@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#061019">
+<meta name="description" content="UYC: organizador de empresas, marcas, aplicaciones, redes sociales, misiones, visiones, enlaces e identidad visual.">
+<title>UYC · Centro de organización</title>
+<link rel="stylesheet" href="css/styles.css">
+<script src="data/records.js" defer></script>
+<script src="js/app.js" defer></script>
+</head>
+<body>
+<div id="overlay" class="overlay"></div>
+<div class="shell">
+<aside class="side" id="side" aria-label="Navegación principal">
+<div class="brand"><div class="brand-icon">U<span>Y</span>C</div><div><strong>UYC</strong><small>Centro maestro de organización</small></div></div>
+<div class="sidecap">ESPACIO DE TRABAJO</div>
+<nav class="nav" aria-label="Secciones">
+<button data-view="inicio" type="button"><span class="ico">◫</span>Inicio</button>
+<button data-view="registros" type="button"><span class="ico">▦</span>Empresas y plataformas</button>
+<button data-view="ficha" type="button"><span class="ico">▤</span>Ficha detallada</button>
+<button data-view="identidad" type="button"><span class="ico">◇</span>Identidad visual</button>
+<button data-view="redes" type="button"><span class="ico">◎</span>Redes sociales</button>
+<button data-view="accesos" type="button"><span class="ico">▣</span>Accesos y seguridad</button>
+<button data-view="enlaces" type="button"><span class="ico">↗</span>Enlaces y pendientes</button>
+</nav>
+<div class="side-foot"><strong>UYC V1.0.0</strong>Registro inicial: TaskFlow.<br>Más empresas se añadirán a este mismo sitio conforme sean proporcionadas.</div>
+</aside>
+<div class="main">
+<header class="topbar">
+<div class="top-actions"><button class="hamb" type="button" id="hamb" aria-label="Mostrar u ocultar menú">☰</button><span class="crumb">UYC / <b id="crumb">Inicio</b></span></div>
+<div class="top-actions"><input class="search" type="search" id="search" placeholder="Buscar en UYC..." aria-label="Buscar empresas, correos, usuarios y redes" autocomplete="off"><span class="top-tag">REGISTRO CENTRAL</span></div>
+</header>
+<main class="page" id="page" aria-live="polite"><h1>UYC</h1><p>Cargando registro...</p></main>
+<footer class="foot"><span>UYC · Centro maestro de información</span><span>La información se actualiza por versiones y no contiene contraseñas públicas.</span></footer>
+</div>
+</div>
+<div id="modalCover" class="modal-cover" hidden><div class="modal" role="dialog" aria-modal="true" aria-label="Caja fuerte de contraseñas"><button class="btn sm" type="button" id="closeModal" style="float:right">Cerrar ×</button><div id="modalBody"></div></div></div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
