@@ -1,0 +1,87 @@
+/* UYC — registro público sin contraseñas. Los datos privados nunca deben subirse a GitHub. */
+window.UYC_RECORDS = [
+  {
+    id:"taskflow",
+    nombre:"TaskFlow",
+    tipo:"Aplicación / Sistema digital de productividad y disciplina personal",
+    estado:"En desarrollo — etapa de pre-lanzamiento público",
+    descripcion:"TaskFlow es una plataforma digital diseñada para ayudar al usuario a organizar tareas, hábitos, rutinas y objetivos personales mediante un sistema estructurado de disciplina, seguimiento de progreso, análisis, recompensas y desarrollo constante.\n\nIntegra herramientas orientadas a la productividad, formación de hábitos, cumplimiento de rutinas, organización personal y medición del progreso, dentro de una experiencia visual moderna, motivadora y enfocada en la constancia.\n\nTaskFlow busca convertir las acciones cotidianas en progreso medible, permitiendo que cada usuario pueda visualizar su evolución, mantener el control de sus objetivos y desarrollar una disciplina sostenible a largo plazo.",
+    mision:"Ayudar a las personas a transformar sus objetivos en acciones diarias medibles mediante una plataforma que integra tareas, hábitos, rutinas, disciplina y seguimiento del progreso dentro de una experiencia organizada, motivadora y fácil de utilizar.\n\nTaskFlow busca convertir la constancia diaria en progreso real, proporcionando herramientas que permitan al usuario organizarse, mantener disciplina, medir sus resultados y avanzar de manera continua hacia sus objetivos personales.",
+    vision:"Convertir a TaskFlow en una plataforma de referencia para la organización, productividad y disciplina personal, reconocida por ayudar a las personas a construir hábitos sólidos, cumplir sus objetivos y visualizar de forma clara su evolución.\n\nLa visión de TaskFlow es evolucionar hacia un ecosistema digital cada vez más completo, inteligente y adaptable, capaz de acompañar al usuario en su desarrollo personal, productividad y crecimiento a largo plazo.",
+    proposito:"Transformar la disciplina personal en un sistema organizado, visible y medible que permita al usuario avanzar constantemente hacia sus metas.\n\nTaskFlow no busca únicamente registrar tareas o hábitos, sino crear una estructura que motive al usuario a actuar, mantener constancia y comprobar su progreso mediante resultados reales.",
+    objetivo:"Proporcionar una plataforma integral para gestionar tareas, hábitos, rutinas y objetivos personales, incorporando mecanismos de seguimiento, análisis, progreso y recompensas que favorezcan el desarrollo de la disciplina y la productividad.",
+    valores:["Disciplina","Constancia","Organización","Progreso","Responsabilidad","Superación personal","Enfoque","Productividad","Mejora continua"],
+    contacto:{
+      correo:"taskflowgt.oficial@gmail.com",
+      correo_estado:"Propuesto / pendiente de creación definitiva",
+      usuario:"taskflowgt",
+      usuario_estado:"Pendiente de confirmar disponibilidad",
+      usuario_alternativo:"taskflowgtoficial",
+      whatsapp:"No tiene / Pendiente de definir"
+    },
+    redes:[
+      {plataforma:"Facebook",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
+      {plataforma:"Instagram",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
+      {plataforma:"TikTok",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
+      {plataforma:"Clapper",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"}
+    ],
+    cuentas:[
+      {nombre:"Google / Gmail",correo:"taskflowgt.oficial@gmail.com",usuario:"taskflowgt",estado:"Pendiente de creación / confirmación de la cuenta",url:null,notas:"Cuenta principal propuesta para administrar los servicios oficiales relacionados con TaskFlow."},
+      {nombre:"GitHub",usuario:"novaprimegt-coder",repositorio:"TaskFlow",estado:"Activo",url:"https://github.com/novaprimegt-coder/TaskFlow",notas:"Repositorio utilizado para alojar el proyecto TaskFlow y su página de presentación pública."}
+    ],
+    web:{
+      nombre:"TaskFlow",url:"https://novaprimegt-coder.github.io/TaskFlow/presentacion/",
+      original:"https://novaprimegt-coder.github.io/TaskFlow/presentacion/?utm_source=chatgpt.com",
+      dominio:"novaprimegt-coder.github.io",ruta:"/TaskFlow/presentacion/",
+      alojamiento:"GitHub Pages",protocolo:"HTTPS",estado:"Activo",
+      propietario:"novaprimegt-coder",repositorio:"https://github.com/novaprimegt-coder/TaskFlow",
+      nota_repositorio:"La dirección del repositorio corresponde a la estructura del enlace GitHub Pages proporcionado."
+    },
+    identidad:{
+      nombre_visible:"TaskFlow",nombre_corto:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",
+      correo:"taskflowgt.oficial@gmail.com",
+      nombre_oficial:"TaskFlow",nombres_no_oficiales:["Task Flow","TASK FLOW","Taskflow"],
+      estilo:"Tecnológico, moderno, premium, oscuro y orientado a productividad, disciplina y progreso.",
+      colores:["Cian / turquesa","Azul oscuro","Negro / azul nocturno","Naranja / dorado como color de énfasis"],
+      estetica:["Fondos predominantemente oscuros","Contraste controlado","Elementos tecnológicos","Iluminación cian","Detalles naranjas o dorados","Interfaces limpias","Jerarquía visual clara","Sensación premium","Aspecto futurista sin saturación excesiva"]
+    },
+    activos:[
+      {id:"logo-principal",nombre:"Logo principal",formato:"Vertical / identidad completa",uso:"Representación maestra de la marca; presentaciones y documentación institucional.",pagina:3},
+      {id:"logo-secundario",nombre:"Logo secundario",formato:"Compacto",uso:"Alternativa para publicaciones digitales, miniaturas y piezas promocionales.",pagina:4},
+      {id:"logo-cuadrado",nombre:"Logo cuadrado",formato:"1:1",uso:"Perfiles de redes, miniaturas, imágenes de cuenta e iconos de plataforma.",pagina:5},
+      {id:"logo-horizontal",nombre:"Logo horizontal",formato:"Panorámico",uso:"Página web, encabezados, firmas y presentaciones.",pagina:6},
+      {id:"isotipo",nombre:"Isotipo",formato:"Icono",uso:"Icono de la app, favicon, accesos directos y marca de agua.",pagina:7},
+      {id:"arte-hero",nombre:"Arte Hero / Portada oficial",formato:"16:9",uso:"Lanzamientos, landing pages, campañas y portadas.",pagina:8},
+      {id:"variante-complementaria-a",nombre:"Variante complementaria A",formato:"Vertical",uso:"Material promocional vertical de alto impacto.",pagina:9},
+      {id:"variante-complementaria-b",nombre:"Variante complementaria B",formato:"Cuadrado / vertical",uso:"Campañas, miniaturas y artes digitales promocionales.",pagina:10}
+    ],
+    seguridad:{
+      contrasenas_en_sitio:false,
+      separacion:"No utilizar la contraseña del correo principal como contraseña de las redes sociales.",
+      dos_pasos:["Gmail","Facebook","Instagram","TikTok","GitHub","Cualquier otra plataforma administrativa relacionada con TaskFlow"]
+    },
+    pendientes:[
+      "Creación definitiva del correo: taskflowgt.oficial@gmail.com",
+      "Disponibilidad definitiva del usuario: taskflowgt",
+      "Creación de Facebook","Creación de Instagram","Creación de TikTok","Creación de Clapper",
+      "Enlaces definitivos de cada red social",
+      "Número de teléfono o WhatsApp oficial, en caso de utilizarse"
+    ],
+    notas:[
+      "Mantener TaskFlow como nombre oficial de la plataforma.",
+      "El logo principal del documento de identidad visual constituye la referencia maestra de identidad.",
+      "Mantener la combinación visual cian/turquesa y naranja/dorado, con fondos predominantemente oscuros.",
+      "No alterar las proporciones, composición, colores o elementos esenciales del logo oficial.",
+      "Utilizar el isotipo para icono de aplicación y favicon.",
+      "Utilizar el logo horizontal principalmente en página web.",
+      "Utilizar el logo cuadrado principalmente para perfiles de redes sociales.",
+      "Utilizar el Arte Hero para lanzamiento, portada y campañas principales.",
+      "Mantener coherencia visual entre aplicación, página web y redes sociales.",
+      "No publicar contraseñas en páginas públicas, publicaciones, repositorios GitHub ni documentos destinados a terceros.",
+      "Mantener separada la contraseña principal del correo de la contraseña utilizada en las redes sociales.",
+      "No utilizar ?utm_source=chatgpt.com como parte permanente del enlace oficial.",
+      "Las cuentas sociales permanecen pendientes hasta que sean creadas o confirmadas.",
+      "El teléfono / WhatsApp permanece pendiente hasta que se establezca un número oficial para TaskFlow."
+    ]
+  }
+];
