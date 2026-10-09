@@ -25,7 +25,7 @@
 <button data-view="accesos" type="button"><span class="ico">▣</span>Accesos y seguridad</button>
 <button data-view="enlaces" type="button"><span class="ico">↗</span>Enlaces y pendientes</button>
 </nav>
-<div class="side-foot"><strong>UYC V1.0.0</strong>Registro inicial: TaskFlow.<br>Más empresas se añadirán a este mismo sitio conforme sean proporcionadas.</div>
+<div class="side-foot"><strong>UYC V1.1.0</strong>Registro inicial: TaskFlow.<br>Más empresas se añadirán a este mismo sitio conforme sean proporcionadas.</div>
 </aside>
 <div class="main">
 <header class="topbar">
@@ -128,8 +128,7 @@ window.UYC_RECORDS = [
   }
 ];
 </script>
-<script>
-/* UYC V1.0.0 — sitio estático. Credenciales: solo cifradas en almacenamiento local. */
+<script>/* UYC V1.1.0 — sitio estático. Credenciales: solo cifradas en almacenamiento local. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -137,7 +136,7 @@ const $=(q,el=document)=>el.querySelector(q);
 const esc=s=>String(s===undefined||s===null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nl=s=>esc(s).replace(/\n/g,"<br>");
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-let view="inicio",current=records[0]?.id||null,filter="",unlocked=null,visible=new Set(),toastTimer;
+let view="inicio",current=records[0]?.id||null,filter="",unlocked=null,visible=new Set(),toastTimer,carouselIndex=0;
 const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha detallada",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
 const selected=()=>records.find(x=>x.id===current)||records[0]||null;
 function btn(label,action,extra=""){return '<button type="button" class="btn '+extra+'" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
@@ -178,15 +177,30 @@ return top(r.nombre,r.tipo,"FICHA INSTITUCIONAL")+recordTile(r)
 +section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal propuesto",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Usuario alternativo",r.contacto?.usuario_alternativo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp,false))
 +card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio TaskFlow",r.web?.url))+'</div>';
 }
+function assetInfo(r){
+ const files=["image2.png","image3.png","image4.png","image5.png","image6.png","image1.png","image7.png","image8.png"];
+ const dims=[[256,384],[1254,1254],[1254,1254],[2172,724],[1254,1254],[1672,941],[1254,1254],[1254,1254]];
+ const filenames=["TaskFlow_logo-principal_256x384.png","TaskFlow_logo-secundario_1254x1254.png","TaskFlow_logo-cuadrado_1254x1254.png","TaskFlow_logo-horizontal_2172x724.png","TaskFlow_isotipo_1254x1254.png","TaskFlow_arte-hero_1672x941.png","TaskFlow_variante-complementaria-A_1254x1254.png","TaskFlow_variante-complementaria-B_1254x1254.png"];
+ return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
+}
 function identity(){
-const r=selected();if(!r)return '<div class="empty">No registrado</div>';
-return top("Identidad visual oficial",r.nombre+" · Clasificación de los elementos oficiales de la marca.","MATERIAL DE REFERENCIA")
-+'<div class="notice">Las ocho piezas y sus usos están identificados a partir del documento oficial. Las vistas previas de los archivos originales se habilitarán cuando estén alojados en este repositorio; no se sustituirán por logos inventados.</div>'
-+section("Elementos de identidad",String(items(r))+" recursos")
-+'<div class="media-grid">'+(r.activos||[]).map(a=>{
-const src="assets/"+encodeURIComponent(r.id)+"/"+encodeURIComponent(a.id)+".png";
-return '<article class="card media"><div class="preview"><img src="'+esc(src)+'" alt="'+esc(a.nombre)+'" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="symbol" hidden>◇</span></div><b>'+esc(a.nombre)+'</b><small>'+esc(a.formato)+'</small><p>'+esc(a.uso)+'</p><button class="btn sm" type="button" data-asset="'+esc(src)+'">Ver / Descargar original</button><div class="mini-note">Manual oficial, página '+a.pagina+'</div></article>'}).join("")+'</div>'
-+section("Normas visuales")+'<div class="grid cards2">'+card("Estilo y colores",'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores))+card("Estética y usos",tags(r.identidad?.estetica)+field("Nombre oficial",r.nombre,false)+field("Escrituras no oficiales",(r.identidad?.nombres_no_oficiales||[]).join(", "),false))+'</div>';
+ const r=selected();if(!r)return '<div class="empty">No registrado</div>';
+ const entries=assetInfo(r);if(!entries.length)return top("Identidad visual",r.nombre);
+ carouselIndex=((carouselIndex%entries.length)+entries.length)%entries.length;
+ const active=entries[carouselIndex];
+ const label=a=>a.w+" × "+a.h+" px";
+ const desc=active.uso||"Identidad visual de TaskFlow";
+ return top("Biblioteca de identidad visual","Ocho piezas originales. Formato, transparencia, proporción y resolución sin alteraciones.","TASKFLOW / ARCHIVOS OFICIALES")
+ +'<div class="notice">Las imágenes mostradas y las descargas deben corresponder a los PNG originales del documento oficial. Se mantienen sus medidas exactas y los fondos transparentes, sin recortes ni rediseños.</div>'
+ +'<div class="asset-showcase">'
+ +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.src)+'" alt="'+esc(active.nombre)+'" draggable="false" onerror="this.closest(&quot;.asset-display&quot;).classList.add(&quot;missing&quot;)" onload="this.closest(&quot;.asset-display&quot;).classList.remove(&quot;missing&quot;)"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
+ +'<div class="asset-info"><span class="mini-label">RECURSO '+String(carouselIndex+1).padStart(2,"0")+' / '+String(entries.length).padStart(2,"0")+'</span><h2>'+esc(active.nombre)+'</h2><p>'+esc(desc)+'</p>'
+ +'<div class="asset-specs"><div><span>Resolución original</span><strong>'+label(active)+'</strong></div><div><span>Formato</span><strong>PNG original</strong></div><div><span>Fondo</span><strong>'+(active.transparent?'Transparente (alfa)':'Integrado en la imagen')+'</strong></div><div><span>Relación</span><strong>'+(active.w>active.h?'Horizontal':active.w<active.h?'Vertical':'Cuadrada 1:1')+'</strong></div><div><span>Nombre original en Word</span><strong>'+esc(active.file)+'</strong></div></div>'
+ +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver tamaño original ↗</button></div></div></div>'
+ +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de las ocho imágenes">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
+ +section("Todas las imágenes originales",entries.length+" recursos individuales")
+ +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
+ +section("Normas visuales")+card("Identidad de TaskFlow",'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
 }
 function social(){
 const r=selected();if(!r)return "";
@@ -239,6 +253,8 @@ function renderVaultFields(){const el=$("#vaultFields");if(!el)return;if(!unlock
 function vaultModal(){if(!crypto?.subtle){toast("El cifrado no está disponible en este navegador");return}if(unlocked){showModal('<h2>Administrar caja fuerte</h2><p>Para modificar las credenciales bloquea y vuelve a abrir con tu clave maestra.</p><div class="actions"><button class="btn" data-action="vault-lock">Bloquear</button><button class="btn" data-action="vault-delete">Eliminar datos locales</button></div>');return}if(hasVault()){showModal('<h2>Desbloquear caja fuerte</h2><p>La contraseña maestra nunca se almacena.</p><form id="unlockForm"><label for="masterUnlock">Clave maestra</label><input id="masterUnlock" type="password" required autocomplete="current-password"><div class="actions"><button class="btn primary" type="submit">Desbloquear</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>');return}showModal('<h2>Crear caja fuerte local</h2><p>Estos valores se cifrarán únicamente en este navegador, con tu clave maestra personal.</p><form id="createForm"><label for="masterCreate">Nueva clave maestra (mínimo 12 caracteres)</label><input id="masterCreate" type="password" minlength="12" required autocomplete="new-password"><label for="masterAgain">Confirmar clave maestra</label><input id="masterAgain" type="password" minlength="12" required autocomplete="new-password"><label for="passwordEmail">Contraseña de correo</label><input id="passwordEmail" type="password" autocomplete="off"><label for="passwordRedes">Contraseña de redes sociales</label><input id="passwordRedes" type="password" autocomplete="off"><div class="actions"><button class="btn primary" type="submit">Guardar cifrado</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>')}
 async function handleVaultForm(form){const b=form.querySelector('[type="submit"]');b.disabled=true;try{if(form.id==="createForm"){const m=$("#masterCreate").value;if(m.length<12||m!==$("#masterAgain").value){toast("La clave maestra no coincide");return}const values={email:$("#passwordEmail").value,redes:$("#passwordRedes").value};localStorage.setItem(keyFor(),JSON.stringify(await encrypt(m,values)));unlocked=values;toast("Credenciales cifradas en este dispositivo")}else{unlocked=await decrypt($("#masterUnlock").value);toast("Caja fuerte desbloqueada")}visible.clear();closeModal();render()}catch{toast("No se pudo validar o guardar la caja fuerte")}finally{if(b.isConnected)b.disabled=false}}
 document.addEventListener("click",async e=>{
+const slide=e.target.closest("[data-select-slide]");if(slide){carouselIndex=Number(slide.dataset.selectSlide);if(view!=="identidad")navigate("identidad");else render();return}
+const step=e.target.closest("[data-slide]");if(step){const len=assetInfo(selected()).length;carouselIndex=(carouselIndex+Number(step.dataset.slide)+len)%len;render();return}
 const nav=e.target.closest("[data-view]");if(nav){navigate(nav.dataset.view);return}
 const rec=e.target.closest("[data-open]");if(rec){openRecord(rec.dataset.open);return}
 const c=e.target.closest("[data-copy]");if(c){await copy(c.dataset.copy);return}
@@ -260,7 +276,6 @@ $("#closeModal").addEventListener("click",closeModal);
 $("#modalCover").addEventListener("click",e=>{if(e.target.id==="modalCover")closeModal()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeMenu()}});
 render();
-})();
-</script>
+})();</script>
 </body>
 </html>
