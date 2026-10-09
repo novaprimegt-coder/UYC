@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#f5f3ee">
+<meta name="theme-color" content="#252424">
 <meta name="description" content="UYC: organizador de empresas, marcas, aplicaciones, redes sociales, misiones, visiones, enlaces e identidad visual.">
 <title>UYC · Centro de organización</title>
-<link rel="stylesheet" href="css/styles.css?v=1.1.0-editorial">
+<link rel="stylesheet" href="css/styles.css?v=2.3.0">
 
 
 </head>
@@ -25,7 +25,7 @@
 <button data-view="accesos" type="button"><span class="ico">▣</span>Accesos y seguridad</button>
 <button data-view="enlaces" type="button"><span class="ico">↗</span>Enlaces y pendientes</button>
 </nav>
-<div class="side-foot"><strong>UYC V1.1.0</strong>Registro inicial: TaskFlow.<br>Más empresas se añadirán a este mismo sitio conforme sean proporcionadas.</div>
+<div class="side-foot"><strong>UYC V2.3.0</strong>Registro inicial: TaskFlow.<br>Más empresas se añadirán a este mismo sitio conforme sean proporcionadas.</div>
 </aside>
 <div class="main">
 <header class="topbar">
@@ -148,18 +148,34 @@ function card(title,inner){return '<section class="card pad"><h3>'+esc(title)+'<
 function top(title,sub,kicker="REGISTRO UYC"){return '<div class="kicker">'+esc(kicker)+'</div><h1 class="title">'+esc(title)+'</h1><p class="sub">'+esc(sub)+'</p>'}
 function section(title,sub=""){return '<div class="heading"><h2>'+esc(title)+'</h2><small>'+esc(sub)+'</small></div>'}
 function badge(s){return '<span class="pill warn">'+esc(s)+'</span>'}
-function recordTile(r){return '<article class="card rec"><div class="rec-mark"><img src="assets/taskflow/image4.png" alt="Logo oficial cuadrado TaskFlow" loading="lazy" onerror="this.hidden=true"></div><div class="rec-main"><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo)+'</p>'+badge(r.estado)+'</div><button class="btn primary" data-open="'+esc(r.id)+'">Abrir ficha ↗</button></article>'}
+function recordImage(r,kind){
+ if(!r)return null;
+ const fromRecord=r.visual?.[kind]||r.imagenes?.[kind];
+ if(fromRecord)return fromRecord;
+ if(r.id==="taskflow"){if(kind==="cuadrado")return "assets/taskflow/image4.png";if(kind==="hero")return "assets/taskflow/image1.png";}
+ return null;
+}
+function recordTile(r){
+ const img=recordImage(r,"cuadrado");
+ const symbol=img?'<img src="'+esc(img)+'" alt="Imagen oficial de '+esc(r.nombre)+'" loading="lazy" onerror="this.hidden=true">':esc(r.nombre.slice(0,2).toUpperCase());
+ return '<article class="card rec"><div class="rec-mark">'+symbol+'</div><div class="rec-main"><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo)+'</p>'+badge(r.estado)+'</div><button class="btn primary" data-open="'+esc(r.id)+'">Abrir ficha ↗</button></article>';
+}
 function items(r){return (r?.activos||[]).length}
 function countSocial(){return records.reduce((n,r)=>n+(r.redes||[]).length,0)}
 function countMedia(){return records.reduce((n,r)=>n+items(r),0)}
 function home(){
-return top("Todo tu ecosistema, en un solo lugar.","Organización centralizada de empresas, marcas, aplicaciones, identidades digitales y recursos oficiales.","UYC · CENTRO MAESTRO")
-+'<section class="hero"><div><div class="pills"><span class="pill">Centro de organización UYC</span><span class="pill warn">Actualización por versiones</span></div><h2>Una plataforma.<br><em>Toda tu información organizada.</em></h2><p>Explora y consulta tus registros desde una página web central. Cada nueva empresa se incorporará sin eliminar la anterior.</p><div class="actions">'+btn("Ver registros","goto:registros","primary")+btn("Identidad visual","goto:identidad")+'</div></div><img class="hero-art" src="assets/taskflow/image1.png" alt="Arte Hero oficial de TaskFlow" draggable="false"></section>'
-+section("Galería oficial de TaskFlow","PNG originales • proporciones intactas")
-+'<div class="home-preview-list"><button type="button" data-action="goto:identidad"><img src="assets/taskflow/image2.png" alt="Logo principal" loading="lazy"><span>Logo principal</span></button><button type="button" data-action="goto:identidad"><img src="assets/taskflow/image5.png" alt="Logo horizontal" loading="lazy"><span>Logo horizontal</span></button><button type="button" data-action="goto:identidad"><img src="assets/taskflow/image6.png" alt="Isotipo" loading="lazy"><span>Isotipo</span></button><button type="button" data-action="goto:identidad"><img src="assets/taskflow/image1.png" alt="Arte Hero" loading="lazy"><span>Arte Hero</span></button></div>'
-+'<div class="grid stats">'+[[records.length,"Empresas y plataformas","Registros incorporados"],[countMedia(),"Recursos visuales","Registrados"],[countSocial(),"Redes sociales","Registradas o pendientes"],[records.reduce((n,r)=>n+(r.cuentas||[]).length,0),"Cuentas relacionadas","Registros vinculados"]].map(x=>'<div class="card stat"><span>'+esc(x[1])+'</span><b>'+x[0]+'</b><small>'+esc(x[2])+'</small></div>').join("")+'</div>'
-+section("Empresas y plataformas","Selecciona una ficha")+'<div class="rows">'+(records.length?records.map(recordTile).join(""):'<div class="card empty">No hay registros incorporados.</div>')+'</div>'
-+'<p class="mini-note">Las contraseñas no se publican en el sitio. Los datos de cada registro se actualizan en el repositorio UYC.</p>';
+ const chosen=selected(), chosenName=chosen?.nombre||"";
+ const displayImg=recordImage(chosen,"hero");
+ const featuredAssets=chosen?assetInfo(chosen).filter(a=>a.src).slice(0,4):[];
+ const preview=featuredAssets.length?
+   section("Identidad visual de "+chosenName,"Recursos originales · abre la biblioteca")
+    +'<div class="home-preview-list">'+featuredAssets.map(a=>'<button type="button" data-action="goto:identidad"><img src="'+esc(a.src)+'" alt="'+esc(a.nombre)+" de "+esc(chosenName)+'" loading="lazy"><span>'+esc(a.nombre)+'</span></button>').join("")+'</div>':"";
+ return top("Tu universo empresarial, en un solo lugar.","Un espacio central para organizar las empresas, marcas, plataformas, cuentas e identidades que forman parte de UYC.","UYC · CENTRO DE ORGANIZACIÓN")
+ +'<section class="hero"><div><div class="pills"><span class="pill">Centro de organización UYC</span><span class="pill warn">'+esc(records.length)+" "+(records.length===1?"empresa registrada":"empresas registradas")+'</span></div><h2>Cada empresa.<br><em>Su propio espacio.</em></h2><p>Consulta tus registros en un único lugar. La información y los recursos oficiales de cada marca se conservan por separado.</p><div class="actions">'+btn("Ver empresas","goto:registros","primary")+(chosen?btn("Explorar "+chosenName,"goto:ficha"):"")+'</div></div>'+(displayImg?'<img class="hero-art" src="'+esc(displayImg)+'" alt="Imagen oficial de '+esc(chosenName)+'" loading="lazy">':"")+'</section>'
+ +'<div class="grid stats">'+[[records.length,"Empresas y plataformas","Registros incorporados"],[countMedia(),"Recursos visuales","Archivos asociados"],[countSocial(),"Redes sociales","Registradas o pendientes"],[records.reduce((n,r)=>n+(r.cuentas||[]).length,0),"Cuentas relacionadas","Registros vinculados"]].map(x=>'<div class="card stat"><span>'+esc(x[1])+'</span><b>'+x[0]+'</b><small>'+esc(x[2])+'</small></div>').join("")+'</div>'
+ +section("Empresas y plataformas",records.length+" registros disponibles")+'<div class="rows">'+(records.length?records.map(recordTile).join(""):'<div class="card empty">No hay registros incorporados.</div>')+'</div>'
+ +preview
+ +'<p class="mini-note">Las contraseñas no se publican en el sitio. Los registros de cada empresa se actualizan de forma independiente en UYC.</p>';
 }
 function allRecords(){
 const arr=records.filter(r=>norm(JSON.stringify(r)).includes(norm(filter)));
@@ -180,19 +196,25 @@ return top(r.nombre,r.tipo,"FICHA INSTITUCIONAL")+recordTile(r)
 +card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio TaskFlow",r.web?.url))+'</div>';
 }
 function assetInfo(r){
+ if(!r)return [];
  const files=["image2.png","image3.png","image4.png","image5.png","image6.png","image1.png","image7.png","image8.png"];
  const dims=[[256,384],[1254,1254],[1254,1254],[2172,724],[1254,1254],[1672,941],[1254,1254],[1254,1254]];
  const filenames=["TaskFlow_logo-principal_256x384.png","TaskFlow_logo-secundario_1254x1254.png","TaskFlow_logo-cuadrado_1254x1254.png","TaskFlow_logo-horizontal_2172x724.png","TaskFlow_isotipo_1254x1254.png","TaskFlow_arte-hero_1672x941.png","TaskFlow_variante-complementaria-A_1254x1254.png","TaskFlow_variante-complementaria-B_1254x1254.png"];
- return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
+ if(r.id==="taskflow")return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
+ return (r.activos||[]).filter(a=>a.src||a.archivo).map(a=>{
+  const source=a.src||a.archivo;
+  const fname=source.split("/").pop();
+  return {...a,src:source,file:fname,filename:a.filename||fname,w:Number(a.w||a.ancho||0),h:Number(a.h||a.alto||0),transparent:Boolean(a.transparent)};
+ });
 }
 function identity(){
  const r=selected();if(!r)return '<div class="empty">No registrado</div>';
- const entries=assetInfo(r);if(!entries.length)return top("Identidad visual",r.nombre);
+ const entries=assetInfo(r);if(!entries.length)return top("Identidad visual de "+r.nombre,"Todavía no se han incorporado imágenes oficiales para esta empresa.","BIBLIOTECA VISUAL");
  carouselIndex=((carouselIndex%entries.length)+entries.length)%entries.length;
  const active=entries[carouselIndex];
  const label=a=>a.w+" × "+a.h+" px";
- const desc=active.uso||"Identidad visual de TaskFlow";
- return top("Biblioteca de identidad visual","Ocho piezas originales. Formato, transparencia, proporción y resolución sin alteraciones.","TASKFLOW / ARCHIVOS OFICIALES")
+ const desc=active.uso||"Identidad visual de "+r.nombre;
+ return top("Identidad visual de "+r.nombre,entries.length+" archivos registrados. Proporciones y formatos originales.","RECURSOS DE "+r.nombre.toUpperCase())
  +'<div class="notice">Las imágenes mostradas y las descargas deben corresponder a los PNG originales del documento oficial. Se mantienen sus medidas exactas y los fondos transparentes, sin recortes ni rediseños.</div>'
  +'<div class="asset-showcase">'
  +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.src)+'" alt="'+esc(active.nombre)+'" draggable="false" onerror="this.closest(&quot;.asset-display&quot;).classList.add(&quot;missing&quot;)" onload="this.closest(&quot;.asset-display&quot;).classList.remove(&quot;missing&quot;)"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
@@ -202,7 +224,7 @@ function identity(){
  +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de las ocho imágenes">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
  +section("Todas las imágenes originales",entries.length+" recursos individuales")
  +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
- +section("Normas visuales")+card("Identidad de TaskFlow",'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
+ +section("Normas visuales")+card("Identidad de "+esc(r.nombre),'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
 }
 function social(){
 const r=selected();if(!r)return "";
