@@ -187,3 +187,27 @@ body::before,body::after{display:none!important}
 .checker{background-color:#252429!important;background-image:linear-gradient(45deg,#ffffff0b 25%,transparent 25%),linear-gradient(-45deg,#ffffff0b 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ffffff0b 75%),linear-gradient(-45deg,transparent 75%,#ffffff0b 75%)!important}
 .sidebar a:hover,.sidebar button:hover{color:#ffe0ad!important}
 @media(max-width:760px){.page-head h1{font-size:32px!important}.hero{min-height:400px!important}.hero-content{min-height:400px!important}.showcase-stage{min-height:330px!important}.asset-preview{min-height:160px!important}.showcase-panel{padding:12px!important}}
+
+
+/* UYC 2.2: legibilidad, escalabilidad y corrección de tarjetas móviles */
+:root{--txt:#232326!important;--muted:#585653!important;--line:#dedbd4!important;--cyan:#705538!important;--orange:#9a6e39!important}
+body{color:#262522!important;background:#f6f5f1!important;font-size:16px!important;line-height:1.65!important}
+.main,.content,.main-content,.workspace{color:#282622}
+.topbar{color:#f6f2ed!important}
+.topbar .crumb,.topbar .crumb *, .topbar .breadcrumb{color:#e7e0d7!important}
+.page-head h1,.section-title,.section-head h2,.record-card h2,.record-card h3,.company-card h2,.company-card h3{color:#242320!important}
+.page-head p,.muted,.subtitle,.record-card p,.company-card p,.section-head p{color:#5c5953!important}
+.card,.panel,.record-card,.company-card,.stat,.stat-card,.quick-tile,.asset-card{color:#282622}
+.tag,.status,.badge,.status-tag,.pill{white-space:normal!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.5!important;max-width:100%!important;display:inline-flex!important;align-items:center!important;padding:7px 12px!important}
+.record-card,.company-card,.record-row,.company-row{min-width:0!important}
+.record-card *, .company-card *, .record-row *, .company-row *{min-width:0;overflow-wrap:break-word}
+button,a{touch-action:manipulation}
+@media(max-width:780px){
+ body{font-size:15.5px!important}
+ .page-head h1{font-size:clamp(29px,8vw,40px)!important;line-height:1.12!important}
+ .record-card,.company-card,.record-row,.company-row{display:flex!important;flex-direction:column!important;align-items:flex-start!important;gap:14px!important}
+ .record-card img,.company-card img{max-width:130px!important;height:auto!important;object-fit:contain!important}
+ .tag,.status,.badge,.status-tag,.pill{font-size:12px!important}
+ .topbar{gap:10px!important}
+ .topbar input{min-width:0!important;width:100%!important}
+}
