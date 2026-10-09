@@ -149,3 +149,41 @@ body{background:#f5f3ee;color:#292826;font-family:ui-sans-serif,system-ui,-apple
 .rec-mark img{max-width:100%;max-height:100%;object-fit:contain;display:block}
 @media(max-width:1200px){.home-preview-list{grid-template-columns:repeat(2,minmax(0,1fr))}.hero .hero-art{max-height:250px}}
 @media(max-width:760px){.hero{flex-direction:column;align-items:stretch;gap:22px}.hero>div{width:100%;flex:auto}.hero .hero-art{width:100%;max-height:270px;flex:auto;object-fit:contain}.home-preview-list{grid-template-columns:repeat(2,minmax(0,1fr))}.home-preview-list button{min-height:140px}.home-preview-list img{height:100px}}
+
+
+/* UYC V2.1 — editorial graphite + pearl; high-contrast navigation */
+:root{color-scheme:dark;--uyc-bg:#0b0b0e;--uyc-panel:#17171b;--uyc-border:#35343a;--uyc-text:#f7f4ee;--uyc-muted:#a9a5a0;--uyc-accent:#f4c78d}
+html,body{background:#0b0b0e!important;color:#f7f4ee!important}
+body::before,body::after{display:none!important}
+.shell{background:#0b0b0e!important}
+.sidebar{background:#111115!important;border-right:1px solid #303036!important}
+.main-wrapper{background:linear-gradient(140deg,#0c0c10 0%,#121116 50%,#0a0b0f 100%)!important}
+.topbar{background:#141419ed!important;border-bottom:1px solid #303037!important;box-shadow:none!important}
+.page-head h1{font-size:clamp(32px,3.5vw,52px)!important;letter-spacing:-.055em!important;color:#faf6f0!important}
+.page-head p,.page-head .page-kicker{color:#c1bcb6!important}
+.panel,.rich-card,.stat-card,.quick-tile,.social-card,.asset-card,.record-cover,.identity-showcase,.showcase-stage,.showcase-frame,.showcase-stat,.search-dialog,.vault-modal,.image-modal{background:#18181d!important;border-color:#34333b!important;box-shadow:0 15px 45px #00000025!important}
+.hero{border:1px solid #5c5148!important;border-radius:25px!important;box-shadow:0 22px 70px #0007!important}
+.hero::after{background:linear-gradient(90deg,#0c0b10f5 0%,#101016dd 46%,#10101650 100%)!important}
+.hero h1{color:#fff8ee!important;font-size:clamp(35px,4.6vw,67px)!important;letter-spacing:-.065em!important}
+.hero h1 em{color:#f5c78c!important}
+.btn-primary{background:#f4c78d!important;color:#191312!important;border-color:#f4c78d!important;box-shadow:none!important}
+.btn-primary:hover{background:#ffe0ad!important}
+.btn-outline,.btn-quiet,.carousel-nav{background:#27252b!important;color:#f8f2e8!important;border-color:#4c4544!important}
+.btn-outline:hover,.btn-quiet:hover{border-color:#f4c78d!important}
+.page-kicker,.mini-overline,.hero-kicker,.asset-eyebrow{color:#f4c78d!important}
+.stat-card strong,.panel-title,.rich-head h2,.asset-title,.showcase-panel h2{color:#faf5ef!important}
+.stat-card,.quick-tile,.panel,.asset-card,.rich-card{border-radius:20px!important}
+.asset-card{overflow:hidden!important}
+.asset-preview{background:radial-gradient(ellipse at center,#29282d,#121216)!important;min-height:230px!important}
+.asset-preview img,.showcase-frame img,.feature-thumb img{object-fit:contain!important}
+.showcase-stage{min-height:470px!important}
+.showcase-frame{background:radial-gradient(circle at center,#302a2a,#111116 80%)!important}
+.carousel-thumb{background:#242229!important;border-color:#44404a!important;border-radius:16px!important}
+.carousel-thumb.active{background:#302922!important;border-color:#e9bd81!important;box-shadow:inset 0 0 0 1px #e9bd81!important}
+.carousel-nav{border-radius:14px!important}
+.showcase-panel{padding:24px!important}
+.showcase-panel h2{font-size:clamp(30px,3vw,46px)!important}
+.showcase-description,.asset-description,.panel-subtitle{color:#bcb7b3!important}
+.checker{background-color:#252429!important;background-image:linear-gradient(45deg,#ffffff0b 25%,transparent 25%),linear-gradient(-45deg,#ffffff0b 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#ffffff0b 75%),linear-gradient(-45deg,transparent 75%,#ffffff0b 75%)!important}
+.sidebar a:hover,.sidebar button:hover{color:#ffe0ad!important}
+@media(max-width:760px){.page-head h1{font-size:32px!important}.hero{min-height:400px!important}.hero-content{min-height:400px!important}.showcase-stage{min-height:330px!important}.asset-preview{min-height:160px!important}.showcase-panel{padding:12px!important}}
