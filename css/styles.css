@@ -348,3 +348,83 @@ body{
  .asset-info{padding:17px}
  .home-preview-list img{height:85px}
 }
+
+
+/* UYC V2.4 — claridad de contenido, directorio verdaderamente multiempresa */
+.hero-general{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(285px,.95fr);gap:clamp(22px,4vw,64px);align-items:center;min-height:375px}
+.hero-general .hero-copy{flex:none;max-width:unset;min-width:0}
+.hero-general h2{font-size:clamp(34px,4vw,60px);line-height:1.12}
+.hero-general p{max-width:610px;line-height:1.85;font-size:15px;margin-bottom:25px}
+.hero-overview{display:grid;gap:12px;padding:clamp(19px,2.5vw,29px);border:1px solid #806b55;border-radius:19px;background:linear-gradient(155deg,#342f2c,#292728);box-shadow:0 16px 44px #100e0c2c}
+.hero-overview-label{display:block;color:#f3d9b5;letter-spacing:.13em;font-size:11px;font-weight:800;margin-bottom:3px}
+.hero-step{display:flex;gap:14px;padding:14px 0;border-top:1px solid #625349;align-items:flex-start}
+.hero-step>b{display:grid;place-items:center;flex:0 0 35px;height:35px;border:1px solid #b69970;border-radius:10px;color:#f9dfbb;font-size:13px;font-weight:800}
+.hero-step>span{display:grid;gap:5px;min-width:0}
+.hero-step strong{color:#fffaf5;font-size:14px;font-weight:760;line-height:1.35}
+.hero-step small{color:#e0d3c4;font-size:12.5px;line-height:1.55}
+.hero-general::after{display:none}
+.stats .stat{min-height:168px;display:flex;flex-direction:column;gap:8px;justify-content:space-between}
+.stats .stat span{font-size:13px;line-height:1.38;letter-spacing:0;font-weight:800;color:#4b433b}
+.stats .stat b{font-size:clamp(36px,4vw,48px);line-height:1.15;color:#26221f;margin:0}
+.stats .stat small{font-size:12.5px;line-height:1.55;color:#585149}
+.company-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:18px}
+.company-directory .rec{display:flex;flex-direction:column;align-items:stretch;gap:0;padding:0;overflow:hidden;border-radius:21px}
+.rec-head{display:grid;grid-template-columns:86px minmax(0,1fr);gap:19px;align-items:center;padding:23px 24px}
+.rec-head .rec-mark{width:86px;height:86px;border-radius:16px;flex:0 0 auto}
+.rec-head .rec-main{display:flex;flex-direction:column;align-items:flex-start;min-width:0;gap:7px}
+.rec-eyebrow{color:#715535;font-size:10.5px;font-weight:850;letter-spacing:.105em}
+.rec-head .rec-main h3{font-size:clamp(21px,2.1vw,27px);line-height:1.17;overflow-wrap:anywhere}
+.rec-head .rec-main p{font-size:13.5px;color:#4e4841;line-height:1.58;max-width:100%;overflow-wrap:anywhere}
+.rec-bottom{display:flex;align-items:flex-end;gap:16px;justify-content:space-between;padding:20px 24px 23px;border-top:1px solid #e8e1d8;background:#fdfbf8}
+.rec-state{display:flex;flex-direction:column;gap:8px;align-items:flex-start;min-width:0;flex:1 1 auto}
+.rec-state-label{color:#675f54;font-size:10px;letter-spacing:.1em;font-weight:850;line-height:1.5}
+.rec-state .pill.warn{font-size:12px;line-height:1.5;white-space:normal;word-break:normal;overflow-wrap:normal;display:inline-block;max-width:100%;width:auto;border-radius:11px;padding:8px 12px;background:#f8ecdb;color:#4f341e;border:1px solid #dfbe96}
+.rec-bottom>.btn{flex:none;width:auto;min-height:44px;white-space:nowrap}
+.guide-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:17px}
+.guide-card{padding:26px;min-width:0}
+.guide-count{color:#765635;display:block;font-size:11px;font-weight:800;letter-spacing:.12em;margin-bottom:18px}
+.guide-card h3{font-size:20px;line-height:1.28;margin:0 0 13px}
+.guide-card p{color:#514940;font-size:14px;line-height:1.83;margin:0}
+.home-privacy{padding:14px 0;color:#544b40;font-size:13px;line-height:1.7}
+.catalog-explainer{display:flex;align-items:center;gap:16px;margin:16px 0 23px;padding:19px 21px;border:1px solid #e1d7ca;border-radius:16px;background:#fffaf5}
+.catalog-explainer strong{color:#4f3823;white-space:nowrap;font-size:15px}
+.catalog-explainer span{font-size:13px;line-height:1.6;color:#5b5148}
+.company-context{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:16px 21px;margin:0 0 25px;background:#fff;border:1px solid #e1d8ca;border-radius:15px}
+.company-context>div{display:flex;flex-direction:column;gap:4px;min-width:0}
+.company-context-label{color:#795936;font-weight:800;font-size:10px;letter-spacing:.11em}
+.company-context strong{font-size:21px;color:#28231d;line-height:1.3;overflow-wrap:anywhere}
+.company-context small{font-size:12px;color:#595047;line-height:1.6}
+.company-context .btn{flex:none}
+@media(max-width:1200px){.hero-general{grid-template-columns:minmax(0,1fr) minmax(255px,.82fr)}.company-directory{grid-template-columns:1fr}.guide-grid{grid-template-columns:1fr 1fr}.hero-general h2{font-size:clamp(34px,4.3vw,55px)}}
+@media(max-width:840px){.hero-general{grid-template-columns:1fr}.hero-overview{width:100%}.guide-grid{grid-template-columns:1fr}.company-directory{grid-template-columns:1fr}}
+@media(max-width:600px){
+ .hero-general{display:flex;flex-direction:column;align-items:stretch;gap:25px;padding:26px 20px}
+ .hero-general .hero-copy{width:100%;min-width:0}
+ .hero-general h2{font-size:clamp(32px,8.6vw,43px);margin:19px 0}
+ .hero-general p{font-size:14px;line-height:1.8}
+ .hero-overview{padding:17px;border-radius:16px}
+ .hero-step{gap:12px;padding:12px 0}
+ .hero-step small{font-size:12px}
+ .stats{gap:11px}
+ .stats .stat{padding:16px;min-height:156px;gap:9px}
+ .stats .stat span{font-size:12px;line-height:1.35}
+ .stats .stat b{font-size:38px}
+ .stats .stat small{font-size:11.5px;line-height:1.45}
+ .rec-head{grid-template-columns:72px minmax(0,1fr);gap:13px;padding:18px 17px}
+ .rec-head .rec-mark{width:72px;height:72px}
+ .rec-head .rec-main{gap:6px}
+ .rec-eyebrow{font-size:9.5px;letter-spacing:.065em}
+ .rec-head .rec-main h3{font-size:23px}
+ .rec-head .rec-main p{font-size:13px;line-height:1.55}
+ .rec-bottom{flex-direction:column;align-items:stretch;gap:16px;padding:17px}
+ .rec-bottom>.btn{width:100%;white-space:normal;align-self:stretch}
+ .rec-state .pill.warn{font-size:12px;border-radius:11px}
+ .guide-card{padding:22px}
+ .catalog-explainer{display:grid;gap:6px;padding:17px}
+ .company-context{padding:16px;align-items:stretch}
+ .company-context .btn{width:100%}
+ .top-actions:last-child{min-width:0}
+ .search{font-size:13px}
+}
+@media(max-width:390px){.stats .stat{padding:14px}.stats .stat span{font-size:11px}.stats .stat b{font-size:34px}.rec-head .rec-mark{width:62px;height:62px}.rec-head{grid-template-columns:62px minmax(0,1fr);gap:12px}}
+
