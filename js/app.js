@@ -8,13 +8,45 @@ const nl=s=>esc(s).replace(/\n/g,"<br>");
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let view="inicio",current=null,filter="",unlocked=null,visible=new Set(),toastTimer,carouselIndex=0;
 const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha empresarial",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
-const selected=()=>records.find(x=>x.id===current)||null;
+const localEdits=new Map();
+const editsKey=id=>"uyc:pending:"+id+":v1";
+function editsFor(id){
+ if(localEdits.has(id))return localEdits.get(id);
+ let patch={fields:{},done:[]};
+ try{const saved=JSON.parse(localStorage.getItem(editsKey(id))||"null");
+ if(saved&&typeof saved==="object"){
+  if(saved.fields&&typeof saved.fields==="object")patch.fields=saved.fields;
+  if(Array.isArray(saved.done))patch.done=saved.done.filter(Number.isInteger);
+ }}catch{}
+ localEdits.set(id,patch);return patch;
+}
+function effectiveRecord(r){
+ if(!r)return null;
+ const patch=editsFor(r.id);
+ const record={...r,contacto:{...(r.contacto||{})},web:{...(r.web||{})},
+  redes:(r.redes||[]).map(x=>({...x})),cuentas:(r.cuentas||[]).map(x=>({...x})),_localEdits:patch};
+ for(const [key,value] of Object.entries(patch.fields||{})){
+  if(typeof value!=="string"||!value.trim())continue;
+  if(key==="categoria"){record.categoria=value;continue}
+  if(key.startsWith("contacto.")){
+   const name=key.slice(9);
+   if(["correo","correo_estado","usuario","usuario_estado","whatsapp"].includes(name))record.contacto[name]=value;
+  }else if(key==="web.url")record.web.url=value;
+  else if(key.startsWith("redes.")){
+   const [,name,field]=key.split(".");
+   const account=record.redes.find(x=>x.plataforma===name);
+   if(account&&["url","estado"].includes(field))account[field]=value;
+  }
+ }
+ return record;
+}
+const selected=()=>effectiveRecord(records.find(x=>x.id===current)||null);
 function btn(label,action,extra=""){return '<button type="button" class="btn '+extra+'" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
 function tag(s){return '<span class="tag">'+esc(s)+'</span>'}
 function tags(xs){return '<div class="taglist">'+(xs||[]).map(tag).join("")+'</div>'}
 function field(k,v,copy=true){const missing=v===null||v===undefined||v==="";return '<div class="field"><label>'+esc(k)+'</label><div class="value"><span class="'+(missing?"muted":"")+'">'+esc(missing?"No registrado":v)+'</span>'+(copy&&!missing?'<button class="btn copy" type="button" data-copy="'+esc(v)+'">Copiar</button>':"")+'</div></div>'}
 function link(label,url){return url?'<a class="btn sm" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">↗ '+esc(label)+'</a>':'<span class="fineprint">Pendiente de crear o confirmar</span>'}
-function card(title,inner){return '<section class="card pad"><h3>'+esc(title)+'</h3>'+inner+'</section>'}
+function card(title,inner,copyValue=null){return '<section class="card pad"><div class="card-heading"><h3>'+esc(title)+'</h3>'+(copyValue!==null&&copyValue!==undefined&&copyValue!==""?'<button class="btn copy card-copy" type="button" data-copy="'+esc(copyValue)+'" aria-label="Copiar '+esc(title)+'">Copiar</button>':"")+'</div>'+inner+'</section>'}
 function top(title,sub,kicker="REGISTRO UYC"){return '<div class="kicker">'+esc(kicker)+'</div><h1 class="title">'+esc(title)+'</h1><p class="sub">'+esc(sub)+'</p>'}
 function section(title,sub=""){return '<div class="heading"><h2>'+esc(title)+'</h2><small>'+esc(sub)+'</small></div>'}
 function badge(s){return '<span class="pill warn">'+esc(s)+'</span>'}
@@ -90,12 +122,12 @@ function detail(){
 const r=selected();if(!r)return selectPrompt("Ficha empresarial");
 return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +section("Información general")+'<div class="grid cards2">'
-+card("Descripción",'<div class="text-block">'+nl(r.descripcion)+'</div>')
-+card("Identidad y estado",field("Nombre oficial",r.nombre)+field("Tipo",r.tipo,false)+field("Estado",r.estado,false)+field("Nombre correcto",r.identidad?.nombre_oficial,false))
++card("Descripción",'<div class="text-block">'+nl(r.descripcion)+'</div>',r.descripcion)
++card("Identidad y estado",field("Nombre oficial",r.nombre)+field("Tipo",r.tipo)+field("Estado",r.estado)+field("Nombre correcto",r.identidad?.nombre_oficial))
 +'</div>'+section("Filosofía y desarrollo")
-+'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>')+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>')+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>')+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>')+'</div>'
-+section("Valores de la organización")+card("Valores institucionales",tags(r.valores))
-+section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Usuario alternativo",r.contacto?.usuario_alternativo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp,false))
++'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
++section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
++section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
 +card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>';
 }
 function assetInfo(r){
@@ -135,7 +167,7 @@ return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendie
 +'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
 +'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
 +field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+field("Usuario alternativo",s.alternativo)+field("Correo asociado",s.correo)
-+field("Enlace",s.url,false)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
++field("Enlace",s.url)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
 }
 function access(){
 const r=selected();if(!r)return selectPrompt("Accesos y seguridad");
