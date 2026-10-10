@@ -128,7 +128,7 @@ return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
 +section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
 +section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
-+card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>';
++card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'+section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
 }
 function assetInfo(r){
  if(!r)return [];
@@ -179,12 +179,65 @@ return top("Accesos y seguridad",r.nombre+" · Cuentas y contraseñas protegidas
 }
 function links(){
 const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
-return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)
+const done=new Set(r._localEdits?.done||[]);
+return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
 +'<div class="grid cards2">'
 +card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false))
-+card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field"><label>PENDIENTE '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
++card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }
+
+function pendingEditor(){
+ const r=selected();if(!r)return;
+ const patch=editsFor(r.id);
+ const base=records.find(x=>x.id===r.id);
+ const value=(key,fallback)=>String(patch.fields[key]??fallback??"");
+ const input=(label,key,type,fallback)=>'<label class="pending-input"><span>'+esc(label)+'</span><input name="'+esc(key)+'" type="'+esc(type)+'" value="'+esc(value(key,fallback))+'" maxlength="400" autocomplete="off"></label>';
+ const status=(label,key,fallback)=>{
+  const current=value(key,fallback),original=fallback||"Pendiente de confirmar";
+  return '<label class="pending-input"><span>'+esc(label)+'</span><select name="'+esc(key)+'">'
+   +'<option value="'+esc(original)+'" '+(current===original?"selected":"")+'>'+esc(original)+'</option>'
+   +'<option value="Confirmado" '+(current==="Confirmado"?"selected":"")+'>Confirmado</option></select></label>';
+ };
+ const socials=(r.redes||[]).map(account=>'<div class="pending-social"><strong>'+esc(account.plataforma)+'</strong>'
+  +input("Enlace oficial","redes."+account.plataforma+".url","url",account.url)
+  +status("Estado de la cuenta","redes."+account.plataforma+".estado",base.redes?.find(a=>a.plataforma===account.plataforma)?.estado)
+  +'</div>').join("");
+ const checks=(base.pendientes||[]).map((text,i)=>'<label class="pending-check"><input type="checkbox" name="done" value="'+i+'" '+(patch.done.includes(i)?"checked":"")+'><span>'+esc(text)+'</span></label>').join("");
+ showModal('<div class="pending-modal"><h2>Completar información de '+esc(r.nombre)+'</h2><p class="editor-help">Los datos que añadas se guardan únicamente en este navegador; no modifican el registro oficial publicado en GitHub.</p>'
+  +'<form id="pendingForm" class="pending-form"><h3>Datos de la empresa</h3><div class="pending-form-grid">'
+  +input("Categoría de la empresa","categoria","text",r.categoria||r.tipo)
+  +input("Correo principal","contacto.correo","email",r.contacto?.correo)
+  +status("Estado del correo","contacto.correo_estado",base.contacto?.correo_estado)
+  +input("Usuario principal","contacto.usuario","text",r.contacto?.usuario)
+  +status("Estado del usuario","contacto.usuario_estado",base.contacto?.usuario_estado)
+  +input("Teléfono / WhatsApp","contacto.whatsapp","tel",r.contacto?.whatsapp==="No tiene / Pendiente de definir"?"":r.contacto?.whatsapp)
+  +input("Página web oficial","web.url","url",r.web?.url)
+  +'</div><h3>Redes sociales</h3><div class="pending-social-grid">'+socials+'</div>'
+  +'<h3>Información por confirmar</h3><div class="pending-checks">'+checks+'</div>'
+  +'<p class="editor-warning">No introduzcas contraseñas aquí. Para contraseñas utiliza la caja fuerte cifrada. Esta información no se sincroniza entre dispositivos.</p>'
+  +'<div class="actions pending-modal-actions"><button class="btn primary" type="submit">Guardar información</button>'
+  +'<button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form></div>');
+}
+function savePending(form){
+ const r=selected();if(!r)return;
+ const fields={},done=[];
+ const allowed=new Set(["categoria","contacto.correo","contacto.correo_estado","contacto.usuario","contacto.usuario_estado","contacto.whatsapp","web.url"]);
+ for(const account of r.redes||[])for(const prop of ["url","estado"])allowed.add("redes."+account.plataforma+"."+prop);
+ for(const [key,value] of new FormData(form).entries()){
+  if(key==="done"){
+   const i=Number(value);
+   if(Number.isInteger(i)&&i>=0&&i<(r.pendientes||[]).length)done.push(i);
+  }else if(allowed.has(key)&&typeof value==="string")fields[key]=value.trim().slice(0,400);
+ }
+ try{
+  const next={fields,done:[...new Set(done)]};
+  localStorage.setItem(editsKey(r.id),JSON.stringify(next));
+  localEdits.set(r.id,next);
+  closeModal();render();toast("Datos guardados en este dispositivo");
+ }catch{toast("No se pudieron guardar los cambios; revisa el almacenamiento del navegador")}
+}
+
 const pages={inicio:home,registros:allRecords,ficha:detail,identidad:identity,redes:social,accesos:access,enlaces:links};
 
 /* Las miniaturas siempre dan una vista rapida. Solo se carga un PNG grande a la vez. */
@@ -290,12 +343,13 @@ if(asset){
 }
 const ac=e.target.closest("[data-action]");if(!ac)return;
 const action=ac.dataset.action;if(action.startsWith("goto:"))return navigate(action.slice(5));
+if(action==="edit-pending")return pendingEditor();
 if(action==="vault")return vaultModal();
 if(action==="close-modal")return closeModal();
 if(action==="vault-lock"){unlocked=null;visible.clear();closeModal();render();toast("Caja fuerte bloqueada");return}
 if(action==="vault-delete"){if(!confirm("¿Eliminar las credenciales cifradas de ESTE dispositivo? No se pueden recuperar después."))return;localStorage.removeItem(keyFor());unlocked=null;visible.clear();closeModal();render();toast("Credenciales locales eliminadas");return}
 });
-document.addEventListener("submit",e=>{if(!e.target.matches("#createForm,#unlockForm"))return;e.preventDefault();handleVaultForm(e.target)});
+document.addEventListener("submit",e=>{if(e.target.matches("#pendingForm")){e.preventDefault();savePending(e.target);return}if(!e.target.matches("#createForm,#unlockForm"))return;e.preventDefault();handleVaultForm(e.target)});
 $("#search").addEventListener("input",e=>{filter=e.target.value;if(filter&&!["registros"].includes(view))view="registros";render()});
 $("#hamb").addEventListener("click",()=>{$("#side").classList.toggle("open");$("#overlay").classList.toggle("open")});
 $("#overlay").addEventListener("click",closeMenu);
