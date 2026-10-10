@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#252424">
 <meta name="description" content="UYC: directorio general para organizar empresas, marcas y plataformas con sus propias fichas, recursos visuales, cuentas y redes sociales.">
 <title>UYC · Centro de organización</title>
-<link rel="stylesheet" href="css/styles.css?v=2.5.0">
+<link rel="stylesheet" href="css/styles.css?v=2.6.0">
 
 
 </head>
@@ -25,7 +25,7 @@
 <button data-view="accesos" type="button"><span class="ico">▣</span>Accesos y seguridad</button>
 <button data-view="enlaces" type="button"><span class="ico">↗</span>Enlaces y pendientes</button>
 </nav>
-<div class="side-foot"><strong>UYC V2.5.0</strong>Directorio general de empresas y plataformas.<br>Cada organización conserva su propio registro.</div>
+<div class="side-foot"><strong>UYC V2.6.0</strong>Directorio general de empresas y plataformas.<br>Cada organización conserva su propio registro.</div>
 </aside>
 <div class="main">
 <header class="topbar">
@@ -138,13 +138,45 @@ const nl=s=>esc(s).replace(/\n/g,"<br>");
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let view="inicio",current=null,filter="",unlocked=null,visible=new Set(),toastTimer,carouselIndex=0;
 const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha empresarial",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
-const selected=()=>records.find(x=>x.id===current)||null;
+const localEdits=new Map();
+const editsKey=id=>"uyc:pending:"+id+":v1";
+function editsFor(id){
+ if(localEdits.has(id))return localEdits.get(id);
+ let patch={fields:{},done:[]};
+ try{const saved=JSON.parse(localStorage.getItem(editsKey(id))||"null");
+ if(saved&&typeof saved==="object"){
+  if(saved.fields&&typeof saved.fields==="object")patch.fields=saved.fields;
+  if(Array.isArray(saved.done))patch.done=saved.done.filter(Number.isInteger);
+ }}catch{}
+ localEdits.set(id,patch);return patch;
+}
+function effectiveRecord(r){
+ if(!r)return null;
+ const patch=editsFor(r.id);
+ const record={...r,contacto:{...(r.contacto||{})},web:{...(r.web||{})},
+  redes:(r.redes||[]).map(x=>({...x})),cuentas:(r.cuentas||[]).map(x=>({...x})),_localEdits:patch};
+ for(const [key,value] of Object.entries(patch.fields||{})){
+  if(typeof value!=="string"||!value.trim())continue;
+  if(key==="categoria"){record.categoria=value;continue}
+  if(key.startsWith("contacto.")){
+   const name=key.slice(9);
+   if(["correo","correo_estado","usuario","usuario_estado","whatsapp"].includes(name))record.contacto[name]=value;
+  }else if(key==="web.url")record.web.url=value;
+  else if(key.startsWith("redes.")){
+   const [,name,field]=key.split(".");
+   const account=record.redes.find(x=>x.plataforma===name);
+   if(account&&["url","estado"].includes(field))account[field]=value;
+  }
+ }
+ return record;
+}
+const selected=()=>effectiveRecord(records.find(x=>x.id===current)||null);
 function btn(label,action,extra=""){return '<button type="button" class="btn '+extra+'" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
 function tag(s){return '<span class="tag">'+esc(s)+'</span>'}
 function tags(xs){return '<div class="taglist">'+(xs||[]).map(tag).join("")+'</div>'}
 function field(k,v,copy=true){const missing=v===null||v===undefined||v==="";return '<div class="field"><label>'+esc(k)+'</label><div class="value"><span class="'+(missing?"muted":"")+'">'+esc(missing?"No registrado":v)+'</span>'+(copy&&!missing?'<button class="btn copy" type="button" data-copy="'+esc(v)+'">Copiar</button>':"")+'</div></div>'}
 function link(label,url){return url?'<a class="btn sm" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">↗ '+esc(label)+'</a>':'<span class="fineprint">Pendiente de crear o confirmar</span>'}
-function card(title,inner){return '<section class="card pad"><h3>'+esc(title)+'</h3>'+inner+'</section>'}
+function card(title,inner,copyValue=null){return '<section class="card pad"><div class="card-heading"><h3>'+esc(title)+'</h3>'+(copyValue!==null&&copyValue!==undefined&&copyValue!==""?'<button class="btn copy card-copy" type="button" data-copy="'+esc(copyValue)+'" aria-label="Copiar '+esc(title)+'">Copiar</button>':"")+'</div>'+inner+'</section>'}
 function top(title,sub,kicker="REGISTRO UYC"){return '<div class="kicker">'+esc(kicker)+'</div><h1 class="title">'+esc(title)+'</h1><p class="sub">'+esc(sub)+'</p>'}
 function section(title,sub=""){return '<div class="heading"><h2>'+esc(title)+'</h2><small>'+esc(sub)+'</small></div>'}
 function badge(s){return '<span class="pill warn">'+esc(s)+'</span>'}
@@ -220,13 +252,13 @@ function detail(){
 const r=selected();if(!r)return selectPrompt("Ficha empresarial");
 return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +section("Información general")+'<div class="grid cards2">'
-+card("Descripción",'<div class="text-block">'+nl(r.descripcion)+'</div>')
-+card("Identidad y estado",field("Nombre oficial",r.nombre)+field("Tipo",r.tipo,false)+field("Estado",r.estado,false)+field("Nombre correcto",r.identidad?.nombre_oficial,false))
++card("Descripción",'<div class="text-block">'+nl(r.descripcion)+'</div>',r.descripcion)
++card("Identidad y estado",field("Nombre oficial",r.nombre)+field("Tipo",r.tipo)+field("Estado",r.estado)+field("Nombre correcto",r.identidad?.nombre_oficial))
 +'</div>'+section("Filosofía y desarrollo")
-+'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>')+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>')+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>')+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>')+'</div>'
-+section("Valores de la organización")+card("Valores institucionales",tags(r.valores))
-+section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Usuario alternativo",r.contacto?.usuario_alternativo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp,false))
-+card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>';
++'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
++section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
++section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
++card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'+section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
 }
 function assetInfo(r){
  if(!r)return [];
@@ -250,13 +282,13 @@ function identity(){
  return top("Identidad visual de "+r.nombre,entries.length+" recursos oficiales asociados a esta empresa. Se conservan sus proporciones y formatos registrados.","RECURSOS DE "+r.nombre.toUpperCase())+companyContext(r)
  +'<div class="notice">Este apartado reúne los archivos oficiales de la empresa seleccionada. Las descargas conservan el contenido, las proporciones y la transparencia del archivo original.</div>'
  +'<div class="asset-showcase">'
- +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
+ +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">No se pudo cargar el recurso. <button type="button" class="btn sm asset-retry" data-retry-image>Reintentar imagen</button></div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
  +'<div class="asset-info"><span class="mini-label">RECURSO '+String(carouselIndex+1).padStart(2,"0")+' / '+String(entries.length).padStart(2,"0")+'</span><h2>'+esc(active.nombre)+'</h2><p>'+esc(desc)+'</p>'
  +'<div class="asset-specs"><div><span>Resolución original</span><strong>'+label(active)+'</strong></div><div><span>Formato</span><strong>PNG original</strong></div><div><span>Fondo</span><strong>'+(active.transparent?'Transparente (alfa)':'Integrado en la imagen')+'</strong></div><div><span>Relación</span><strong>'+(active.w>active.h?'Horizontal':active.w<active.h?'Vertical':'Cuadrada 1:1')+'</strong></div><div><span>Nombre original en Word</span><strong>'+esc(active.file)+'</strong></div></div>'
- +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver tamaño original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
+ +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
  +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de imágenes de la empresa">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
  +section("Todas las imágenes originales",entries.length+" recursos individuales")
- +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
+ +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Imagen no disponible <button class="btn sm asset-retry" type="button" data-retry-image>Reintentar</button></span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
  +section("Normas visuales")+card("Identidad de "+esc(r.nombre),'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
 }
 function social(){
@@ -265,7 +297,7 @@ return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendie
 +'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
 +'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
 +field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+field("Usuario alternativo",s.alternativo)+field("Correo asociado",s.correo)
-+field("Enlace",s.url,false)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
++field("Enlace",s.url)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
 }
 function access(){
 const r=selected();if(!r)return selectPrompt("Accesos y seguridad");
@@ -277,39 +309,101 @@ return top("Accesos y seguridad",r.nombre+" · Cuentas y contraseñas protegidas
 }
 function links(){
 const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
-return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)
+const done=new Set(r._localEdits?.done||[]);
+return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
 +'<div class="grid cards2">'
 +card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false))
-+card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field"><label>PENDIENTE '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
++card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }
+
+function pendingEditor(){
+ const r=selected();if(!r)return;
+ const patch=editsFor(r.id);
+ const base=records.find(x=>x.id===r.id);
+ const value=(key,fallback)=>String(patch.fields[key]??fallback??"");
+ const input=(label,key,type,fallback)=>'<label class="pending-input"><span>'+esc(label)+'</span><input name="'+esc(key)+'" type="'+esc(type)+'" value="'+esc(value(key,fallback))+'" maxlength="400" autocomplete="off"></label>';
+ const status=(label,key,fallback)=>{
+  const current=value(key,fallback),original=fallback||"Pendiente de confirmar";
+  return '<label class="pending-input"><span>'+esc(label)+'</span><select name="'+esc(key)+'">'
+   +'<option value="'+esc(original)+'" '+(current===original?"selected":"")+'>'+esc(original)+'</option>'
+   +'<option value="Confirmado" '+(current==="Confirmado"?"selected":"")+'>Confirmado</option></select></label>';
+ };
+ const socials=(r.redes||[]).map(account=>'<div class="pending-social"><strong>'+esc(account.plataforma)+'</strong>'
+  +input("Enlace oficial","redes."+account.plataforma+".url","url",account.url)
+  +status("Estado de la cuenta","redes."+account.plataforma+".estado",base.redes?.find(a=>a.plataforma===account.plataforma)?.estado)
+  +'</div>').join("");
+ const checks=(base.pendientes||[]).map((text,i)=>'<label class="pending-check"><input type="checkbox" name="done" value="'+i+'" '+(patch.done.includes(i)?"checked":"")+'><span>'+esc(text)+'</span></label>').join("");
+ showModal('<div class="pending-modal"><h2>Completar información de '+esc(r.nombre)+'</h2><p class="editor-help">Los datos que añadas se guardan únicamente en este navegador; no modifican el registro oficial publicado en GitHub.</p>'
+  +'<form id="pendingForm" class="pending-form"><h3>Datos de la empresa</h3><div class="pending-form-grid">'
+  +input("Categoría de la empresa","categoria","text",r.categoria||r.tipo)
+  +input("Correo principal","contacto.correo","email",r.contacto?.correo)
+  +status("Estado del correo","contacto.correo_estado",base.contacto?.correo_estado)
+  +input("Usuario principal","contacto.usuario","text",r.contacto?.usuario)
+  +status("Estado del usuario","contacto.usuario_estado",base.contacto?.usuario_estado)
+  +input("Teléfono / WhatsApp","contacto.whatsapp","tel",r.contacto?.whatsapp==="No tiene / Pendiente de definir"?"":r.contacto?.whatsapp)
+  +input("Página web oficial","web.url","url",r.web?.url)
+  +'</div><h3>Redes sociales</h3><div class="pending-social-grid">'+socials+'</div>'
+  +'<h3>Información por confirmar</h3><div class="pending-checks">'+checks+'</div>'
+  +'<p class="editor-warning">No introduzcas contraseñas aquí. Para contraseñas utiliza la caja fuerte cifrada. Esta información no se sincroniza entre dispositivos.</p>'
+  +'<div class="actions pending-modal-actions"><button class="btn primary" type="submit">Guardar información</button>'
+  +'<button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form></div>');
+}
+function savePending(form){
+ const r=selected();if(!r)return;
+ const fields={},done=[];
+ const allowed=new Set(["categoria","contacto.correo","contacto.correo_estado","contacto.usuario","contacto.usuario_estado","contacto.whatsapp","web.url"]);
+ for(const account of r.redes||[])for(const prop of ["url","estado"])allowed.add("redes."+account.plataforma+"."+prop);
+ for(const [key,value] of new FormData(form).entries()){
+  if(key==="done"){
+   const i=Number(value);
+   if(Number.isInteger(i)&&i>=0&&i<(r.pendientes||[]).length)done.push(i);
+  }else if(allowed.has(key)&&typeof value==="string")fields[key]=value.trim().slice(0,400);
+ }
+ try{
+  const next={fields,done:[...new Set(done)]};
+  localStorage.setItem(editsKey(r.id),JSON.stringify(next));
+  localEdits.set(r.id,next);
+  closeModal();render();toast("Datos guardados en este dispositivo");
+ }catch{toast("No se pudieron guardar los cambios; revisa el almacenamiento del navegador")}
+}
+
 const pages={inicio:home,registros:allRecords,ficha:detail,identidad:identity,redes:social,accesos:access,enlaces:links};
 
 /* Las miniaturas siempre dan una vista rapida. Solo se carga un PNG grande a la vez. */
+/* Miniaturas ligeras sin listeners duplicados ni PNG completos precargados. */
+let assetListenersAttached=false;
 function connectAssetImages(){
- document.querySelectorAll("img[data-original-src]").forEach(img=>{
-  img.addEventListener("error",()=>{
-   if(img.dataset.uycTriedOriginal!=="1"&&img.src!==new URL(img.dataset.originalSrc,window.location.href).href){
-    img.dataset.uycTriedOriginal="1";
-    img.src=img.dataset.originalSrc;
-    return;
-   }
-   const container=img.closest(".asset-display");
-   if(container)container.classList.add("missing");
-   else if(img.nextElementSibling?.classList?.contains("symbol")){
-    img.hidden=true;img.nextElementSibling.hidden=false;
-   }else img.hidden=true;
-  });
-  img.addEventListener("load",()=>img.closest(".asset-display")?.classList.remove("missing"));
- });
-}
-function improveMainImage(){
- const el=document.querySelector(".asset-display img[data-image-role='main']");
- if(!el||!el.dataset.originalSrc||typeof Image==="undefined")return;
- const source=el.dataset.originalSrc;
- const full=new Image();full.decoding="async";
- full.onload=()=>{if(el.isConnected&&el.dataset.originalSrc===source){el.src=source;el.classList.add("original-loaded")}};
- full.onerror=()=>{};full.src=source;
+ if(assetListenersAttached)return;
+ assetListenersAttached=true;
+ document.addEventListener("error",e=>{
+  const img=e.target;
+  if(!img?.matches?.("img[data-original-src]"))return;
+  const original=img.dataset.originalSrc;
+  const stage=Number(img.dataset.uycFallback||"0");
+  const originalURL=new URL(original,window.location.href).href;
+  if(stage===0&&img.src!==originalURL){
+   img.dataset.uycFallback="1";img.src=original+"?v=2.6.0";return;
+  }
+  if(stage<=1&&original.startsWith("assets/taskflow/")){
+   img.dataset.uycFallback="2";
+   img.src="https://raw.githubusercontent.com/novaprimegt-coder/UYC/main/"+original+"?v=2.6.0";
+   return;
+  }
+  img.dataset.uycFallback="3";
+  const frame=img.closest(".asset-display");
+  if(frame)frame.classList.add("missing");
+  else if(img.nextElementSibling?.classList?.contains("symbol")){
+   img.hidden=true;img.nextElementSibling.hidden=false;
+  }else img.hidden=true;
+ },true);
+ document.addEventListener("load",e=>{
+  const img=e.target;
+  if(!img?.matches?.("img[data-original-src]"))return;
+  img.hidden=false;
+  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
+  img.closest(".asset-display")?.classList.remove("missing");
+ },true);
 }
 function render(){
 document.title="UYC · "+names[view];
@@ -317,7 +411,7 @@ $("#crumb").textContent=names[view];
 document.querySelectorAll("[data-view]").forEach(x=>{x.classList.toggle("active",x.dataset.view===view);x.setAttribute("aria-current",x.dataset.view===view?"page":"false")});
 $("#page").innerHTML=pages[view]();
 connectAssetImages();
-if(view==="identidad")setTimeout(improveMainImage,70);
+/* El PNG grande solo se carga bajo petición del usuario. */
 if(view==="accesos")renderVaultFields();
 }
 function navigate(v){if(!pages[v])return;view=v;filter="";$("#search").value="";render();closeMenu();window.scrollTo(0,0)}
@@ -363,6 +457,18 @@ function vaultModal(){if(!crypto?.subtle){toast("El cifrado no está disponible 
 async function handleVaultForm(form){const b=form.querySelector('[type="submit"]');b.disabled=true;try{if(form.id==="createForm"){const m=$("#masterCreate").value;if(m.length<12||m!==$("#masterAgain").value){toast("La clave maestra no coincide");return}const values={email:$("#passwordEmail").value,redes:$("#passwordRedes").value};localStorage.setItem(keyFor(),JSON.stringify(await encrypt(m,values)));unlocked=values;toast("Credenciales cifradas en este dispositivo")}else{unlocked=await decrypt($("#masterUnlock").value);toast("Caja fuerte desbloqueada")}visible.clear();closeModal();render()}catch{toast("No se pudo validar o guardar la caja fuerte")}finally{if(b.isConnected)b.disabled=false}}
 document.addEventListener("click",async e=>{
 const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){if(!isOfficialAsset(copyPNG.dataset.copyPng)){toast("Imagen no autorizada");return}try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
+const retry=e.target.closest("[data-retry-image]");
+if(retry){
+ const frame=retry.closest(".asset-display, .preview");
+ const img=frame?.querySelector("img[data-original-src]");
+ if(img){
+  img.dataset.uycFallback="1";img.hidden=false;
+  frame.classList.remove("missing");
+  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
+  img.src=img.dataset.originalSrc+"?retry="+Date.now();
+ }
+ return;
+}
 const download=e.target.closest("a[download]");
 if(download){
  if(!isOfficialAsset(download.href)){
@@ -388,12 +494,13 @@ if(asset){
 }
 const ac=e.target.closest("[data-action]");if(!ac)return;
 const action=ac.dataset.action;if(action.startsWith("goto:"))return navigate(action.slice(5));
+if(action==="edit-pending")return pendingEditor();
 if(action==="vault")return vaultModal();
 if(action==="close-modal")return closeModal();
 if(action==="vault-lock"){unlocked=null;visible.clear();closeModal();render();toast("Caja fuerte bloqueada");return}
 if(action==="vault-delete"){if(!confirm("¿Eliminar las credenciales cifradas de ESTE dispositivo? No se pueden recuperar después."))return;localStorage.removeItem(keyFor());unlocked=null;visible.clear();closeModal();render();toast("Credenciales locales eliminadas");return}
 });
-document.addEventListener("submit",e=>{if(!e.target.matches("#createForm,#unlockForm"))return;e.preventDefault();handleVaultForm(e.target)});
+document.addEventListener("submit",e=>{if(e.target.matches("#pendingForm")){e.preventDefault();savePending(e.target);return}if(!e.target.matches("#createForm,#unlockForm"))return;e.preventDefault();handleVaultForm(e.target)});
 $("#search").addEventListener("input",e=>{filter=e.target.value;if(filter&&!["registros"].includes(view))view="registros";render()});
 $("#hamb").addEventListener("click",()=>{$("#side").classList.toggle("open");$("#overlay").classList.toggle("open")});
 $("#overlay").addEventListener("click",closeMenu);
