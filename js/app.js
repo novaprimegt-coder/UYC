@@ -1,4 +1,4 @@
-/* UYC V2.4.1 — controles de copia, recursos y escala. Credenciales locales cifradas. */
+/* UYC V2.5.0 — carga progresiva de imagenes y respuestas fluidas. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -25,9 +25,17 @@ function recordImage(r,kind){
  if(r.id==="taskflow"){if(kind==="cuadrado")return "assets/taskflow/image4.png";if(kind==="hero")return "assets/taskflow/image1.png";}
  return null;
 }
+function lightweightImage(r,source){
+ if(!r||!source)return source||"";
+ if(r.id==="taskflow"){
+  const match=source.match(/(?:^|\/)image([1-8])\.png(?:\?.*)?$/);
+  if(match)return "assets/taskflow/optimized/thumb-image"+match[1]+".webp";
+ }
+ return r.visual?.miniaturas?.[source]||source;
+}
 function recordTile(r){
  const img=recordImage(r,"cuadrado");
- const symbol=img?'<img src="'+esc(img)+'" alt="Logo de '+esc(r.nombre)+'" loading="lazy" onerror="this.hidden=true">':esc(r.nombre.slice(0,2).toUpperCase());
+ const symbol=img?'<img src="'+esc(lightweightImage(r,img))+'" data-original-src="'+esc(img)+'" alt="Logo de '+esc(r.nombre)+'" loading="lazy" decoding="async" width="86" height="86">':esc(r.nombre.slice(0,2).toUpperCase());
  return '<article class="card rec" aria-label="Registro de '+esc(r.nombre)+'">'
   +'<div class="rec-head"><div class="rec-mark">'+symbol+'</div><div class="rec-main"><span class="rec-eyebrow">EMPRESA / PLATAFORMA</span><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo)+'</p></div></div>'
   +'<div class="rec-bottom"><div class="rec-state"><span class="rec-state-label">ESTADO DEL REGISTRO</span>'+badge(r.estado)+'</div>'
@@ -95,11 +103,11 @@ function assetInfo(r){
  const files=["image2.png","image3.png","image4.png","image5.png","image6.png","image1.png","image7.png","image8.png"];
  const dims=[[256,384],[1254,1254],[1254,1254],[2172,724],[1254,1254],[1672,941],[1254,1254],[1254,1254]];
  const filenames=["TaskFlow_logo-principal_256x384.png","TaskFlow_logo-secundario_1254x1254.png","TaskFlow_logo-cuadrado_1254x1254.png","TaskFlow_logo-horizontal_2172x724.png","TaskFlow_isotipo_1254x1254.png","TaskFlow_arte-hero_1672x941.png","TaskFlow_variante-complementaria-A_1254x1254.png","TaskFlow_variante-complementaria-B_1254x1254.png"];
- if(r.id==="taskflow")return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
+ if(r.id==="taskflow")return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],thumb:"assets/taskflow/optimized/thumb-image"+[2,3,4,5,6,1,7,8][i]+".webp",file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
  return (r.activos||[]).filter(a=>a.src||a.archivo).map(a=>{
   const source=a.src||a.archivo;
   const fname=source.split("/").pop();
-  return {...a,src:source,file:fname,filename:a.filename||fname,w:Number(a.w||a.ancho||0),h:Number(a.h||a.alto||0),transparent:Boolean(a.transparent)};
+  return {...a,src:source,thumb:a.thumb||a.miniatura||source,file:fname,filename:a.filename||fname,w:Number(a.w||a.ancho||0),h:Number(a.h||a.alto||0),transparent:Boolean(a.transparent)};
  });
 }
 function identity(){
@@ -112,13 +120,13 @@ function identity(){
  return top("Identidad visual de "+r.nombre,entries.length+" recursos oficiales asociados a esta empresa. Se conservan sus proporciones y formatos registrados.","RECURSOS DE "+r.nombre.toUpperCase())+companyContext(r)
  +'<div class="notice">Este apartado reúne los archivos oficiales de la empresa seleccionada. Las descargas conservan el contenido, las proporciones y la transparencia del archivo original.</div>'
  +'<div class="asset-showcase">'
- +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.src)+'" alt="'+esc(active.nombre)+'" draggable="false" onerror="this.closest(&quot;.asset-display&quot;).classList.add(&quot;missing&quot;)" onload="this.closest(&quot;.asset-display&quot;).classList.remove(&quot;missing&quot;)"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
+ +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
  +'<div class="asset-info"><span class="mini-label">RECURSO '+String(carouselIndex+1).padStart(2,"0")+' / '+String(entries.length).padStart(2,"0")+'</span><h2>'+esc(active.nombre)+'</h2><p>'+esc(desc)+'</p>'
  +'<div class="asset-specs"><div><span>Resolución original</span><strong>'+label(active)+'</strong></div><div><span>Formato</span><strong>PNG original</strong></div><div><span>Fondo</span><strong>'+(active.transparent?'Transparente (alfa)':'Integrado en la imagen')+'</strong></div><div><span>Relación</span><strong>'+(active.w>active.h?'Horizontal':active.w<active.h?'Vertical':'Cuadrada 1:1')+'</strong></div><div><span>Nombre original en Word</span><strong>'+esc(active.file)+'</strong></div></div>'
  +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver tamaño original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
- +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de imágenes de la empresa">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
+ +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de imágenes de la empresa">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
  +section("Todas las imágenes originales",entries.length+" recursos individuales")
- +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.src)+'" loading="lazy" alt="'+esc(a.nombre)+'" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
+ +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
  +section("Normas visuales")+card("Identidad de "+esc(r.nombre),'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
 }
 function social(){
@@ -146,11 +154,40 @@ return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }
 const pages={inicio:home,registros:allRecords,ficha:detail,identidad:identity,redes:social,accesos:access,enlaces:links};
+
+/* Las miniaturas siempre dan una vista rapida. Solo se carga un PNG grande a la vez. */
+function connectAssetImages(){
+ document.querySelectorAll("img[data-original-src]").forEach(img=>{
+  img.addEventListener("error",()=>{
+   if(img.dataset.uycTriedOriginal!=="1"&&img.src!==new URL(img.dataset.originalSrc,window.location.href).href){
+    img.dataset.uycTriedOriginal="1";
+    img.src=img.dataset.originalSrc;
+    return;
+   }
+   const container=img.closest(".asset-display");
+   if(container)container.classList.add("missing");
+   else if(img.nextElementSibling?.classList?.contains("symbol")){
+    img.hidden=true;img.nextElementSibling.hidden=false;
+   }else img.hidden=true;
+  });
+  img.addEventListener("load",()=>img.closest(".asset-display")?.classList.remove("missing"));
+ });
+}
+function improveMainImage(){
+ const el=document.querySelector(".asset-display img[data-image-role='main']");
+ if(!el||!el.dataset.originalSrc||typeof Image==="undefined")return;
+ const source=el.dataset.originalSrc;
+ const full=new Image();full.decoding="async";
+ full.onload=()=>{if(el.isConnected&&el.dataset.originalSrc===source){el.src=source;el.classList.add("original-loaded")}};
+ full.onerror=()=>{};full.src=source;
+}
 function render(){
 document.title="UYC · "+names[view];
 $("#crumb").textContent=names[view];
 document.querySelectorAll("[data-view]").forEach(x=>{x.classList.toggle("active",x.dataset.view===view);x.setAttribute("aria-current",x.dataset.view===view?"page":"false")});
 $("#page").innerHTML=pages[view]();
+connectAssetImages();
+if(view==="identidad")setTimeout(improveMainImage,70);
 if(view==="accesos")renderVaultFields();
 }
 function navigate(v){if(!pages[v])return;view=v;filter="";$("#search").value="";render();closeMenu();window.scrollTo(0,0)}
@@ -198,16 +235,9 @@ document.addEventListener("click",async e=>{
 const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){if(!isOfficialAsset(copyPNG.dataset.copyPng)){toast("Imagen no autorizada");return}try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
 const download=e.target.closest("a[download]");
 if(download){
- if(!isOfficialAsset(download.href)){e.preventDefault();toast("Solo se descargan recursos oficiales de la empresa seleccionada");return}
- if(download.dataset.ready==="true")return;
- e.preventDefault();
- try{
-   const res=await fetch(download.href,{method:"HEAD"});
-   if(!res.ok)throw Error("missing");
-   download.dataset.ready="true";
-   download.click();
- }catch{toast("El archivo PNG oficial no está disponible para descargar")}
- finally{delete download.dataset.ready}
+ if(!isOfficialAsset(download.href)){
+  e.preventDefault();toast("Solo se descargan recursos oficiales de la empresa seleccionada");
+ }
  return;
 }
 const slide=e.target.closest("[data-select-slide]");if(slide){carouselIndex=Number(slide.dataset.selectSlide);if(view!=="identidad")navigate("identidad");else render();return}
