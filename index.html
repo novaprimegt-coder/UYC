@@ -25,7 +25,7 @@
 <button data-view="accesos" type="button"><span class="ico">▣</span>Accesos y seguridad</button>
 <button data-view="enlaces" type="button"><span class="ico">↗</span>Enlaces y pendientes</button>
 </nav>
-<div class="side-foot"><strong>UYC V2.6.0</strong>Directorio general de empresas y plataformas.<br>Cada organización conserva su propio registro.</div>
+<div class="side-foot"><strong>UYC V2.6.1</strong>Directorio general de empresas y plataformas.<br>Cada organización conserva su propio registro.</div>
 </aside>
 <div class="main">
 <header class="topbar">
@@ -43,73 +43,211 @@
 /* UYC — registro público sin contraseñas. Los datos privados nunca deben subirse a GitHub. */
 window.UYC_RECORDS = [
   {
-    id:"taskflow",
-    nombre:"TaskFlow",
-    tipo:"Aplicación / Sistema digital de productividad y disciplina personal",
-    estado:"En desarrollo — etapa de pre-lanzamiento público",
-    descripcion:"TaskFlow es una plataforma digital diseñada para ayudar al usuario a organizar tareas, hábitos, rutinas y objetivos personales mediante un sistema estructurado de disciplina, seguimiento de progreso, análisis, recompensas y desarrollo constante.\n\nIntegra herramientas orientadas a la productividad, formación de hábitos, cumplimiento de rutinas, organización personal y medición del progreso, dentro de una experiencia visual moderna, motivadora y enfocada en la constancia.\n\nTaskFlow busca convertir las acciones cotidianas en progreso medible, permitiendo que cada usuario pueda visualizar su evolución, mantener el control de sus objetivos y desarrollar una disciplina sostenible a largo plazo.",
-    mision:"Ayudar a las personas a transformar sus objetivos en acciones diarias medibles mediante una plataforma que integra tareas, hábitos, rutinas, disciplina y seguimiento del progreso dentro de una experiencia organizada, motivadora y fácil de utilizar.\n\nTaskFlow busca convertir la constancia diaria en progreso real, proporcionando herramientas que permitan al usuario organizarse, mantener disciplina, medir sus resultados y avanzar de manera continua hacia sus objetivos personales.",
-    vision:"Convertir a TaskFlow en una plataforma de referencia para la organización, productividad y disciplina personal, reconocida por ayudar a las personas a construir hábitos sólidos, cumplir sus objetivos y visualizar de forma clara su evolución.\n\nLa visión de TaskFlow es evolucionar hacia un ecosistema digital cada vez más completo, inteligente y adaptable, capaz de acompañar al usuario en su desarrollo personal, productividad y crecimiento a largo plazo.",
-    proposito:"Transformar la disciplina personal en un sistema organizado, visible y medible que permita al usuario avanzar constantemente hacia sus metas.\n\nTaskFlow no busca únicamente registrar tareas o hábitos, sino crear una estructura que motive al usuario a actuar, mantener constancia y comprobar su progreso mediante resultados reales.",
-    objetivo:"Proporcionar una plataforma integral para gestionar tareas, hábitos, rutinas y objetivos personales, incorporando mecanismos de seguimiento, análisis, progreso y recompensas que favorezcan el desarrollo de la disciplina y la productividad.",
-    valores:["Disciplina","Constancia","Organización","Progreso","Responsabilidad","Superación personal","Enfoque","Productividad","Mejora continua"],
-    contacto:{
-      correo:"taskflowgt.oficial@gmail.com",
-      correo_estado:"Propuesto / pendiente de creación definitiva",
-      usuario:"taskflowgt",
-      usuario_estado:"Pendiente de confirmar disponibilidad",
-      usuario_alternativo:"taskflowgtoficial",
-      whatsapp:"No tiene / Pendiente de definir"
-    },
-    redes:[
-      {plataforma:"Facebook",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
-      {plataforma:"Instagram",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
-      {plataforma:"TikTok",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"},
-      {plataforma:"Clapper",nombre:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",correo:"taskflowgt.oficial@gmail.com",url:null,estado:"Pendiente de crear / confirmar"}
+    "id": "taskflow",
+    "nombre": "TaskFlow",
+    "tipo": "Aplicación / Sistema digital de productividad y disciplina personal",
+    "estado": "Lanzado oficialmente",
+    "descripcion": "TaskFlow es una plataforma digital diseñada para ayudar al usuario a organizar tareas, hábitos, rutinas y objetivos personales mediante un sistema estructurado de disciplina, seguimiento de progreso, análisis, recompensas y desarrollo constante.\n\nIntegra herramientas orientadas a la productividad, formación de hábitos, cumplimiento de rutinas, organización personal y medición del progreso, dentro de una experiencia visual moderna, motivadora y enfocada en la constancia.\n\nTaskFlow busca convertir las acciones cotidianas en progreso medible, permitiendo que cada usuario pueda visualizar su evolución, mantener el control de sus objetivos y desarrollar una disciplina sostenible a largo plazo.",
+    "mision": "Ayudar a las personas a transformar sus objetivos en acciones diarias medibles mediante una plataforma que integra tareas, hábitos, rutinas, disciplina y seguimiento del progreso dentro de una experiencia organizada, motivadora y fácil de utilizar.\n\nTaskFlow busca convertir la constancia diaria en progreso real, proporcionando herramientas que permitan al usuario organizarse, mantener disciplina, medir sus resultados y avanzar de manera continua hacia sus objetivos personales.",
+    "vision": "Convertir a TaskFlow en una plataforma de referencia para la organización, productividad y disciplina personal, reconocida por ayudar a las personas a construir hábitos sólidos, cumplir sus objetivos y visualizar de forma clara su evolución.\n\nLa visión de TaskFlow es evolucionar hacia un ecosistema digital cada vez más completo, inteligente y adaptable, capaz de acompañar al usuario en su desarrollo personal, productividad y crecimiento a largo plazo.",
+    "proposito": "Transformar la disciplina personal en un sistema organizado, visible y medible que permita al usuario avanzar constantemente hacia sus metas.\n\nTaskFlow no busca únicamente registrar tareas o hábitos, sino crear una estructura que motive al usuario a actuar, mantener constancia y comprobar su progreso mediante resultados reales.",
+    "objetivo": "Proporcionar una plataforma integral para gestionar tareas, hábitos, rutinas y objetivos personales, incorporando mecanismos de seguimiento, análisis, progreso y recompensas que favorezcan el desarrollo de la disciplina y la productividad.",
+    "valores": [
+      "Disciplina",
+      "Constancia",
+      "Organización",
+      "Progreso",
+      "Responsabilidad",
+      "Superación personal",
+      "Enfoque",
+      "Productividad",
+      "Mejora continua"
     ],
-    cuentas:[
-      {nombre:"Google / Gmail",correo:"taskflowgt.oficial@gmail.com",usuario:"taskflowgt",estado:"Pendiente de creación / confirmación de la cuenta",url:null,notas:"Cuenta principal propuesta para administrar los servicios oficiales relacionados con TaskFlow."},
-      {nombre:"GitHub",usuario:"novaprimegt-coder",repositorio:"TaskFlow",estado:"Activo",url:"https://github.com/novaprimegt-coder/TaskFlow",notas:"Repositorio utilizado para alojar el proyecto TaskFlow y su página de presentación pública."}
-    ],
-    web:{
-      nombre:"TaskFlow",url:"https://novaprimegt-coder.github.io/TaskFlow/presentacion/",
-      original:"https://novaprimegt-coder.github.io/TaskFlow/presentacion/?utm_source=chatgpt.com",
-      dominio:"novaprimegt-coder.github.io",ruta:"/TaskFlow/presentacion/",
-      alojamiento:"GitHub Pages",protocolo:"HTTPS",estado:"Activo",
-      propietario:"novaprimegt-coder",repositorio:"https://github.com/novaprimegt-coder/TaskFlow",
-      nota_repositorio:"La dirección del repositorio corresponde a la estructura del enlace GitHub Pages proporcionado."
+    "contacto": {
+      "correo": "taskflowgt.oficial@gmail.com",
+      "correo_estado": "Creado, confirmado y en funcionamiento",
+      "usuario": "taskflowgt",
+      "usuario_estado": "Disponible y confirmado",
+      "whatsapp": "No aplica — atención mediante bot en la página de TaskFlow",
+      "telefono": "No aplica"
     },
-    identidad:{
-      nombre_visible:"TaskFlow",nombre_corto:"TaskFlow",usuario:"taskflowgt",alternativo:"taskflowgtoficial",
-      correo:"taskflowgt.oficial@gmail.com",
-      nombre_oficial:"TaskFlow",nombres_no_oficiales:["Task Flow","TASK FLOW","Taskflow"],
-      estilo:"Tecnológico, moderno, premium, oscuro y orientado a productividad, disciplina y progreso.",
-      colores:["Cian / turquesa","Azul oscuro","Negro / azul nocturno","Naranja / dorado como color de énfasis"],
-      estetica:["Fondos predominantemente oscuros","Contraste controlado","Elementos tecnológicos","Iluminación cian","Detalles naranjas o dorados","Interfaces limpias","Jerarquía visual clara","Sensación premium","Aspecto futurista sin saturación excesiva"]
-    },
-    activos:[
-      {id:"logo-principal",nombre:"Logo principal",formato:"Vertical / identidad completa",uso:"Representación maestra de la marca; presentaciones y documentación institucional.",pagina:3},
-      {id:"logo-secundario",nombre:"Logo secundario",formato:"Compacto",uso:"Alternativa para publicaciones digitales, miniaturas y piezas promocionales.",pagina:4},
-      {id:"logo-cuadrado",nombre:"Logo cuadrado",formato:"1:1",uso:"Perfiles de redes, miniaturas, imágenes de cuenta e iconos de plataforma.",pagina:5},
-      {id:"logo-horizontal",nombre:"Logo horizontal",formato:"Panorámico",uso:"Página web, encabezados, firmas y presentaciones.",pagina:6},
-      {id:"isotipo",nombre:"Isotipo",formato:"Icono",uso:"Icono de la app, favicon, accesos directos y marca de agua.",pagina:7},
-      {id:"arte-hero",nombre:"Arte Hero / Portada oficial",formato:"16:9",uso:"Lanzamientos, landing pages, campañas y portadas.",pagina:8},
-      {id:"variante-complementaria-a",nombre:"Variante complementaria A",formato:"Vertical",uso:"Material promocional vertical de alto impacto.",pagina:9},
-      {id:"variante-complementaria-b",nombre:"Variante complementaria B",formato:"Cuadrado / vertical",uso:"Campañas, miniaturas y artes digitales promocionales.",pagina:10}
+    "redes": [
+      {
+        "plataforma": "Facebook",
+        "nombre": "TaskFlow",
+        "usuario": "taskflowgt",
+        "correo": "taskflowgt.oficial@gmail.com",
+        "url": "https://facebook.com/taskflowgt",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
+      },
+      {
+        "plataforma": "Instagram",
+        "nombre": "TaskFlow",
+        "usuario": "taskflowgt",
+        "correo": "taskflowgt.oficial@gmail.com",
+        "url": "https://www.instagram.com/taskflowgt?obrf=dG4yMnVubDI0OGtt",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
+      },
+      {
+        "plataforma": "TikTok",
+        "nombre": "TaskFlow",
+        "usuario": "taskflowgt",
+        "correo": "taskflowgt.oficial@gmail.com",
+        "url": "https://tiktok.com/@taskflowgt",
+        "estado": "Creada — estado operativo pendiente de confirmar",
+        "dos_pasos": "Desactivada"
+      },
+      {
+        "plataforma": "Clapper",
+        "nombre": "TaskFlow",
+        "usuario": "taskflowgt",
+        "correo": "taskflowgt.oficial@gmail.com",
+        "url": "https://clapperapp.com/taskflowgt?is_invite=1&r=dPYGGOl5ov&c=in&m=co",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
+      }
     ],
-    seguridad:{
-      contrasenas_en_sitio:false,
-      separacion:"No utilizar la contraseña del correo principal como contraseña de las redes sociales.",
-      dos_pasos:["Gmail","Facebook","Instagram","TikTok","GitHub","Cualquier otra plataforma administrativa relacionada con TaskFlow"]
-    },
-    pendientes:[
-      "Creación definitiva del correo: taskflowgt.oficial@gmail.com",
-      "Disponibilidad definitiva del usuario: taskflowgt",
-      "Creación de Facebook","Creación de Instagram","Creación de TikTok","Creación de Clapper",
-      "Enlaces definitivos de cada red social",
-      "Número de teléfono o WhatsApp oficial, en caso de utilizarse"
+    "cuentas": [
+      {
+        "nombre": "Google / Gmail",
+        "correo": "taskflowgt.oficial@gmail.com",
+        "usuario": "taskflowgt",
+        "estado": "Activa — correo confirmado y en funcionamiento",
+        "url": "https://mail.google.com/",
+        "notas": "Cuenta principal confirmada para administrar los servicios oficiales relacionados con TaskFlow."
+      },
+      {
+        "nombre": "GitHub",
+        "usuario": "novaprimegt-coder",
+        "repositorio": "TaskFlow",
+        "estado": "Activo",
+        "url": "https://github.com/novaprimegt-coder/TaskFlow",
+        "notas": "Repositorio utilizado para alojar el proyecto TaskFlow y su página de presentación pública."
+      }
     ],
-    notas:[
+    "web": {
+      "nombre": "TaskFlow",
+      "url": "https://novaprimegt-coder.github.io/TaskFlow/presentacion/",
+      "original": "https://novaprimegt-coder.github.io/TaskFlow/presentacion/?utm_source=chatgpt.com",
+      "dominio": "novaprimegt-coder.github.io",
+      "ruta": "/TaskFlow/presentacion/",
+      "alojamiento": "GitHub Pages",
+      "protocolo": "HTTPS",
+      "estado": "Activo",
+      "propietario": "novaprimegt-coder",
+      "repositorio": "https://github.com/novaprimegt-coder/TaskFlow",
+      "nota_repositorio": "La dirección del repositorio corresponde a la estructura del enlace GitHub Pages proporcionado."
+    },
+    "identidad": {
+      "nombre_visible": "TaskFlow",
+      "nombre_corto": "TaskFlow",
+      "usuario": "taskflowgt",
+      "correo": "taskflowgt.oficial@gmail.com",
+      "nombre_oficial": "TaskFlow",
+      "nombres_no_oficiales": [
+        "Task Flow",
+        "TASK FLOW",
+        "Taskflow"
+      ],
+      "estilo": "Tecnológico, moderno, premium, oscuro y orientado a productividad, disciplina y progreso.",
+      "colores": [
+        "Cian / turquesa",
+        "Azul oscuro",
+        "Negro / azul nocturno",
+        "Naranja / dorado como color de énfasis"
+      ],
+      "estetica": [
+        "Fondos predominantemente oscuros",
+        "Contraste controlado",
+        "Elementos tecnológicos",
+        "Iluminación cian",
+        "Detalles naranjas o dorados",
+        "Interfaces limpias",
+        "Jerarquía visual clara",
+        "Sensación premium",
+        "Aspecto futurista sin saturación excesiva"
+      ]
+    },
+    "activos": [
+      {
+        "id": "logo-principal",
+        "nombre": "Logo principal",
+        "formato": "Vertical / identidad completa",
+        "uso": "Representación maestra de la marca; presentaciones y documentación institucional.",
+        "pagina": 3
+      },
+      {
+        "id": "logo-secundario",
+        "nombre": "Logo secundario",
+        "formato": "Compacto",
+        "uso": "Alternativa para publicaciones digitales, miniaturas y piezas promocionales.",
+        "pagina": 4
+      },
+      {
+        "id": "logo-cuadrado",
+        "nombre": "Logo cuadrado",
+        "formato": "1:1",
+        "uso": "Perfiles de redes, miniaturas, imágenes de cuenta e iconos de plataforma.",
+        "pagina": 5
+      },
+      {
+        "id": "logo-horizontal",
+        "nombre": "Logo horizontal",
+        "formato": "Panorámico",
+        "uso": "Página web, encabezados, firmas y presentaciones.",
+        "pagina": 6
+      },
+      {
+        "id": "isotipo",
+        "nombre": "Isotipo",
+        "formato": "Icono",
+        "uso": "Icono de la app, favicon, accesos directos y marca de agua.",
+        "pagina": 7
+      },
+      {
+        "id": "arte-hero",
+        "nombre": "Arte Hero / Portada oficial",
+        "formato": "16:9",
+        "uso": "Lanzamientos, landing pages, campañas y portadas.",
+        "pagina": 8
+      },
+      {
+        "id": "variante-complementaria-a",
+        "nombre": "Variante complementaria A",
+        "formato": "Vertical",
+        "uso": "Material promocional vertical de alto impacto.",
+        "pagina": 9
+      },
+      {
+        "id": "variante-complementaria-b",
+        "nombre": "Variante complementaria B",
+        "formato": "Cuadrado / vertical",
+        "uso": "Campañas, miniaturas y artes digitales promocionales.",
+        "pagina": 10
+      }
+    ],
+    "seguridad": {
+      "contrasenas_en_sitio": false,
+      "separacion": "No utilizar la contraseña del correo principal como contraseña de las redes sociales.",
+      "dos_pasos": [
+        "Gmail",
+        "Facebook",
+        "Instagram",
+        "TikTok",
+        "GitHub",
+        "Cualquier otra plataforma administrativa relacionada con TaskFlow"
+      ],
+      "correo_dos_pasos": "Pendiente"
+    },
+    "pendientes": [
+      "Verificación en dos pasos del correo Gmail: pendiente de activar o confirmar",
+      "Confirmar el estado operativo de la cuenta de TikTok",
+      "Definir si TaskFlow se publicará en Google Play",
+      "Agregar el enlace oficial de Google Play si se publica la aplicación"
+    ],
+    "notas": [
       "Mantener TaskFlow como nombre oficial de la plataforma.",
       "El logo principal del documento de identidad visual constituye la referencia maestra de identidad.",
       "Mantener la combinación visual cian/turquesa y naranja/dorado, con fondos predominantemente oscuros.",
@@ -122,13 +260,36 @@ window.UYC_RECORDS = [
       "No publicar contraseñas en páginas públicas, publicaciones, repositorios GitHub ni documentos destinados a terceros.",
       "Mantener separada la contraseña principal del correo de la contraseña utilizada en las redes sociales.",
       "No utilizar ?utm_source=chatgpt.com como parte permanente del enlace oficial.",
-      "Las cuentas sociales permanecen pendientes hasta que sean creadas o confirmadas.",
-      "El teléfono / WhatsApp permanece pendiente hasta que se establezca un número oficial para TaskFlow."
-    ]
+      "Facebook, Instagram y Clapper están confirmados como activos; TikTok está creado, pero su estado operativo sigue pendiente de confirmar.",
+      "TaskFlow no utiliza número telefónico ni WhatsApp para atención; los usuarios serán atendidos mediante redes sociales y un bot en la página oficial."
+    ],
+    "categoria": "Productividad, organización personal y hábitos",
+    "aplicacion": {
+      "estado": "Lanzado oficialmente",
+      "version": "9.8",
+      "compilacion": "6",
+      "disponibilidad": "Sí — descarga pública",
+      "plataformas": [
+        "Android"
+      ],
+      "lanzamiento": "9 de octubre de 2026",
+      "descarga_url": "https://novaprimegt-coder.github.io/Apk/TaskFlow-9.8-build6-r2.html",
+      "fuente_descarga": "https://github.com/novaprimegt-coder/Apk",
+      "google_play_estado": "Pendiente de definir",
+      "google_play_url": null
+    },
+    "soporte": {
+      "correo": "taskflowgt.oficial@gmail.com",
+      "canal": "Redes sociales",
+      "enlace": "Redes sociales",
+      "atencion": "Atención mediante bot en la página oficial de TaskFlow",
+      "telefono": "No aplica",
+      "whatsapp": "No aplica"
+    }
   }
 ];
 </script>
-<script>/* UYC V2.6.0 — imágenes fiables, datos copiables, formulario local de pendientes. */
+<script>/* UYC V2.6.1 — ficha TaskFlow confirmada, lanzamiento y enlaces oficiales. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -258,7 +419,12 @@ return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
 +section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
 +section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
-+card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'+section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
++card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'
++(r.aplicacion?section("Aplicación y lanzamiento")+'<div class="grid cards2">'
++card("Publicación de la aplicación",field("Estado",r.aplicacion.estado)+field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad pública",r.aplicacion.disponibilidad)+field("Sistema compatible",(r.aplicacion.plataformas||[]).join(", "))+field("Fecha de lanzamiento",r.aplicacion.lanzamiento)+field("Publicación en Google Play",r.aplicacion.google_play_estado))
++card("Descarga oficial y soporte",field("Enlace de descarga",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url)+field("Repositorio de descargas",r.aplicacion.fuente_descarga)+field("Correo de soporte",r.soporte?.correo)+field("Canal de atención",r.soporte?.canal)+field("Atención al usuario",r.soporte?.atencion))
++'</div>':"")
++section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
 }
 function assetInfo(r){
  if(!r)return [];
@@ -296,7 +462,7 @@ const r=selected();if(!r)return selectPrompt("Redes sociales");
 return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendientes.","IDENTIDAD DIGITAL")+companyContext(r)
 +'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
 +'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
-+field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+field("Usuario alternativo",s.alternativo)+field("Correo asociado",s.correo)
++field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+(s.alternativo?field("Usuario alternativo",s.alternativo):"")+field("Correo asociado",s.correo)+(s.dos_pasos?field("Verificación en dos pasos",s.dos_pasos,false):"")
 +field("Enlace",s.url)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
 }
 function access(){
@@ -305,14 +471,14 @@ return top("Accesos y seguridad",r.nombre+" · Cuentas y contraseñas protegidas
 +'<div class="notice"><b>Protección de contraseñas:</b> el repositorio público no contiene credenciales reales. Puedes guardar contraseñas cifradas solo en este navegador. No se sincronizan entre dispositivos y necesitas recordar tu clave maestra.</div>'
 +'<div class="grid cards2">'+(r.cuentas||[]).map(c=>card(c.nombre,field("Usuario",c.usuario||"No registrado")+field("Correo",c.correo||"No registrado")+field("Repositorio",c.repositorio,false)+field("Estado",c.estado,false)+'<p class="mini-note">'+esc(c.notas)+'</p>'+link("Abrir enlace",c.url))).join("")+'</div>'
 +section("Caja fuerte local")+'<div class="card pad"><h3>Contraseñas en este dispositivo</h3><p class="text-block">Usa cifrado AES-GCM con una clave maestra creada por ti. Las credenciales nunca se incluyen en GitHub y no se comparten con otras personas o dispositivos.</p><div class="actions">'+btn(unlocked?"Gestionar contraseñas":"Configurar / abrir caja fuerte","vault","primary")+(unlocked?btn("Bloquear","vault-lock"):"")+'</div><div id="vaultFields"></div></div>'
-+section("Verificación adicional")+card("Autenticación de dos pasos",tags(r.seguridad?.dos_pasos)+'<p class="mini-note">'+esc(r.seguridad?.separacion)+'</p>');
++section("Verificación adicional")+card("Autenticación de dos pasos",(r.seguridad?.correo_dos_pasos?field("Estado de Gmail",r.seguridad.correo_dos_pasos,false):"")+'<p class="mini-note">Plataformas recomendadas para activar la verificación:</p>'+tags(r.seguridad?.dos_pasos)+'<p class="mini-note">'+esc(r.seguridad?.separacion)+'</p>');
 }
 function links(){
 const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
 const done=new Set(r._localEdits?.done||[]);
 return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
 +'<div class="grid cards2">'
-+card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false))
++card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false)+(r.aplicacion?.descarga_url?field("Descarga oficial de la aplicación",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url):""))
 +card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }

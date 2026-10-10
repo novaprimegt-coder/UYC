@@ -1,4 +1,4 @@
-/* UYC V2.6.0 — imágenes fiables, datos copiables, formulario local de pendientes. */
+/* UYC V2.6.1 — ficha TaskFlow confirmada, lanzamiento y enlaces oficiales. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -128,7 +128,12 @@ return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
 +section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
 +section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
-+card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'+section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
++card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'
++(r.aplicacion?section("Aplicación y lanzamiento")+'<div class="grid cards2">'
++card("Publicación de la aplicación",field("Estado",r.aplicacion.estado)+field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad pública",r.aplicacion.disponibilidad)+field("Sistema compatible",(r.aplicacion.plataformas||[]).join(", "))+field("Fecha de lanzamiento",r.aplicacion.lanzamiento)+field("Publicación en Google Play",r.aplicacion.google_play_estado))
++card("Descarga oficial y soporte",field("Enlace de descarga",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url)+field("Repositorio de descargas",r.aplicacion.fuente_descarga)+field("Correo de soporte",r.soporte?.correo)+field("Canal de atención",r.soporte?.canal)+field("Atención al usuario",r.soporte?.atencion))
++'</div>':"")
++section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
 }
 function assetInfo(r){
  if(!r)return [];
@@ -166,7 +171,7 @@ const r=selected();if(!r)return selectPrompt("Redes sociales");
 return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendientes.","IDENTIDAD DIGITAL")+companyContext(r)
 +'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
 +'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
-+field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+field("Usuario alternativo",s.alternativo)+field("Correo asociado",s.correo)
++field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+(s.alternativo?field("Usuario alternativo",s.alternativo):"")+field("Correo asociado",s.correo)+(s.dos_pasos?field("Verificación en dos pasos",s.dos_pasos,false):"")
 +field("Enlace",s.url)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
 }
 function access(){
@@ -175,14 +180,14 @@ return top("Accesos y seguridad",r.nombre+" · Cuentas y contraseñas protegidas
 +'<div class="notice"><b>Protección de contraseñas:</b> el repositorio público no contiene credenciales reales. Puedes guardar contraseñas cifradas solo en este navegador. No se sincronizan entre dispositivos y necesitas recordar tu clave maestra.</div>'
 +'<div class="grid cards2">'+(r.cuentas||[]).map(c=>card(c.nombre,field("Usuario",c.usuario||"No registrado")+field("Correo",c.correo||"No registrado")+field("Repositorio",c.repositorio,false)+field("Estado",c.estado,false)+'<p class="mini-note">'+esc(c.notas)+'</p>'+link("Abrir enlace",c.url))).join("")+'</div>'
 +section("Caja fuerte local")+'<div class="card pad"><h3>Contraseñas en este dispositivo</h3><p class="text-block">Usa cifrado AES-GCM con una clave maestra creada por ti. Las credenciales nunca se incluyen en GitHub y no se comparten con otras personas o dispositivos.</p><div class="actions">'+btn(unlocked?"Gestionar contraseñas":"Configurar / abrir caja fuerte","vault","primary")+(unlocked?btn("Bloquear","vault-lock"):"")+'</div><div id="vaultFields"></div></div>'
-+section("Verificación adicional")+card("Autenticación de dos pasos",tags(r.seguridad?.dos_pasos)+'<p class="mini-note">'+esc(r.seguridad?.separacion)+'</p>');
++section("Verificación adicional")+card("Autenticación de dos pasos",(r.seguridad?.correo_dos_pasos?field("Estado de Gmail",r.seguridad.correo_dos_pasos,false):"")+'<p class="mini-note">Plataformas recomendadas para activar la verificación:</p>'+tags(r.seguridad?.dos_pasos)+'<p class="mini-note">'+esc(r.seguridad?.separacion)+'</p>');
 }
 function links(){
 const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
 const done=new Set(r._localEdits?.done||[]);
 return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
 +'<div class="grid cards2">'
-+card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false))
++card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false)+(r.aplicacion?.descarga_url?field("Descarga oficial de la aplicación",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url):""))
 +card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }
