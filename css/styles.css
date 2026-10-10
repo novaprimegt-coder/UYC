@@ -428,3 +428,7 @@ body{
 }
 @media(max-width:390px){.stats .stat{padding:14px}.stats .stat span{font-size:11px}.stats .stat b{font-size:34px}.rec-head .rec-mark{width:62px;height:62px}.rec-head{grid-template-columns:62px minmax(0,1fr);gap:12px}}
 
+
+/* UYC 2.4.0: mayor legibilidad en las etiquetas de las métricas generales. */
+.stats .stat span{text-transform:none;letter-spacing:0;font-size:13px;line-height:1.35}
+@media(max-width:600px){.stats .stat span{font-size:12px}}

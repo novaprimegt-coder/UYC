@@ -7,7 +7,7 @@ const esc=s=>String(s===undefined||s===null?"":s).replace(/[&<>"']/g,c=>({"&":"&
 const nl=s=>esc(s).replace(/\n/g,"<br>");
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
 let view="inicio",current=null,filter="",unlocked=null,visible=new Set(),toastTimer,carouselIndex=0;
-const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha detallada",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
+const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha empresarial",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
 const selected=()=>records.find(x=>x.id===current)||null;
 function btn(label,action,extra=""){return '<button type="button" class="btn '+extra+'" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
 function tag(s){return '<span class="tag">'+esc(s)+'</span>'}
@@ -87,7 +87,7 @@ return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +'</div>'+section("Filosofía y desarrollo")
 +'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>')+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>')+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>')+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>')+'</div>'
 +section("Valores de la organización")+card("Valores institucionales",tags(r.valores))
-+section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal propuesto",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Usuario alternativo",r.contacto?.usuario_alternativo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp,false))
++section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Usuario alternativo",r.contacto?.usuario_alternativo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp,false))
 +card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>';
 }
 function assetInfo(r){
@@ -124,7 +124,7 @@ function identity(){
 function social(){
 const r=selected();if(!r)return selectPrompt("Redes sociales");
 return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendientes.","IDENTIDAD DIGITAL")+companyContext(r)
-+'<div class="notice">Los nombres de usuario son propuestas y las cuentas sociales permanecen pendientes hasta su creación o confirmación.</div>'
++'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
 +'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
 +field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+field("Usuario alternativo",s.alternativo)+field("Correo asociado",s.correo)
 +field("Enlace",s.url,false)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
