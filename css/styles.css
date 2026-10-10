@@ -432,3 +432,26 @@ body{
 /* UYC 2.4.0: mayor legibilidad en las etiquetas de las métricas generales. */
 .stats .stat span{text-transform:none;letter-spacing:0;font-size:13px;line-height:1.35}
 @media(max-width:600px){.stats .stat span{font-size:12px}}
+/* UYC V2.4.1: selección reservada a los campos editables; imágenes sin arrastrar */
+html, body, .shell, .modal-cover, .page, .side, .topbar{
+ -webkit-user-select:none;
+ user-select:none;
+ -webkit-touch-callout:none;
+}
+input, textarea, [contenteditable="true"], [contenteditable=""]{
+ -webkit-user-select:text!important;
+ user-select:text!important;
+ -webkit-touch-callout:default;
+}
+img{
+ -webkit-user-select:none!important;
+ user-select:none!important;
+ -webkit-touch-callout:none!important;
+ -webkit-user-drag:none;
+}
+.asset-modal-preview{
+ display:grid;place-items:center;padding:18px;background:#f2ece4;
+ border:1px solid #dfd7cb;border-radius:14px;min-height:190px;
+ max-height:min(67vh,700px);overflow:auto;
+}
+.asset-modal-preview img{max-width:100%;max-height:min(60vh,620px);object-fit:contain}

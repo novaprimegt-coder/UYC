@@ -1,4 +1,4 @@
-/* UYC V2.4.0 — directorio general multiempresa. Credenciales: solo cifradas en almacenamiento local. */
+/* UYC V2.4.1 — controles de copia, recursos y escala. Credenciales locales cifradas. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -157,6 +157,29 @@ function navigate(v){if(!pages[v])return;view=v;filter="";$("#search").value="";
 function openRecord(id){if(records.some(r=>r.id===id)){if(current!==id){unlocked=null;visible.clear();carouselIndex=0;}current=id;navigate("ficha")}}
 function toast(msg){clearTimeout(toastTimer);const el=$("#toast");el.textContent=msg;el.hidden=false;toastTimer=setTimeout(()=>el.hidden=true,2600)}
 async function copy(value){try{await navigator.clipboard.writeText(value);toast("Copiado correctamente")}catch{toast("No se pudo copiar; revisa los permisos del navegador")}}
+/* La información de consulta no se selecciona; los inputs de búsqueda y
+   la caja fuerte siguen permitiendo editar/copiar su contenido propio. */
+const isEditableElement=el=>!!(el&&el.closest?.('input, textarea, [contenteditable="true"], [contenteditable=""]'));
+const isOfficialAsset=source=>!!(selected()&&assetInfo(selected()).some(a=>{
+ try{return new URL(a.src,window.location.href).href===new URL(source,window.location.href).href}
+ catch{return false}
+}));
+document.addEventListener("selectstart",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+document.addEventListener("copy",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+document.addEventListener("cut",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+document.addEventListener("contextmenu",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+document.addEventListener("dragstart",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+document.addEventListener("keydown",e=>{
+ const editable=isEditableElement(e.target)||isEditableElement(document.activeElement);
+ const key=e.key.toLowerCase();
+ if((e.ctrlKey||e.metaKey)&&!editable&&["c","x"].includes(key))e.preventDefault();
+ if((e.ctrlKey||e.metaKey)&&["=","+","-","0","add","subtract","numpadadd","numpadsubtract","numpad0"].includes(key))e.preventDefault();
+},{capture:true});
+document.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey)e.preventDefault()},{passive:false});
+document.addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});
+document.addEventListener("gesturechange",e=>e.preventDefault(),{passive:false});
+document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
+
 function closeMenu(){$("#side").classList.remove("open");$("#overlay").classList.remove("open")}
 function closeModal(){$("#modalCover").hidden=true;$("#modalBody").innerHTML=""}
 function showModal(html){$("#modalBody").innerHTML=html;$("#modalCover").hidden=false}
@@ -172,8 +195,21 @@ function renderVaultFields(){const el=$("#vaultFields");if(!el)return;if(!unlock
 function vaultModal(){if(!crypto?.subtle){toast("El cifrado no está disponible en este navegador");return}if(unlocked){showModal('<h2>Administrar caja fuerte</h2><p>Para modificar las credenciales bloquea y vuelve a abrir con tu clave maestra.</p><div class="actions"><button class="btn" data-action="vault-lock">Bloquear</button><button class="btn" data-action="vault-delete">Eliminar datos locales</button></div>');return}if(hasVault()){showModal('<h2>Desbloquear caja fuerte</h2><p>La contraseña maestra nunca se almacena.</p><form id="unlockForm"><label for="masterUnlock">Clave maestra</label><input id="masterUnlock" type="password" required autocomplete="current-password"><div class="actions"><button class="btn primary" type="submit">Desbloquear</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>');return}showModal('<h2>Crear caja fuerte local</h2><p>Estos valores se cifrarán únicamente en este navegador, con tu clave maestra personal.</p><form id="createForm"><label for="masterCreate">Nueva clave maestra (mínimo 12 caracteres)</label><input id="masterCreate" type="password" minlength="12" required autocomplete="new-password"><label for="masterAgain">Confirmar clave maestra</label><input id="masterAgain" type="password" minlength="12" required autocomplete="new-password"><label for="passwordEmail">Contraseña de correo</label><input id="passwordEmail" type="password" autocomplete="off"><label for="passwordRedes">Contraseña de redes sociales</label><input id="passwordRedes" type="password" autocomplete="off"><div class="actions"><button class="btn primary" type="submit">Guardar cifrado</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>')}
 async function handleVaultForm(form){const b=form.querySelector('[type="submit"]');b.disabled=true;try{if(form.id==="createForm"){const m=$("#masterCreate").value;if(m.length<12||m!==$("#masterAgain").value){toast("La clave maestra no coincide");return}const values={email:$("#passwordEmail").value,redes:$("#passwordRedes").value};localStorage.setItem(keyFor(),JSON.stringify(await encrypt(m,values)));unlocked=values;toast("Credenciales cifradas en este dispositivo")}else{unlocked=await decrypt($("#masterUnlock").value);toast("Caja fuerte desbloqueada")}visible.clear();closeModal();render()}catch{toast("No se pudo validar o guardar la caja fuerte")}finally{if(b.isConnected)b.disabled=false}}
 document.addEventListener("click",async e=>{
-const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
-const download=e.target.closest("a[download]");if(download){if(download.dataset.ready==="true")return;e.preventDefault();try{const res=await fetch(download.href,{method:"HEAD"});if(!res.ok)throw Error("missing");download.dataset.ready="true";download.click();delete download.dataset.ready}catch{toast("El archivo PNG original aún no está alojado en UYC")}return}
+const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){if(!isOfficialAsset(copyPNG.dataset.copyPng)){toast("Imagen no autorizada");return}try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
+const download=e.target.closest("a[download]");
+if(download){
+ if(!isOfficialAsset(download.href)){e.preventDefault();toast("Solo se descargan recursos oficiales de la empresa seleccionada");return}
+ if(download.dataset.ready==="true")return;
+ e.preventDefault();
+ try{
+   const res=await fetch(download.href,{method:"HEAD"});
+   if(!res.ok)throw Error("missing");
+   download.dataset.ready="true";
+   download.click();
+ }catch{toast("El archivo PNG oficial no está disponible para descargar")}
+ finally{delete download.dataset.ready}
+ return;
+}
 const slide=e.target.closest("[data-select-slide]");if(slide){carouselIndex=Number(slide.dataset.selectSlide);if(view!=="identidad")navigate("identidad");else render();return}
 const step=e.target.closest("[data-slide]");if(step){const len=assetInfo(selected()).length;carouselIndex=(carouselIndex+Number(step.dataset.slide)+len)%len;render();return}
 const nav=e.target.closest("[data-view]");if(nav){navigate(nav.dataset.view);return}
@@ -181,7 +217,15 @@ const rec=e.target.closest("[data-open]");if(rec){openRecord(rec.dataset.open);r
 const c=e.target.closest("[data-copy]");if(c){await copy(c.dataset.copy);return}
 const s=e.target.closest("[data-secret]");if(s){const k=s.dataset.secret;if(!unlocked?.[k]){toast("Esta contraseña no está registrada");return}visible.has(k)?visible.delete(k):visible.add(k);renderVaultFields();if(visible.has(k))setTimeout(()=>{visible.delete(k);renderVaultFields()},15000);return}
 const sc=e.target.closest("[data-secret-copy]");if(sc){const val=unlocked?.[sc.dataset.secret];val?copy(val):toast("Contraseña no registrada");return}
-const asset=e.target.closest("[data-asset]");if(asset){const url=asset.dataset.asset;try{const rsp=await fetch(url,{method:"HEAD"});if(!rsp.ok)throw Error("missing");window.open(url,"_blank","noopener,noreferrer")}catch{toast("El original todavía no está publicado en UYC")};return}
+const asset=e.target.closest("[data-asset]");
+if(asset){
+ const url=asset.dataset.asset;
+ if(!isOfficialAsset(url)){toast("Imagen no autorizada");return}
+ const info=assetInfo(selected()).find(a=>a.src===url);
+ if(!info)return;
+ showModal('<h2>'+esc(info.nombre)+'</h2><p>Vista previa del archivo oficial. Para guardar el PNG original utiliza el botón de descarga de la galería.</p><div class="asset-modal-preview"><img src="'+esc(info.src)+'" draggable="false" alt="'+esc(info.nombre)+'"></div><p class="fineprint">Original · '+info.w+' × '+info.h+' px</p>');
+ return;
+}
 const ac=e.target.closest("[data-action]");if(!ac)return;
 const action=ac.dataset.action;if(action.startsWith("goto:"))return navigate(action.slice(5));
 if(action==="vault")return vaultModal();
