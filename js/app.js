@@ -152,13 +152,13 @@ function identity(){
  return top("Identidad visual de "+r.nombre,entries.length+" recursos oficiales asociados a esta empresa. Se conservan sus proporciones y formatos registrados.","RECURSOS DE "+r.nombre.toUpperCase())+companyContext(r)
  +'<div class="notice">Este apartado reúne los archivos oficiales de la empresa seleccionada. Las descargas conservan el contenido, las proporciones y la transparencia del archivo original.</div>'
  +'<div class="asset-showcase">'
- +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">El archivo original aún no está alojado en este repositorio.<br>No se muestra una imagen inventada en su lugar.</div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
+ +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">No se pudo cargar el recurso. <button type="button" class="btn sm asset-retry" data-retry-image>Reintentar imagen</button></div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
  +'<div class="asset-info"><span class="mini-label">RECURSO '+String(carouselIndex+1).padStart(2,"0")+' / '+String(entries.length).padStart(2,"0")+'</span><h2>'+esc(active.nombre)+'</h2><p>'+esc(desc)+'</p>'
  +'<div class="asset-specs"><div><span>Resolución original</span><strong>'+label(active)+'</strong></div><div><span>Formato</span><strong>PNG original</strong></div><div><span>Fondo</span><strong>'+(active.transparent?'Transparente (alfa)':'Integrado en la imagen')+'</strong></div><div><span>Relación</span><strong>'+(active.w>active.h?'Horizontal':active.w<active.h?'Vertical':'Cuadrada 1:1')+'</strong></div><div><span>Nombre original en Word</span><strong>'+esc(active.file)+'</strong></div></div>'
- +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver tamaño original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
+ +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
  +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de imágenes de la empresa">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
  +section("Todas las imágenes originales",entries.length+" recursos individuales")
- +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Sin archivo</span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
+ +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Imagen no disponible <button class="btn sm asset-retry" type="button" data-retry-image>Reintentar</button></span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
  +section("Normas visuales")+card("Identidad de "+esc(r.nombre),'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
 }
 function social(){
@@ -241,30 +241,39 @@ function savePending(form){
 const pages={inicio:home,registros:allRecords,ficha:detail,identidad:identity,redes:social,accesos:access,enlaces:links};
 
 /* Las miniaturas siempre dan una vista rapida. Solo se carga un PNG grande a la vez. */
+/* Miniaturas ligeras sin listeners duplicados ni PNG completos precargados. */
+let assetListenersAttached=false;
 function connectAssetImages(){
- document.querySelectorAll("img[data-original-src]").forEach(img=>{
-  img.addEventListener("error",()=>{
-   if(img.dataset.uycTriedOriginal!=="1"&&img.src!==new URL(img.dataset.originalSrc,window.location.href).href){
-    img.dataset.uycTriedOriginal="1";
-    img.src=img.dataset.originalSrc;
-    return;
-   }
-   const container=img.closest(".asset-display");
-   if(container)container.classList.add("missing");
-   else if(img.nextElementSibling?.classList?.contains("symbol")){
-    img.hidden=true;img.nextElementSibling.hidden=false;
-   }else img.hidden=true;
-  });
-  img.addEventListener("load",()=>img.closest(".asset-display")?.classList.remove("missing"));
- });
-}
-function improveMainImage(){
- const el=document.querySelector(".asset-display img[data-image-role='main']");
- if(!el||!el.dataset.originalSrc||typeof Image==="undefined")return;
- const source=el.dataset.originalSrc;
- const full=new Image();full.decoding="async";
- full.onload=()=>{if(el.isConnected&&el.dataset.originalSrc===source){el.src=source;el.classList.add("original-loaded")}};
- full.onerror=()=>{};full.src=source;
+ if(assetListenersAttached)return;
+ assetListenersAttached=true;
+ document.addEventListener("error",e=>{
+  const img=e.target;
+  if(!img?.matches?.("img[data-original-src]"))return;
+  const original=img.dataset.originalSrc;
+  const stage=Number(img.dataset.uycFallback||"0");
+  const originalURL=new URL(original,window.location.href).href;
+  if(stage===0&&img.src!==originalURL){
+   img.dataset.uycFallback="1";img.src=original+"?v=2.6.0";return;
+  }
+  if(stage<=1&&original.startsWith("assets/taskflow/")){
+   img.dataset.uycFallback="2";
+   img.src="https://raw.githubusercontent.com/novaprimegt-coder/UYC/main/"+original+"?v=2.6.0";
+   return;
+  }
+  img.dataset.uycFallback="3";
+  const frame=img.closest(".asset-display");
+  if(frame)frame.classList.add("missing");
+  else if(img.nextElementSibling?.classList?.contains("symbol")){
+   img.hidden=true;img.nextElementSibling.hidden=false;
+  }else img.hidden=true;
+ },true);
+ document.addEventListener("load",e=>{
+  const img=e.target;
+  if(!img?.matches?.("img[data-original-src]"))return;
+  img.hidden=false;
+  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
+  img.closest(".asset-display")?.classList.remove("missing");
+ },true);
 }
 function render(){
 document.title="UYC · "+names[view];
@@ -272,7 +281,7 @@ $("#crumb").textContent=names[view];
 document.querySelectorAll("[data-view]").forEach(x=>{x.classList.toggle("active",x.dataset.view===view);x.setAttribute("aria-current",x.dataset.view===view?"page":"false")});
 $("#page").innerHTML=pages[view]();
 connectAssetImages();
-if(view==="identidad")setTimeout(improveMainImage,70);
+/* El PNG grande solo se carga bajo petición del usuario. */
 if(view==="accesos")renderVaultFields();
 }
 function navigate(v){if(!pages[v])return;view=v;filter="";$("#search").value="";render();closeMenu();window.scrollTo(0,0)}
@@ -318,6 +327,18 @@ function vaultModal(){if(!crypto?.subtle){toast("El cifrado no está disponible 
 async function handleVaultForm(form){const b=form.querySelector('[type="submit"]');b.disabled=true;try{if(form.id==="createForm"){const m=$("#masterCreate").value;if(m.length<12||m!==$("#masterAgain").value){toast("La clave maestra no coincide");return}const values={email:$("#passwordEmail").value,redes:$("#passwordRedes").value};localStorage.setItem(keyFor(),JSON.stringify(await encrypt(m,values)));unlocked=values;toast("Credenciales cifradas en este dispositivo")}else{unlocked=await decrypt($("#masterUnlock").value);toast("Caja fuerte desbloqueada")}visible.clear();closeModal();render()}catch{toast("No se pudo validar o guardar la caja fuerte")}finally{if(b.isConnected)b.disabled=false}}
 document.addEventListener("click",async e=>{
 const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){if(!isOfficialAsset(copyPNG.dataset.copyPng)){toast("Imagen no autorizada");return}try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
+const retry=e.target.closest("[data-retry-image]");
+if(retry){
+ const frame=retry.closest(".asset-display, .preview");
+ const img=frame?.querySelector("img[data-original-src]");
+ if(img){
+  img.dataset.uycFallback="1";img.hidden=false;
+  frame.classList.remove("missing");
+  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
+  img.src=img.dataset.originalSrc+"?retry="+Date.now();
+ }
+ return;
+}
 const download=e.target.closest("a[download]");
 if(download){
  if(!isOfficialAsset(download.href)){
