@@ -455,3 +455,91 @@ img{
  max-height:min(67vh,700px);overflow:auto;
 }
 .asset-modal-preview img{max-width:100%;max-height:min(60vh,620px);object-fit:contain}
+
+
+/* UYC V2.6 — jerarquía coherente, formularios y galería rápida. */
+.page{min-width:0}
+.card{min-width:0}
+.card-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:13px;margin:0 0 13px}
+.card-heading h3{margin:0!important;min-width:0;overflow-wrap:break-word;line-height:1.4}
+.card-heading .card-copy{min-width:74px;min-height:34px;flex:none;padding:7px 11px;font-size:12px}
+.text-block{font-size:clamp(14px,1.45vw,16px);line-height:1.86;letter-spacing:0;color:#403a34}
+.value{min-width:0}
+.value span{font-size:14px;line-height:1.6;overflow-wrap:anywhere}
+.field label{font-size:11px}
+.asset-info{min-width:0;overflow:hidden;padding:clamp(18px,3vw,35px)}
+.asset-showcase{min-width:0;grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr)}
+.asset-info .actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;width:100%;min-width:0;align-items:stretch}
+.asset-info .actions>*{display:inline-flex!important;align-items:center;justify-content:center;width:100%!important;min-width:0!important;min-height:40px!important;padding:9px 10px!important;line-height:1.32!important;font-size:12px!important;text-align:center;white-space:normal;overflow-wrap:break-word;flex:none!important}
+.asset-info .actions>:nth-child(3){grid-column:1/-1}
+.asset-info .actions>*:only-child{grid-column:1/-1}
+.asset-info .mini-label{font-size:11px}
+.asset-info .asset-specs{min-width:0}
+.asset-specs div{align-items:flex-start;gap:12px}
+.asset-specs strong{overflow-wrap:anywhere;word-break:normal;line-height:1.45}
+.asset-specs span{line-height:1.45}
+.asset-display{min-width:0}
+.asset-display img{max-width:100%;object-fit:contain}
+.asset-display .asset-placeholder{font-size:14px;color:#63574b;line-height:1.75}
+.asset-retry{display:inline-flex!important;margin:13px auto 0;min-height:35px}
+.asset-display .asset-retry{font-weight:750}
+.media-grid{gap:14px}
+.media{min-width:0;display:flex;flex-direction:column;gap:9px;padding:15px}
+.media .preview{height:auto;aspect-ratio:4/3;margin:0 0 8px;position:relative;overflow:hidden;background:#f2eee8}
+.media .preview img{width:100%;height:100%;max-height:100%;object-fit:contain!important;display:block}
+.media .preview .symbol{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:#f2eee8;color:#544b43;text-align:center;padding:12px;font-size:12px}
+.media .preview .symbol[hidden]{display:none!important}
+.media .preview .asset-retry{margin:0 auto}
+.media b{font-size:15px;line-height:1.38;color:#2b2621}
+.media p{font-size:13px;line-height:1.65;color:#514b44;min-height:0!important;margin:0}
+.media small{font-size:12px;line-height:1.5;color:#62594f;min-height:0!important}
+.media .actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;align-items:stretch;margin-top:auto;padding-top:9px}
+.media .actions>*{width:100%!important;min-width:0;display:flex;align-items:center;justify-content:center;min-height:36px;padding:8px 7px;font-size:11.5px;line-height:1.25;white-space:normal;text-align:center}
+.pending-intro{background:linear-gradient(120deg,#fff,#fbf7f1);border-color:#d9c8b4}
+.pending-intro h3{font-size:17px;line-height:1.35;margin:0 0 8px}
+.pending-intro p{font-size:13.5px;line-height:1.7;color:#544b43;margin:0 0 16px}
+.pending-row{background:#fff;min-width:0}
+.pending-row label{font-size:11px;font-weight:800;color:#745334}
+.pending-row span{color:#3e3932;font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+.modal:has(.pending-modal){width:min(840px,96vw);max-height:min(91dvh,900px);overflow-y:auto;overscroll-behavior:contain}
+.pending-modal{color:#2a2520}
+.pending-modal h2{font-size:24px;line-height:1.27;margin:0 0 10px;letter-spacing:-.035em}
+.pending-modal h3{font-size:15px;line-height:1.4;margin:24px 0 12px;color:#302920}
+.pending-modal .editor-help{font-size:13.5px;line-height:1.7;color:#564e45}
+.pending-form-grid,.pending-social-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.pending-input{min-width:0;display:flex;flex-direction:column;gap:7px;margin:0}
+.pending-input span{font-size:12px;font-weight:750;color:#4a4037}
+.pending-input input,.pending-input select{width:100%;min-width:0;min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid #cabfb1;background:#fff;color:#27221d;font:inherit;font-size:14px;text-overflow:ellipsis}
+.pending-input input:focus,.pending-input select:focus{border-color:#957249;outline:2px solid #dfc5a2;outline-offset:1px}
+.pending-social{border:1px solid #dfd5c9;border-radius:14px;background:#fefbf7;padding:15px;display:grid;gap:13px;min-width:0}
+.pending-social strong{font-size:15px;font-weight:800}
+.pending-checks{display:grid;gap:9px}
+.pending-check{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid #e1d9cf;border-radius:10px;background:#fff;color:#3b342d;font-size:13px;line-height:1.55;cursor:pointer}
+.pending-check input{margin:3px 0 0;accent-color:#765330;width:18px;height:18px;flex:none}
+.pending-modal .editor-warning{color:#6b4b2a;background:#fff5e8;border:1px solid #ebd5b9;border-radius:10px;padding:13px;font-size:13px;line-height:1.65;margin:18px 0}
+.pending-modal-actions{display:flex;gap:10px;margin-top:19px}
+.pending-modal-actions .btn{min-height:43px}
+@media(max-width:1140px){
+ .asset-showcase{grid-template-columns:minmax(0,1fr)}
+ .asset-info .actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:720px){
+ .media-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .media{padding:11px;gap:8px}
+ .media b{font-size:13px}
+ .media small,.media p{font-size:11.5px}
+ .media .preview{aspect-ratio:1/1}
+ .media .actions{grid-template-columns:1fr}
+ .media .actions>*{font-size:12px;min-height:36px}
+ .asset-info .actions{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px}
+ .asset-info .actions>*{font-size:11.5px!important;padding:9px 7px!important}
+ .pending-form-grid,.pending-social-grid{grid-template-columns:1fr}
+ .pending-modal h2{font-size:21px}
+ .card-heading{gap:9px}
+ .card-heading .card-copy{padding:7px 9px}
+}
+@media(max-width:380px){
+ .media-grid{grid-template-columns:1fr}
+ .media .preview{aspect-ratio:4/3}
+ .media .actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
