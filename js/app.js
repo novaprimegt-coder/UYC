@@ -1,4 +1,4 @@
-/* UYC V2.5.0 — carga progresiva de imagenes y respuestas fluidas. */
+/* UYC V2.6.0 — imágenes fiables, datos copiables, formulario local de pendientes. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -279,8 +279,8 @@ function render(){
 document.title="UYC · "+names[view];
 $("#crumb").textContent=names[view];
 document.querySelectorAll("[data-view]").forEach(x=>{x.classList.toggle("active",x.dataset.view===view);x.setAttribute("aria-current",x.dataset.view===view?"page":"false")});
-$("#page").innerHTML=pages[view]();
 connectAssetImages();
+$("#page").innerHTML=pages[view]();
 /* El PNG grande solo se carga bajo petición del usuario. */
 if(view==="accesos")renderVaultFields();
 }
