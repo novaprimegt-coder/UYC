@@ -1,4 +1,4 @@
-/* UYC 5.1.0 · Acciones centradas, control de ficha refinado y registros sin datos duplicados. */
+/* UYC 5.2.0 · Controles alineados, información sin duplicados y enlaces TaskFlow confirmados. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -28,7 +28,10 @@ function status(s){return '<span class="status">'+esc(s||"PENDIENTE")+'</span>'}
 function overline(s){return '<span class="eyebrow">'+esc(s)+'</span>'}
 function heading(t,description="",suffix=""){return '<div class="section-heading"><div><h2>'+esc(t)+'</h2>'+(description?'<p>'+esc(description)+'</p>':"")+'</div>'+(suffix?'<span>'+esc(suffix)+'</span>':"")+'</div>'}
 function field(label,value,canCopy=false){
- return '<div class="data-row"><div class="data-meta"><span class="data-label">'+esc(label)+'</span><span class="data-value '+(!exists(value)?'missing':'')+'">'+esc(exists(value)?value:"Pendiente de registrar")+'</span></div>'+(canCopy?copyBtn(value):"")+'</div>';
+ const raw=exists(value)?String(value):"Pendiente de registrar";
+ const isLong=/^https?:\/\//i.test(raw)||raw.length>57;
+ const classes="data-row"+(isLong&&canCopy?" data-row--long":"");
+ return '<div class="'+classes+'"><div class="data-meta"><span class="data-label">'+esc(label)+'</span><span class="data-value '+(!exists(value)?'missing':'')+'">'+esc(raw)+'</span></div>'+(canCopy?copyBtn(value):"")+'</div>';
 }
 function card(title,body,copyValue=null){
  return '<section class="surface pad"><div class="card-heading"><h3>'+esc(title)+'</h3>'+(copyValue===null?"":copyBtn(copyValue))+'</div>'+body+'</section>';
@@ -121,7 +124,7 @@ function profile(r){
  +'<div class="info-rail-item"><span>Categoría empresarial</span><strong>'+esc(r.categoria||r.tipo||"Pendiente")+'</strong>'+copyBtn(r.categoria||r.tipo,"Copiar categoría")+'</div></div>'
  +'<div class="section-heading feature-heading"><div><h2>Misión y visión</h2><p>Textos oficiales, disponibles para copiar.</p></div></div>'
  +'<div class="grid-two feature-cards">'+mission+vision+'</div>'
- +'<details class="detail-group"><summary><span><strong>Ver ficha completa</strong><small>Descripción, propósito, objetivos, valores y aplicación</small></span><span class="detail-expand" aria-hidden="true"></span></summary>'
+ +'<details class="detail-group"><summary><span><strong>Información complementaria</strong><small>Descripción, propósito, objetivos, valores y aplicación</small></span><span class="detail-toggle"><span class="detail-toggle-label"><span class="when-closed">Ver más</span><span class="when-open">Ocultar</span></span><span class="detail-expand" aria-hidden="true"></span></span></summary>'
  +'<div class="detail-group-body"><div class="grid-two">'
  +extras.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")
  +values+(app||"")+'</div></div></details></div>';
@@ -150,7 +153,7 @@ function social(r){
     +'<div class="social-record">'+identityDiff
     +field("Enlace oficial",a.url,true)
     +field("Verificación en dos pasos",a.dos_pasos||"PENDIENTE")
-    +'</div><div class="social-actions">'+external("Abrir "+a.plataforma,a.url,"primary")+'</div></article>';
+    +'</div><div class="social-actions"><span class="social-action-spacer" aria-hidden="true"></span>'+external("Abrir "+a.plataforma,a.url,"primary")+'</div></article>';
   }).join("")+'</div>'
   :'<div class="empty"><strong>Sin redes registradas</strong>Las nuevas cuentas se incorporan desde el código de UYC.</div>');
 }
@@ -178,11 +181,11 @@ function repositories(r){
    +field("Enlace de descarga",apk.descarga_url,true)
    +'<div class="card-actions">'+external("Abrir descarga oficial",apk.descarga_url,"primary")+'</div></section></div>':"")
  +((r.pendientes?.length||r.notas?.length)?
- heading("Seguimiento del registro","Observaciones y datos que siguen pendientes de confirmación.")
- +'<div class="grid-two">'
- +(r.pendientes?.length?card("Pendientes",'<div class="copy-text">'+r.pendientes.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
- +(r.notas?.length?card("Observaciones",'<div class="copy-text">'+r.notas.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
- +'</div>':"");
+ '<details class="detail-group notes-group"><summary><span><strong>Notas y seguimiento</strong><small>Consulta los asuntos pendientes y las observaciones adicionales.</small></span><span class="detail-toggle"><span class="detail-toggle-label"><span class="when-closed">Ver notas</span><span class="when-open">Ocultar</span></span><span class="detail-expand" aria-hidden="true"></span></span></summary>'
+ +'<div class="detail-group-body"><div class="grid-two">'
+ +(r.pendientes?.length?card("Pendientes",'<div class="copy-text">'+[...new Set(r.pendientes)].map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
+ +(r.notas?.length?card("Observaciones",'<div class="copy-text">'+[...new Set(r.notas)].map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
+ +'</div></div></details>':"");
 }
 function identity(r){
  const entries=allAssets(r);

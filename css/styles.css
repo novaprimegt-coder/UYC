@@ -353,3 +353,158 @@ body.menu-open{overflow:hidden}
  .head-spacer{flex:1 1 0;min-width:0}
  .is-company .header-back{margin-left:auto}
 }
+
+/* UYC V5.2 — separación física de acciones y datos, controles profesionales.
+   No cambia la información ni la identidad visual de empresas registradas. */
+:root{--button-radius:12px;--button-height:44px;--action-space:20px}
+.btn{
+  position:relative;z-index:1;
+  display:inline-flex;align-items:center;justify-content:center;
+  width:auto;min-height:var(--button-height);
+  padding:10px 17px;gap:8px;
+  border-radius:var(--button-radius);border:1px solid #decec4;
+  background:#fffdfa;color:#634c45;
+  font-size:12px;font-weight:750;line-height:1.35;
+  text-align:center;text-wrap:balance;vertical-align:middle;
+  box-shadow:0 1px 1px rgba(50,38,34,.025);
+  transition:background-color .16s,border-color .16s,box-shadow .16s,transform .16s;
+}
+.btn:not(:disabled):hover{background:#fff1e9;border-color:#c99780;box-shadow:0 3px 12px rgba(132,76,55,.075)}
+.btn:not(:disabled):active{transform:translateY(1px)}
+.btn.primary{background:#a85746;color:#fff;border-color:#a85746}
+.btn.primary:hover{background:#914334;color:#fff;border-color:#914334}
+.btn.small{min-height:36px;padding:7px 12px;font-size:11px}
+.btn-row{gap:12px;align-items:center}
+.surface.pad{padding:clamp(20px,2.7vw,29px)}
+/* Text and actions have independent grid tracks: dividers never pass through a button. */
+.data-row{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;justify-content:stretch;
+ column-gap:clamp(15px,2vw,27px);row-gap:12px;
+ padding:17px 0;border-bottom:1px solid #f0e8e1;
+ min-height:67px;
+}
+.data-row:first-child{padding-top:9px}
+.data-row:last-child{border-bottom:0;padding-bottom:9px}
+.data-row .data-meta{min-width:0;max-width:100%}
+.data-row .data-value{line-height:1.6;overflow-wrap:anywhere;word-break:normal}
+.data-row .btn{
+ align-self:center;justify-self:end;
+ min-width:84px;max-width:142px;min-height:38px;
+ padding:8px 13px;margin:0;
+ white-space:nowrap;font-size:11px;
+}
+.data-row--long{grid-template-columns:minmax(0,1fr)}
+.data-row--long .btn{justify-self:end;margin:1px 0 0;min-width:96px}
+.card-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:18px;margin:0 0 19px}
+.card-heading .btn{justify-self:end;align-self:center;min-width:84px}
+.card-heading h3{line-height:1.35}
+/* Buttons never rest on the same rule as content. */
+.social-grid{align-items:stretch;gap:18px}
+.social-card{display:flex;flex-direction:column;padding:clamp(20px,2.6vw,29px);gap:0}
+.social-head{display:flex;align-items:center;gap:14px;justify-content:space-between;
+  padding:0 0 17px;min-height:51px;margin:0;border-bottom:1px solid #eee6e0}
+.social-head h3{min-width:0;font-size:18px}
+.social-head .status{max-width:62%;flex:none}
+.social-record{flex:1;min-width:0;padding:12px 0 0}
+.social-record .data-row:first-child{padding-top:8px}
+.social-record .data-row:last-child{border-bottom:none;padding-bottom:8px}
+.social-actions{
+ display:flex;align-items:center;justify-content:center;
+ flex-direction:column;gap:0;
+ min-height:auto;margin:0;padding:0;
+ border:0;
+}
+.social-action-spacer{display:block;width:100%;height:19px;min-height:19px;
+ border:0;margin:0;padding:0}
+.social-actions .btn{
+ width:min(100%,330px);max-width:330px;min-height:46px;
+ display:flex;margin:0 auto;border-radius:12px;
+ font-size:12px;font-weight:780;text-align:center
+}
+.social-actions .under{margin:0 auto;text-align:center}
+.repo-actions,.card-actions{
+ display:flex;align-items:center;justify-content:center;gap:13px;
+ flex-wrap:wrap;border-top:0;padding:23px 0 0;margin-top:auto
+}
+.repo-actions .btn,.card-actions .btn{
+ flex:1 1 160px;max-width:290px;min-width:0;
+ min-height:46px;margin:0;border-radius:12px
+}
+.repo-card{gap:14px}
+.download-panel .card-actions{margin-top:0}
+.info-rail-item .btn{align-self:stretch;justify-self:center;width:100%;margin:10px 0 0;min-height:38px;font-size:11px}
+.info-rail-item{gap:9px}
+.feature-cards .surface{padding:clamp(22px,2.7vw,30px)}
+/* Genuine collapsed-state chevron with its own dedicated area. */
+.detail-group{margin-top:25px;overflow:hidden}
+.detail-group summary{
+ display:grid;grid-template-columns:minmax(0,1fr) auto;
+ align-items:center;gap:clamp(15px,3vw,28px);
+ min-height:94px;padding:23px clamp(21px,3vw,30px);
+ cursor:pointer;border:0
+}
+.detail-group summary>span:first-child{min-width:0}
+.detail-group summary strong{font-size:14px;line-height:1.45}
+.detail-group summary small{line-height:1.65}
+.detail-toggle{display:inline-flex;align-items:center;gap:12px;justify-self:end;flex:none;min-width:120px;justify-content:flex-end}
+.detail-toggle-label{font-size:11px;font-weight:800;color:#99634f;white-space:nowrap}
+.detail-toggle .when-open{display:none}
+.detail-group[open] .when-open{display:inline}
+.detail-group[open] .when-closed{display:none}
+.detail-expand{
+ position:relative;width:40px;height:40px;flex:none;
+ border:1px solid #e7cdbc;border-radius:12px;
+ background:#fff9f5;display:grid;place-items:center;
+ color:#aa604e
+}
+.detail-expand::before{
+ content:"";display:block;
+ width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;
+ transform:translateY(-2px) rotate(45deg)
+}
+.detail-group[open] .detail-expand::before{transform:translateY(2px) rotate(225deg)}
+.detail-group[open] summary{background:#fff8f4}
+.detail-group-body{padding:24px clamp(18px,2.6vw,28px);border-top:1px solid #f0e7de}
+.detail-group-body .grid-two{gap:17px}
+.notes-group{margin-top:28px}
+.notes-group .copy-text p{margin:0 0 12px}
+.notes-group .copy-text p:last-child{margin-bottom:0}
+.asset-actions{gap:11px;align-items:stretch}
+.asset-actions .btn{min-height:43px;min-width:0;padding:10px;font-size:11px}
+.asset-card .btn-row{gap:8px}
+.asset-card .btn{min-height:37px;padding:7px 9px;font-size:11px}
+@media(max-width:800px){
+ .social-card{padding:clamp(19px,4vw,27px)}
+ .social-grid{gap:15px}
+}
+@media(max-width:540px){
+ .data-row{padding:17px 0;column-gap:12px;row-gap:11px}
+ .data-row--long{grid-template-columns:minmax(0,1fr)}
+ .data-row .btn{min-height:39px;min-width:80px;padding:8px 11px;margin:0}
+ .data-row--long .btn{width:auto;min-width:95px;max-width:140px}
+ .card-heading{gap:11px}
+ .card-heading .btn{min-width:80px}
+ .social-card{padding:20px 18px}
+ .social-head .status{max-width:60%}
+ .social-record{padding-top:10px}
+ .social-action-spacer{height:20px;min-height:20px}
+ .social-actions .btn{width:min(100%,290px);min-height:45px}
+ .detail-group summary{min-height:88px;padding:20px 17px;gap:10px}
+ .detail-toggle{gap:9px;min-width:94px}
+ .detail-toggle-label{font-size:10px}
+ .detail-expand{height:37px;width:37px;border-radius:11px}
+ .detail-group-body{padding:18px 14px}
+ .repo-actions,.card-actions{gap:10px;padding-top:20px}
+ .repo-actions .btn,.card-actions .btn{flex:1 1 100%;max-width:100%}
+ .asset-actions .btn{min-height:42px;padding:8px;font-size:10.5px}
+ .asset-card .btn-row{gap:7px}
+ .asset-card .btn{min-height:36px;font-size:10.5px}
+}
+@media(max-width:360px){
+ .detail-toggle{min-width:40px}
+ .detail-toggle-label{display:none}
+ .data-row{grid-template-columns:minmax(0,1fr)}
+ .data-row .btn{justify-self:end}
+}
+

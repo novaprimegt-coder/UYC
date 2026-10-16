@@ -54,7 +54,7 @@ window.UYC_RECORDS = [
         "usuario": "taskflowgt",
         "correo": "taskflowgt.oficial@gmail.com",
         "url": "https://tiktok.com/@taskflowgt",
-        "estado": "Creada — estado operativo pendiente de confirmar",
+        "estado": "Activa",
         "dos_pasos": "Desactivada"
       },
       {
@@ -206,8 +206,7 @@ window.UYC_RECORDS = [
     },
     "pendientes": [
       "Verificación en dos pasos del correo Gmail: pendiente de activar o confirmar",
-      "Confirmar el estado operativo de la cuenta de TikTok",
-      "Definir si TaskFlow se publicará en Google Play",
+        "Definir si TaskFlow se publicará en Google Play",
       "Agregar el enlace oficial de Google Play si se publica la aplicación"
     ],
     "notas": [
@@ -222,8 +221,8 @@ window.UYC_RECORDS = [
       "Mantener coherencia visual entre aplicación, página web y redes sociales.",
       "No publicar contraseñas en páginas públicas, publicaciones, repositorios GitHub ni documentos destinados a terceros.",
       "Mantener separada la contraseña principal del correo de la contraseña utilizada en las redes sociales.",
-      "No utilizar ?utm_source=chatgpt.com como parte permanente del enlace oficial.",
-      "Facebook, Instagram y Clapper están confirmados como activos; TikTok está creado, pero su estado operativo sigue pendiente de confirmar.",
+      "El enlace oficial de descarga apunta al archivo TaskFlow.apk de la versión estable en el repositorio Apk.",
+      "Facebook, Instagram, TikTok y Clapper están confirmados como activos.",
       "TaskFlow no utiliza número telefónico ni WhatsApp para atención; los usuarios serán atendidos mediante redes sociales y un bot en la página oficial."
     ],
     "categoria": "Productividad, organización personal y hábitos",
@@ -236,7 +235,7 @@ window.UYC_RECORDS = [
         "Android"
       ],
       "lanzamiento": "9 de octubre de 2026",
-      "descarga_url": "https://novaprimegt-coder.github.io/Apk/TaskFlow-9.8-build6-r2.html",
+      "descarga_url": "https://github.com/novaprimegt-coder/Apk/releases/download/stable/TaskFlow.apk?utm_source=chatgpt.com",
       "fuente_descarga": "https://github.com/novaprimegt-coder/Apk",
       "google_play_estado": "Pendiente de definir",
       "google_play_url": null
