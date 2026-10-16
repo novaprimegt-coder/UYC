@@ -1,4 +1,4 @@
-/* UYC V2.6.1 — ficha TaskFlow confirmada, lanzamiento y enlaces oficiales. */
+/* UYC V2.6.2 — presentación TaskFlow_Home V3.0.0, independiente de sistema y APK. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -28,6 +28,7 @@ function effectiveRecord(r){
  for(const [key,value] of Object.entries(patch.fields||{})){
   if(typeof value!=="string"||!value.trim())continue;
   if(key==="categoria"){record.categoria=value;continue}
+  if(r.id==="taskflow"&&key==="web.url"&&value==="https://novaprimegt-coder.github.io/TaskFlow/presentacion/")continue;
   if(key.startsWith("contacto.")){
    const name=key.slice(9);
    if(["correo","correo_estado","usuario","usuario_estado","whatsapp"].includes(name))record.contacto[name]=value;
@@ -128,7 +129,7 @@ return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
 +'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
 +section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
 +section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
-+card("Presencia web",field("Sitio oficial",r.web?.url)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir sitio oficial",r.web?.url))+'</div>'
++card("Presencia web",field("Sitio de presentación oficial",r.web?.url)+field("Tipo de proyecto",r.web?.tipo_proyecto)+field("Independencia del proyecto",r.web?.independencia)+field("Versión de la presentación",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+field("Repositorio de la presentación",r.web?.repositorio)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir presentación oficial",r.web?.url))+'</div>'
 +(r.aplicacion?section("Aplicación y lanzamiento")+'<div class="grid cards2">'
 +card("Publicación de la aplicación",field("Estado",r.aplicacion.estado)+field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad pública",r.aplicacion.disponibilidad)+field("Sistema compatible",(r.aplicacion.plataformas||[]).join(", "))+field("Fecha de lanzamiento",r.aplicacion.lanzamiento)+field("Publicación en Google Play",r.aplicacion.google_play_estado))
 +card("Descarga oficial y soporte",field("Enlace de descarga",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url)+field("Repositorio de descargas",r.aplicacion.fuente_descarga)+field("Correo de soporte",r.soporte?.correo)+field("Canal de atención",r.soporte?.canal)+field("Atención al usuario",r.soporte?.atencion))
@@ -187,7 +188,7 @@ const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
 const done=new Set(r._localEdits?.done||[]);
 return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
 +'<div class="grid cards2">'
-+card("Sitios y repositorios",field("Página principal",r.web?.url)+link("Abrir página oficial",r.web?.url)+field("Repositorio GitHub",r.web?.repositorio)+link("Abrir repositorio",r.web?.repositorio)+field("Propietario",r.web?.propietario)+field("Enlace original proporcionado",r.web?.original)+field("Nota del repositorio",r.web?.nota_repositorio,false)+(r.aplicacion?.descarga_url?field("Descarga oficial de la aplicación",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url):""))
++card("Sitios y repositorios",field("Página de presentación oficial",r.web?.url)+link("Abrir presentación",r.web?.url)+field("Repositorio de la presentación",r.web?.repositorio)+link("Abrir repositorio de presentación",r.web?.repositorio)+(r.web?.tipo_proyecto?field("Tipo de proyecto",r.web.tipo_proyecto):"")+(r.web?.independencia?field("Proyecto independiente",r.web.independencia):"")+(r.web?.version?field("Versión de la presentación",r.web.version):"")+(r.web?.ultima_actualizacion?field("Actualización de la presentación",r.web.ultima_actualizacion):"")+field("Propietario",r.web?.propietario)+(r.web?.anterior?field("Página de presentación anterior (histórico)",r.web.anterior):"")+field("Nota del repositorio",r.web?.nota_repositorio,false)+(r.aplicacion?.descarga_url?field("Descarga oficial de la aplicación",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url):""))
 +card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
 +section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
 }

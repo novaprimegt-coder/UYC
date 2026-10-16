@@ -77,26 +77,31 @@ window.UYC_RECORDS = [
         "notas": "Cuenta principal confirmada para administrar los servicios oficiales relacionados con TaskFlow."
       },
       {
-        "nombre": "GitHub",
+        "nombre": "GitHub — página de presentación",
         "usuario": "novaprimegt-coder",
-        "repositorio": "TaskFlow",
+        "repositorio": "TaskFlow_Home",
         "estado": "Activo",
-        "url": "https://github.com/novaprimegt-coder/TaskFlow",
-        "notas": "Repositorio utilizado para alojar el proyecto TaskFlow y su página de presentación pública."
+        "url": "https://github.com/novaprimegt-coder/TaskFlow_Home",
+        "notas": "Repositorio de la página de presentación oficial de TaskFlow; no es el repositorio del sistema principal ni el de la APK."
       }
     ],
     "web": {
       "nombre": "TaskFlow",
-      "url": "https://novaprimegt-coder.github.io/TaskFlow/presentacion/",
-      "original": "https://novaprimegt-coder.github.io/TaskFlow/presentacion/?utm_source=chatgpt.com",
+      "url": "https://novaprimegt-coder.github.io/TaskFlow_Home/",
+      "original": "https://novaprimegt-coder.github.io/TaskFlow_Home/",
       "dominio": "novaprimegt-coder.github.io",
-      "ruta": "/TaskFlow/presentacion/",
+      "ruta": "/TaskFlow_Home/",
       "alojamiento": "GitHub Pages",
       "protocolo": "HTTPS",
       "estado": "Activo",
       "propietario": "novaprimegt-coder",
-      "repositorio": "https://github.com/novaprimegt-coder/TaskFlow",
-      "nota_repositorio": "La dirección del repositorio corresponde a la estructura del enlace GitHub Pages proporcionado."
+      "repositorio": "https://github.com/novaprimegt-coder/TaskFlow_Home",
+      "nota_repositorio": "Repositorio exclusivo de la página de presentación oficial, independiente del sistema principal y del repositorio de la APK.",
+      "anterior": "https://novaprimegt-coder.github.io/TaskFlow/presentacion/",
+      "tipo_proyecto": "Página web de presentación oficial de TaskFlow",
+      "independencia": "Independiente del sistema principal y de la APK",
+      "version": "V3.0.0",
+      "ultima_actualizacion": "15 de octubre de 2026, 9:58 p. m. (hora de Guatemala)"
     },
     "identidad": {
       "nombre_visible": "TaskFlow",
