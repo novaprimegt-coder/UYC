@@ -1,4 +1,4 @@
-/* UYC 4.0.0 · Directorio compacto, escritorio lateral y navegación móvil directa. */
+/* UYC 5.0.0 · Archivo visual con navegación única y páginas empresariales compactas. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -72,54 +72,55 @@ function allAssets(r){
 function dimension(a){return a.ancho&&a.alto?a.ancho+" × "+a.alto+" px":"Original sin dimensiones registradas"}
 function officialAsset(src){return !!(current()&&allAssets(current()).some(a=>a.src===src))}
 function directoryItem(r){
- const number=allAssets(r).length;
- const socialCount=(r.redes||[]).length;
- return '<article class="company-card">'
- +'<div class="company-card-top">'+logo(r)+'<div class="company-card-description">'
- +'<span class="company-overline">'+esc(r.categoria||r.tipo||"EMPRESA REGISTRADA")+'</span>'
- +'<h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo||"Empresa o plataforma")+'</p>'
- +'</div></div>'
- +'<div class="company-card-bottom"><div class="company-card-details">'+status(r.estado)+'<span class="company-metadata">'+number+' imágenes · '+socialCount+' redes</span></div>'
- +'<button class="btn primary" type="button" data-open="'+esc(r.id)+'">Entrar <span aria-hidden="true">↗</span></button></div>'
+ const assets=allAssets(r).length,socials=(r.redes||[]).length;
+ return '<article class="company-row">'
+ +'<div class="company-row-identity">'+logo(r)+'<div class="company-row-copy"><span class="company-overline">'+esc(r.categoria||r.tipo||"MARCA")+'</span><h3>'+esc(r.nombre)+'</h3>'
+ +'<p>'+esc(r.tipo||"Empresa, marca o plataforma")+'</p></div></div>'
+ +'<div class="company-row-metrics"><span><strong>'+assets+'</strong> logos</span><span><strong>'+socials+'</strong> redes</span></div>'
+ +'<div class="company-row-actions"><button class="btn subtle" data-open-tab="'+esc(r.id)+':imagenes" type="button">Ver logos</button>'
+ +'<button class="btn primary" data-open="'+esc(r.id)+'" type="button">Abrir empresa <span aria-hidden="true">↗</span></button></div>'
  +'</article>';
 }
 function directory(){
  const list=records.filter(r=>norm([r.nombre,r.tipo,r.categoria,r.estado,r.descripcion].join(" ")).includes(norm(filter)));
- return '<div class="content-in directory-view">'
- +'<section class="directory-header"><div class="section-eyebrow"><span class="eyebrow-line"></span>PORTAFOLIO / UYC</div>'
- +'<div class="directory-heading"><div><h1>Empresas <span>y marcas.</span></h1>'
- +'<p>Consulta la información oficial de cada proyecto desde un mismo lugar.</p></div>'
- +'<span class="directory-count"><strong>'+records.length+'</strong> registradas</span></div></section>'
- +'<section id="directoryList">'+heading("Directorio","Selecciona una empresa para ver su información.",list.length+" "+(list.length===1?"resultado":"resultados"))+'</section>'
- +(list.length?'<div class="company-grid">'+list.map(directoryItem).join("")+'</div>':'<div class="empty"><strong>Sin coincidencias</strong>Prueba con otro nombre o categoría.</div>')
- +'<div class="help-strip"><span class="help-icon" aria-hidden="true">✧</span><div><strong>Todo en su lugar</strong><p>Las fichas se actualizan desde el código. Aquí puedes consultar datos, copiarlos y descargar imágenes oficiales.</p></div></div>'
- +'</div>';
+ return '<section class="directory-view">'
+ +'<header class="directory-header"><div><span class="eyebrow">UYC / CATÁLOGO GENERAL</span>'
+ +'<h1>Tu archivo de <em>empresas.</em></h1>'
+ +'<p>Selecciona una marca para consultar su ficha, sus logos y sus enlaces oficiales.</p></div>'
+ +'<div class="directory-counter"><strong>'+String(records.length).padStart(2,"0")+'</strong><span>'+(records.length===1?"Empresa registrada":"Empresas registradas")+'</span></div></header>'
+ +'<div id="directoryList" class="directory-heading"><div><strong>Empresas registradas</strong><small>Información organizada por empresa</small></div><span>'+list.length+' '+(list.length===1?"resultado":"resultados")+'</span></div>'
+ +(list.length?'<div class="company-list">'+list.map(directoryItem).join("")+'</div>':'<div class="empty"><strong>No se encontraron empresas</strong>Prueba con otro nombre o categoría.</div>')
+ +'<div class="directory-bottom"><span aria-hidden="true">✦</span><p>UYC solo muestra información oficial. Para actualizar datos empresariales se modifica el código, no la página.</p></div>'
+ +'</section>';
 }
 function companyHeading(r){
- return '<div class="company-heading">'
- +'<button class="back-link" type="button" data-menu-home>← Volver a empresas</button>'
- +'<section class="company-heading-main"><div class="company-title">'+logo(r)
- +'<div><span class="company-overline">'+esc(r.categoria||"Empresa o plataforma")+'</span><h1>'+esc(r.nombre)+'</h1>'
- +'<p>'+esc(r.tipo||"Empresa registrada")+'</p></div></div>'
- +'<div class="company-summary">'+status(r.estado)+'</div></section></div>'
- +'<div class="current-section"><div><span class="current-kicker">ESTÁS CONSULTANDO</span><strong>'+esc(sectionTitles[tab]||"Ficha empresarial")+'</strong></div>'
- +'<span class="section-count">'+String(["ficha","imagenes","redes","enlaces","claves"].indexOf(tab)+1).padStart(2,"0")+' / 05</span></div>';
+ const parts=[["ficha","Ficha","▤"],["imagenes","Logos","▧"],["redes","Redes","◎"],["enlaces","Enlaces","↗"],["claves","Claves","◇"]];
+ return '<section class="company-header"><button class="crumb" type="button" data-menu-home>← Todas las empresas</button>'
+ +'<div class="company-banner"><div class="company-banner-main">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Empresa o marca")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Registro UYC")+'</p></div></div>'
+ +'<div class="company-banner-status">'+status(r.estado)+'</div></div>'
+ +'<nav class="company-shortcuts" aria-label="Información de '+esc(r.nombre)+'">'
+ +parts.map(([key,title,symbol])=>'<button type="button" data-tab="'+key+'" class="shortcut '+(tab===key?"active":"")+'" aria-current="'+(tab===key?"page":"false")+'"><span class="shortcut-icon" aria-hidden="true">'+symbol+'</span><span>'+title+'</span></button>').join("")
+ +'</nav></section>';
 }
 function profile(r){
- const main=card("Datos de la empresa",field("Nombre oficial",r.nombre,true)+field("Categoría",r.categoria||r.tipo,true)+field("Correo principal",r.contacto?.correo,true)+field("Usuario",r.contacto?.usuario,true)+field("Estado",r.estado));
- const links=card("Presencia digital",field("Página de presentación",r.web?.url,true)+field("Versión web",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+external("Abrir página oficial",r.web?.url,"small primary"));
  const mission=card("Misión",'<div class="copy-text">'+textBlock(r.mision)+'</div>',r.mision);
  const vision=card("Visión",'<div class="copy-text">'+textBlock(r.vision)+'</div>',r.vision);
  const extras=[["Descripción completa",r.descripcion],["Propósito",r.proposito],["Objetivo general",r.objetivo]];
- const values=card("Valores",'<div class="taglist">'+(r.valores||[]).map(v=>'<span class="tag">'+esc(v)+'</span>').join("")+'</div>',(r.valores||[]).join(", "));
+ const values=card("Valores institucionales",'<div class="taglist">'+(r.valores||[]).map(v=>'<span class="tag">'+esc(v)+'</span>').join("")+'</div>',(r.valores||[]).join(", "));
  const app=r.aplicacion?card("Aplicación o sistema",field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad",r.aplicacion.disponibilidad)+field("Compatible con",(r.aplicacion.plataformas||[]).join(", "))+field("Lanzamiento",r.aplicacion.lanzamiento)+field("Google Play",r.aplicacion.google_play_estado)+external("Descargar aplicación",r.aplicacion.descarga_url,"small primary")):"";
- return '<div class="profile-page">'+heading("Información esencial","Datos que se usan con mayor frecuencia.")
- +'<div class="grid-two">'+main+links+'</div>'
- +heading("Identidad institucional","Textos oficiales con botón de copia.")
+ return '<div class="profile-page"><div class="profile-topline"><div><span class="eyebrow">FICHA OFICIAL</span><h2>Información esencial</h2></div><small>Copia únicamente lo que necesites</small></div>'
+ +'<div class="info-rail">'
+ +'<div class="info-rail-item"><span>Correo oficial</span><strong>'+esc(r.contacto?.correo||"Pendiente")+'</strong>'+copyBtn(r.contacto?.correo,"Copiar correo")+'</div>'
+ +'<div class="info-rail-item"><span>Usuario principal</span><strong>'+esc(r.contacto?.usuario||"Pendiente")+'</strong>'+copyBtn(r.contacto?.usuario,"Copiar usuario")+'</div>'
+ +'<div class="info-rail-item"><span>Página oficial</span><strong>'+esc(r.web?.version||"Presentación")+'</strong>'+external("Abrir sitio",r.web?.url,"small")+'</div></div>'
+ +'<div class="section-heading feature-heading"><div><h2>Misión y visión</h2><p>Textos originales de la empresa, disponibles para copiar.</p></div></div>'
  +'<div class="grid-two feature-cards">'+mission+vision+'</div>'
- +'<details class="detail-group"><summary><span><strong>Ver más información de '+esc(r.nombre)+'</strong><small>Descripción, propósito, objetivos y otros datos</small></span><span class="detail-expand">+</span></summary>'
- +'<div class="detail-group-body"><div class="grid-two">'+extras.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")+values+(app||"")+'</div></div></details>'
- +'</div>';
+ +'<details class="detail-group"><summary><span><strong>Ver ficha completa</strong><small>Descripción, categoría, objetivos, valores y aplicación</small></span><span class="detail-expand">+</span></summary>'
+ +'<div class="detail-group-body"><div class="grid-two">'
+ +card("Datos de la empresa",field("Nombre oficial",r.nombre,true)+field("Categoría",r.categoria||r.tipo,true)+field("Correo principal",r.contacto?.correo,true)+field("Usuario principal",r.contacto?.usuario,true)+field("Estado",r.estado))
+ +card("Presentación oficial",field("Página",r.web?.url,true)+field("Versión web",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+external("Abrir presentación",r.web?.url,"small primary"))
+ +extras.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")
+ +values+(app||"")+'</div></div></details></div>';
 }
 function social(r){
  const items=r.redes||[];
@@ -171,11 +172,10 @@ function identity(r){
  +'<div class="asset-actions"><a class="btn primary" download="'+esc(chosen.archivo)+'" href="'+esc(chosen.src)+'">↓ Descargar PNG</a>'
  +'<button type="button" class="btn" data-preview="'+esc(chosen.src)+'">Ver tamaño original</button>'
  +'<button type="button" class="btn subtle" data-copy-png="'+esc(chosen.src)+'">Copiar PNG</button></div></div></div>'
- +'<div class="asset-thumbs" role="group" aria-label="Seleccionar imagen">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===imageIndex?'active':'')+'" type="button" data-image="'+i+'" aria-pressed="'+(i===imageIndex)+'">'+
- '<img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><strong>'+esc(a.nombre)+'</strong></button>').join("")+'</div>'
- +heading("Biblioteca completa","Descarga individual de los PNG originales.")
- +'<div class="asset-grid">'+entries.map((a,i)=>'<article class="surface asset-card"><div class="asset-card-image">'+thumbImg(r,a.src,a.nombre)+'</div><h3>'+esc(a.nombre)+'</h3><small>'+esc(dimension(a))+'</small>'
- +'<div class="btn-row"><a class="btn primary" href="'+esc(a.src)+'" download="'+esc(a.archivo)+'">↓ PNG</a><button class="btn" type="button" data-image="'+i+'">Ver</button></div></article>').join("")+'</div>';
+ +heading("Todos los recursos oficiales","Selecciona una imagen para verla arriba o descarga su PNG original.")
+ +'<div class="asset-grid">'+entries.map((a,i)=>'<article class="surface asset-card '+(i===imageIndex?"chosen":"")+'"><button class="asset-card-select" type="button" data-image="'+i+'" aria-label="Ver '+esc(a.nombre)+'">'
+ +'<span class="asset-card-image">'+thumbImg(r,a.src,a.nombre)+'</span><strong>'+esc(a.nombre)+'</strong><small>'+esc(dimension(a))+'</small></button>'
+ +'<div class="btn-row"><button type="button" class="btn" data-image="'+i+'">Ver</button><a class="btn primary" href="'+esc(a.src)+'" download="'+esc(a.archivo)+'">↓ PNG</a></div></article>').join("")+'</div>';
 }
 const vaultKey=()=>current()?"uyc:vault:"+current().id+":v1":null;
 function hasVault(){try{return !!localStorage.getItem(vaultKey())}catch{return false}}
@@ -277,23 +277,16 @@ function updateMenu(){
  menuLinks.innerHTML=content;
 }
 function syncNavigation(){
- const desk=isDesktop(),r=current();
- if(desk){
-  drawerOpen=false;menu.hidden=false;menuBackdrop.hidden=true;menu.setAttribute("aria-hidden","false");
-  document.body.classList.remove("menu-open");menuToggle.setAttribute("aria-expanded","false");
- }else{
-  menu.hidden=!drawerOpen;menuBackdrop.hidden=!drawerOpen;
-  menu.setAttribute("aria-hidden",drawerOpen?"false":"true");
-  document.body.classList.toggle("menu-open",drawerOpen);
-  menuToggle.setAttribute("aria-expanded",drawerOpen?"true":"false");
- }
- mobileDock.hidden=desk||!r;
- mobileDock.innerHTML=!r?"":dockLabels.map(([key,label,symbol])=>
- '<button type="button" data-tab="'+key+'" class="dock-tab '+(tab===key?"active":"")+'" aria-label="'+label+'" aria-current="'+(tab===key?"page":"false")+'"><span class="dock-icon">'+symbol+'</span><small>'+label+'</small></button>').join("");
+ menu.hidden=!drawerOpen;
+ menuBackdrop.hidden=!drawerOpen;
+ menu.setAttribute("aria-hidden",drawerOpen?"false":"true");
+ menuToggle.setAttribute("aria-expanded",drawerOpen?"true":"false");
+ document.body.classList.toggle("menu-open",drawerOpen);
+ mobileDock.hidden=true;mobileDock.innerHTML="";
 }
 function setMenuOpen(open){
- if(isDesktop())return;
- drawerOpen=!!open;syncNavigation();
+ drawerOpen=!!open;
+ syncNavigation();
  if(drawerOpen){updateMenu();menuClose.focus()}
  else menuToggle.focus({preventScroll:true});
 }
@@ -302,6 +295,7 @@ function closeSiteMenu(){if(drawerOpen)setMenuOpen(false)}
 function render(){
  const selected=current();
  document.title="UYC · "+(selected?selected.nombre:"Directorio empresarial");
+ document.body.classList.toggle("is-company",!!selected);
  directoryButton.hidden=!selected;
  updateMenu();
  syncNavigation();
@@ -363,6 +357,7 @@ document.addEventListener("click",async event=>{
  const menuHome=el.closest("[data-menu-home]");if(menuHome){goHome();return}
  const menuTab=el.closest("[data-menu-tab]");if(menuTab){openTab(menuTab.dataset.menuTab);return}
  const menuCompany=el.closest("[data-menu-company]");if(menuCompany){openCompany(menuCompany.dataset.menuCompany);return}
+ const tileTab=el.closest("[data-open-tab]");if(tileTab){const [id,targetTab]=String(tileTab.dataset.openTab||"").split(":");openCompany(id);if(sectionTitles[targetTab])openTab(targetTab);return}
  const download=el.closest("a[download]");
  if(download){
   const path=download.getAttribute("href");
