@@ -1,4 +1,4 @@
-/* UYC 5.0.0 · Archivo visual con navegación única y páginas empresariales compactas. */
+/* UYC 5.1.0 · Acciones centradas, control de ficha refinado y registros sin datos duplicados. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -107,53 +107,82 @@ function profile(r){
  const vision=card("Visión",'<div class="copy-text">'+textBlock(r.vision)+'</div>',r.vision);
  const extras=[["Descripción completa",r.descripcion],["Propósito",r.proposito],["Objetivo general",r.objetivo]];
  const values=card("Valores institucionales",'<div class="taglist">'+(r.valores||[]).map(v=>'<span class="tag">'+esc(v)+'</span>').join("")+'</div>',(r.valores||[]).join(", "));
- const app=r.aplicacion?card("Aplicación o sistema",field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad",r.aplicacion.disponibilidad)+field("Compatible con",(r.aplicacion.plataformas||[]).join(", "))+field("Lanzamiento",r.aplicacion.lanzamiento)+field("Google Play",r.aplicacion.google_play_estado)+external("Descargar aplicación",r.aplicacion.descarga_url,"small primary")):"";
+ const app=r.aplicacion?card("Información de la aplicación",
+  field("Versión actual",r.aplicacion.version)
+ +field("Compilación",r.aplicacion.compilacion)
+ +field("Disponibilidad",r.aplicacion.disponibilidad)
+ +field("Compatible con",(r.aplicacion.plataformas||[]).join(", "))
+ +field("Lanzamiento",r.aplicacion.lanzamiento)
+ +field("Google Play",r.aplicacion.google_play_estado)):"";
  return '<div class="profile-page"><div class="profile-topline"><div><span class="eyebrow">FICHA OFICIAL</span><h2>Información esencial</h2></div><small>Copia únicamente lo que necesites</small></div>'
  +'<div class="info-rail">'
  +'<div class="info-rail-item"><span>Correo oficial</span><strong>'+esc(r.contacto?.correo||"Pendiente")+'</strong>'+copyBtn(r.contacto?.correo,"Copiar correo")+'</div>'
  +'<div class="info-rail-item"><span>Usuario principal</span><strong>'+esc(r.contacto?.usuario||"Pendiente")+'</strong>'+copyBtn(r.contacto?.usuario,"Copiar usuario")+'</div>'
- +'<div class="info-rail-item"><span>Página oficial</span><strong>'+esc(r.web?.version||"Presentación")+'</strong>'+external("Abrir sitio",r.web?.url,"small")+'</div></div>'
- +'<div class="section-heading feature-heading"><div><h2>Misión y visión</h2><p>Textos originales de la empresa, disponibles para copiar.</p></div></div>'
+ +'<div class="info-rail-item"><span>Categoría empresarial</span><strong>'+esc(r.categoria||r.tipo||"Pendiente")+'</strong>'+copyBtn(r.categoria||r.tipo,"Copiar categoría")+'</div></div>'
+ +'<div class="section-heading feature-heading"><div><h2>Misión y visión</h2><p>Textos oficiales, disponibles para copiar.</p></div></div>'
  +'<div class="grid-two feature-cards">'+mission+vision+'</div>'
- +'<details class="detail-group"><summary><span><strong>Ver ficha completa</strong><small>Descripción, categoría, objetivos, valores y aplicación</small></span><span class="detail-expand">+</span></summary>'
+ +'<details class="detail-group"><summary><span><strong>Ver ficha completa</strong><small>Descripción, propósito, objetivos, valores y aplicación</small></span><span class="detail-expand" aria-hidden="true"></span></summary>'
  +'<div class="detail-group-body"><div class="grid-two">'
- +card("Datos de la empresa",field("Nombre oficial",r.nombre,true)+field("Categoría",r.categoria||r.tipo,true)+field("Correo principal",r.contacto?.correo,true)+field("Usuario principal",r.contacto?.usuario,true)+field("Estado",r.estado))
- +card("Presentación oficial",field("Página",r.web?.url,true)+field("Versión web",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+external("Abrir presentación",r.web?.url,"small primary"))
  +extras.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")
  +values+(app||"")+'</div></div></details></div>';
 }
 function social(r){
- const items=r.redes||[];
- const shared=card("Identidad digital compartida",field("Usuario principal",r.contacto?.usuario,true)+field("Correo principal",r.contacto?.correo,true)+field("Estado del correo",r.contacto?.correo_estado));
- const support=card("Atención y soporte",field("Canal",r.soporte?.canal||"PENDIENTE")+field("Correo de soporte",r.soporte?.correo,true)+field("Atención",r.soporte?.atencion)+field("Teléfono",r.soporte?.telefono||r.contacto?.telefono));
- return heading("Redes y contacto","Usuario y correo comunes cuando así lo indique la empresa.")
+ const items=r.redes||[],mainUser=r.contacto?.usuario||"",mainEmail=r.contacto?.correo||"";
+ const shared=card("Identidad digital común",
+  field("Usuario principal",mainUser,true)
+ +field("Correo principal",mainEmail,true)
+ +field("Estado del correo",r.contacto?.correo_estado));
+ const supportEmail=r.soporte?.correo||"";
+ const support=card("Soporte y atención",
+  field("Canal de atención",r.soporte?.canal||"PENDIENTE")
+ +(supportEmail&&supportEmail!==mainEmail?field("Correo de soporte",supportEmail,true):"")
+ +field("Atención disponible",r.soporte?.atencion||"PENDIENTE")
+ +field("Teléfono",r.soporte?.telefono||r.contacto?.telefono));
+ return heading("Redes y contacto","Los datos compartidos aparecen una sola vez; cada red conserva su información particular.")
  +'<div class="grid-two">'+shared+support+'</div>'
- +heading("Perfiles registrados","Cada red tiene su enlace y estado independiente.",items.length+" redes")
- +(items.length?'<div class="social-grid">'+items.map(a=>'<article class="surface social-card"><div class="social-head"><h3>'+esc(a.plataforma)+'</h3>'+status(a.estado)+'</div>'
- +field("Nombre visible",a.nombre)+field("Usuario",a.usuario||r.contacto?.usuario,true)+field("Correo",a.correo||r.contacto?.correo,true)+field("Enlace oficial",a.url,true)+field("Verificación en dos pasos",a.dos_pasos||"PENDIENTE")
- +'<div class="btn-row">'+external("Abrir "+a.plataforma,a.url,"small")+'</div></article>').join("")+'</div>':'<div class="empty"><strong>Sin redes registradas</strong>Podrás agregarlas desde el archivo de datos, sin alterar otras empresas.</div>');
+ +heading("Perfiles oficiales","Abre cada plataforma o copia exclusivamente su enlace.",items.length+" redes")
+ +(items.length?'<div class="social-grid">'+items.map(a=>{
+   const identityDiff=(a.nombre&&a.nombre!==r.nombre?field("Nombre de la cuenta",a.nombre):"")
+     +(a.usuario&&a.usuario!==mainUser?field("Usuario propio",a.usuario,true):"")
+     +(a.correo&&a.correo!==mainEmail?field("Correo propio",a.correo,true):"");
+   return '<article class="surface social-card">'
+    +'<div class="social-head"><h3>'+esc(a.plataforma)+'</h3>'+status(a.estado)+'</div>'
+    +'<div class="social-record">'+identityDiff
+    +field("Enlace oficial",a.url,true)
+    +field("Verificación en dos pasos",a.dos_pasos||"PENDIENTE")
+    +'</div><div class="social-actions">'+external("Abrir "+a.plataforma,a.url,"primary")+'</div></article>';
+  }).join("")+'</div>'
+  :'<div class="empty"><strong>Sin redes registradas</strong>Las nuevas cuentas se incorporan desde el código de UYC.</div>');
 }
 function repoCard(kind,obj){
  const badge=kind==="sistema"?"01 · REPOSITORIO DEL SISTEMA":"02 · REPOSITORIO DE PRESENTACIÓN";
  const label=kind==="sistema"?"Sistema o programa":"Página demostrativa o informativa";
  if(!obj||!obj.url)return '<div class="surface pad repo-card"><span class="repo-badge">'+badge+'</span><h3>'+label+'</h3><p>Pendiente de registrar en el código de UYC.</p></div>';
- const site=obj.pagina?'<div>'+field("Página visible",obj.pagina,true)+external("Ver presentación",obj.pagina,"small")+'</div>':"";
- const spec=obj.version?field("Versión de presentación",obj.version):"";
+ const site=obj.pagina?field("Página de presentación",obj.pagina,true):"";
+ const spec=obj.version?field("Versión",obj.version):"";
  const date=obj.actualizacion?field("Última actualización",obj.actualizacion):"";
- return '<article class="surface pad repo-card"><span class="repo-badge">'+badge+'</span><h3>'+label+'</h3><p>'+esc(obj.descripcion||"Repositorio oficial de la empresa")+'</p><strong>'+esc(obj.nombre||"Repositorio GitHub")+'</strong><span class="repo-url">'+esc(obj.url)+'</span>'
- +'<div>'+spec+date+site+'</div><div class="btn-row">'+copyBtn(obj.url,"Copiar enlace")+external("Abrir repositorio",obj.url,"primary small")+'</div></article>';
+ return '<article class="surface pad repo-card"><span class="repo-badge">'+badge+'</span><h3>'+label+'</h3>'
+ +'<p>'+esc(obj.descripcion||"Repositorio oficial de la empresa")+'</p>'
+ +'<strong>'+esc(obj.nombre||"Repositorio GitHub")+'</strong>'
+ +field("Repositorio GitHub",obj.url,true)
+ +spec+date+site
+ +'<div class="repo-actions">'+external("Abrir repositorio",obj.url,"primary")+(obj.pagina?external("Ver página",obj.pagina):"")+'</div></article>';
 }
 function repositories(r){
- const repos=r.repositorios||{},web=r.web||{},apk=r.aplicacion||{};
- const webUrl=repos.presentacion?.pagina||web.url;
- return heading("Enlaces y repositorios","El código del programa y la página informativa son proyectos independientes.")
+ const repos=r.repositorios||{},apk=r.aplicacion||{};
+ return heading("Repositorios oficiales","Cada empresa puede tener su sistema y su página informativa por separado.")
  +'<div class="grid-two">'+repoCard("sistema",repos.sistema)+repoCard("presentacion",repos.presentacion)+'</div>'
- +heading("Otros enlaces oficiales","Consulta sin confundir sistema, página informativa y aplicación descargable.")
- +'<div class="grid-two">'+card("Página de presentación",field("Enlace",webUrl,true)+field("Versión",web.version||repos.presentacion?.version)+field("Tipo de proyecto",web.tipo_proyecto||"Página informativa")+external("Visitar página",webUrl,"small"))
- +card("Aplicación descargable",field("Plataformas",(apk.plataformas||[]).join(", "))+field("Versión",apk.version)+field("Enlace de descarga",apk.descarga_url,true)+external("Descargar APK",apk.descarga_url,"small primary"))+'</div>'
- +heading("Notas y asuntos pendientes","Estos datos también se actualizan desde el código.")
- +'<div class="grid-two">'+card("Pendientes",'<div class="copy-text">'+(r.pendientes?.length?r.pendientes.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join(""):"Sin asuntos pendientes")+'</div>')+
- card("Observaciones",'<div class="copy-text">'+(r.notas?.length?r.notas.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join(""):"Sin observaciones registradas")+'</div>')+'</div>';
+ +(apk.descarga_url?
+   heading("Descarga de la aplicación","Acceso independiente de los repositorios.")
+   +'<div class="grid-two"><section class="surface pad download-panel"><div><h3>Aplicación descargable</h3><p class="under">Instalador oficial de '+esc(r.nombre)+'.</p></div>'
+   +field("Enlace de descarga",apk.descarga_url,true)
+   +'<div class="card-actions">'+external("Abrir descarga oficial",apk.descarga_url,"primary")+'</div></section></div>':"")
+ +((r.pendientes?.length||r.notas?.length)?
+ heading("Seguimiento del registro","Observaciones y datos que siguen pendientes de confirmación.")
+ +'<div class="grid-two">'
+ +(r.pendientes?.length?card("Pendientes",'<div class="copy-text">'+r.pendientes.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
+ +(r.notas?.length?card("Observaciones",'<div class="copy-text">'+r.notas.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join("")+'</div>'):"")
+ +'</div>':"");
 }
 function identity(r){
  const entries=allAssets(r);
