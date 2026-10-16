@@ -1,4 +1,4 @@
-/* UYC — registro público sin contraseñas. Los datos privados nunca deben subirse a GitHub. */
+/* UYC · Fuente pública de datos empresariales. Editar solo desde el código; nunca guardar contraseñas aquí. */
 window.UYC_RECORDS = [
   {
     "id": "taskflow",
@@ -248,6 +248,23 @@ window.UYC_RECORDS = [
       "atencion": "Atención mediante bot en la página oficial de TaskFlow",
       "telefono": "No aplica",
       "whatsapp": "No aplica"
+    },
+    "repositorios": {
+      "sistema": {
+        "tipo": "Sistema o programa",
+        "nombre": "TaskFlow_Sistem",
+        "url": "https://github.com/novaprimegt-coder/TaskFlow_Sistem",
+        "descripcion": "Código y desarrollo del sistema principal de TaskFlow. Independiente de la web de presentación y de la APK."
+      },
+      "presentacion": {
+        "tipo": "Página demostrativa o informativa",
+        "nombre": "TaskFlow_Home",
+        "url": "https://github.com/novaprimegt-coder/TaskFlow_Home",
+        "descripcion": "Repositorio exclusivo de la página pública de presentación de TaskFlow.",
+        "pagina": "https://novaprimegt-coder.github.io/TaskFlow_Home/",
+        "version": "V3.0.0",
+        "actualizacion": "15 de octubre de 2026, 9:58 p. m. (Guatemala)"
+      }
     }
   }
 ];

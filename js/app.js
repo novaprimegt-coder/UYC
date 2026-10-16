@@ -1,390 +1,411 @@
-/* UYC V2.6.2 — presentación TaskFlow_Home V3.0.0, independiente de sistema y APK. */
+/* UYC 3.0.0 · Catálogo de lectura, descargas y contraseñas locales cifradas. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
-const $=(q,el=document)=>el.querySelector(q);
-const esc=s=>String(s===undefined||s===null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const nl=s=>esc(s).replace(/\n/g,"<br>");
+const $=(q,context=document)=>context.querySelector(q);
+const esc=s=>String(s===null||s===undefined?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>String(s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-let view="inicio",current=null,filter="",unlocked=null,visible=new Set(),toastTimer,carouselIndex=0;
-const names={inicio:"Inicio",registros:"Empresas y plataformas",ficha:"Ficha empresarial",identidad:"Identidad visual",redes:"Redes sociales",accesos:"Accesos y seguridad",enlaces:"Enlaces y pendientes"};
-const localEdits=new Map();
-const editsKey=id=>"uyc:pending:"+id+":v1";
-function editsFor(id){
- if(localEdits.has(id))return localEdits.get(id);
- let patch={fields:{},done:[]};
- try{const saved=JSON.parse(localStorage.getItem(editsKey(id))||"null");
- if(saved&&typeof saved==="object"){
-  if(saved.fields&&typeof saved.fields==="object")patch.fields=saved.fields;
-  if(Array.isArray(saved.done))patch.done=saved.done.filter(Number.isInteger);
- }}catch{}
- localEdits.set(id,patch);return patch;
+const validUrl=s=>typeof s==="string"&&/^https?:\/\/[^\s]+$/i.test(s)?s:null;
+const exists=v=>!(v===null||v===undefined||String(v).trim()==="");
+const missingText=v=>!exists(v)||/^(PENDIENTE|NO APLICA|PROPONER)$/i.test(String(v));
+const clipboardSupported=()=>!!navigator.clipboard?.writeText;
+let selectedId=null,tab="ficha",filter="",imageIndex=0;
+let vaultValues=null,revealed=new Set(),toastTimer,working=false;
+const homeButton=$("#brandHome"),directoryButton=$("#goDirectory"),search=$("#search"),mount=$("#app");
+const sectionTitles={ficha:"Ficha empresarial",imagenes:"Identidad visual",redes:"Redes y contacto",enlaces:"Repositorios y enlaces",claves:"Claves protegidas"};
+function current(){return records.find(r=>r.id===selectedId)||null}
+function textBlock(v){return esc(v||"PENDIENTE").replace(/\n/g,"<br>")}
+function btn(label,action,style=""){return '<button class="btn '+style+'" type="button" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
+function external(label,link,style=""){
+ const url=validUrl(link);
+ return url?'<a class="btn '+style+'" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+esc(label)+' ↗</a>':'<span class="under">Enlace pendiente de confirmar</span>';
 }
-function effectiveRecord(r){
- if(!r)return null;
- const patch=editsFor(r.id);
- const record={...r,contacto:{...(r.contacto||{})},web:{...(r.web||{})},
-  redes:(r.redes||[]).map(x=>({...x})),cuentas:(r.cuentas||[]).map(x=>({...x})),_localEdits:patch};
- for(const [key,value] of Object.entries(patch.fields||{})){
-  if(typeof value!=="string"||!value.trim())continue;
-  if(key==="categoria"){record.categoria=value;continue}
-  if(r.id==="taskflow"&&key==="web.url"&&value==="https://novaprimegt-coder.github.io/TaskFlow/presentacion/")continue;
-  if(key.startsWith("contacto.")){
-   const name=key.slice(9);
-   if(["correo","correo_estado","usuario","usuario_estado","whatsapp"].includes(name))record.contacto[name]=value;
-  }else if(key==="web.url")record.web.url=value;
-  else if(key.startsWith("redes.")){
-   const [,name,field]=key.split(".");
-   const account=record.redes.find(x=>x.plataforma===name);
-   if(account&&["url","estado"].includes(field))account[field]=value;
-  }
- }
- return record;
+function copyBtn(text,label="Copiar",style=""){
+ if(!exists(text)||missingText(text))return "";
+ return '<button class="btn small '+style+'" type="button" data-copy="'+esc(text)+'" aria-label="'+esc(label)+'">'+esc(label)+'</button>';
 }
-const selected=()=>effectiveRecord(records.find(x=>x.id===current)||null);
-function btn(label,action,extra=""){return '<button type="button" class="btn '+extra+'" data-action="'+esc(action)+'">'+esc(label)+'</button>'}
-function tag(s){return '<span class="tag">'+esc(s)+'</span>'}
-function tags(xs){return '<div class="taglist">'+(xs||[]).map(tag).join("")+'</div>'}
-function field(k,v,copy=true){const missing=v===null||v===undefined||v==="";return '<div class="field"><label>'+esc(k)+'</label><div class="value"><span class="'+(missing?"muted":"")+'">'+esc(missing?"No registrado":v)+'</span>'+(copy&&!missing?'<button class="btn copy" type="button" data-copy="'+esc(v)+'">Copiar</button>':"")+'</div></div>'}
-function link(label,url){return url?'<a class="btn sm" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">↗ '+esc(label)+'</a>':'<span class="fineprint">Pendiente de crear o confirmar</span>'}
-function card(title,inner,copyValue=null){return '<section class="card pad"><div class="card-heading"><h3>'+esc(title)+'</h3>'+(copyValue!==null&&copyValue!==undefined&&copyValue!==""?'<button class="btn copy card-copy" type="button" data-copy="'+esc(copyValue)+'" aria-label="Copiar '+esc(title)+'">Copiar</button>':"")+'</div>'+inner+'</section>'}
-function top(title,sub,kicker="REGISTRO UYC"){return '<div class="kicker">'+esc(kicker)+'</div><h1 class="title">'+esc(title)+'</h1><p class="sub">'+esc(sub)+'</p>'}
-function section(title,sub=""){return '<div class="heading"><h2>'+esc(title)+'</h2><small>'+esc(sub)+'</small></div>'}
-function badge(s){return '<span class="pill warn">'+esc(s)+'</span>'}
-function recordImage(r,kind){
- if(!r)return null;
- const fromRecord=r.visual?.[kind]||r.imagenes?.[kind];
- if(fromRecord)return fromRecord;
- if(r.id==="taskflow"){if(kind==="cuadrado")return "assets/taskflow/image4.png";if(kind==="hero")return "assets/taskflow/image1.png";}
+function status(s){return '<span class="status">'+esc(s||"PENDIENTE")+'</span>'}
+function overline(s){return '<span class="eyebrow">'+esc(s)+'</span>'}
+function heading(t,description="",suffix=""){return '<div class="section-heading"><div><h2>'+esc(t)+'</h2>'+(description?'<p>'+esc(description)+'</p>':"")+'</div>'+(suffix?'<span>'+esc(suffix)+'</span>':"")+'</div>'}
+function field(label,value,canCopy=false){
+ return '<div class="data-row"><div class="data-meta"><span class="data-label">'+esc(label)+'</span><span class="data-value '+(!exists(value)?'missing':'')+'">'+esc(exists(value)?value:"Pendiente de registrar")+'</span></div>'+(canCopy?copyBtn(value):"")+'</div>';
+}
+function card(title,body,copyValue=null){
+ return '<section class="surface pad"><div class="card-heading"><h3>'+esc(title)+'</h3>'+(copyValue===null?"":copyBtn(copyValue))+'</div>'+body+'</section>';
+}
+function imageSource(r,kind="cuadrado"){
+ const candidate=r.visual?.[kind]||r.imagenes?.[kind];
+ if(candidate)return candidate;
+ if(r.id==="taskflow")return kind==="hero"?"assets/taskflow/image1.png":"assets/taskflow/image4.png";
  return null;
 }
-function lightweightImage(r,source){
- if(!r||!source)return source||"";
+function previewSource(r,source){
+ if(!source)return null;
  if(r.id==="taskflow"){
-  const match=source.match(/(?:^|\/)image([1-8])\.png(?:\?.*)?$/);
-  if(match)return "assets/taskflow/optimized/thumb-image"+match[1]+".webp";
+  const m=source.match(/(?:^|\/)image([1-8])\.png$/);
+  if(m)return "assets/taskflow/optimized/thumb-image"+m[1]+".webp";
  }
  return r.visual?.miniaturas?.[source]||source;
 }
-function recordTile(r){
- const img=recordImage(r,"cuadrado");
- const symbol=img?'<img src="'+esc(lightweightImage(r,img))+'" data-original-src="'+esc(img)+'" alt="Logo de '+esc(r.nombre)+'" loading="lazy" decoding="async" width="86" height="86">':esc(r.nombre.slice(0,2).toUpperCase());
- return '<article class="card rec" aria-label="Registro de '+esc(r.nombre)+'">'
-  +'<div class="rec-head"><div class="rec-mark">'+symbol+'</div><div class="rec-main"><span class="rec-eyebrow">EMPRESA / PLATAFORMA</span><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo)+'</p></div></div>'
-  +'<div class="rec-bottom"><div class="rec-state"><span class="rec-state-label">ESTADO DEL REGISTRO</span>'+badge(r.estado)+'</div>'
-  +'<button class="btn primary" type="button" data-open="'+esc(r.id)+'" aria-label="Abrir ficha de '+esc(r.nombre)+'">Consultar ficha ↗</button></div>'
-  +'</article>';
+function thumbImg(r,source,alt,extra=""){
+ if(!source)return "";
+ const thumb=previewSource(r,source);
+ return '<img src="'+esc(thumb)+'" data-original-src="'+esc(source)+'" decoding="async" loading="lazy" draggable="false" alt="'+esc(alt)+'" '+extra+'>';
 }
-function companyContext(r){
- return '<div class="company-context"><div><span class="company-context-label">CONSULTANDO EMPRESA</span><strong>'+esc(r.nombre)+'</strong><small>Los datos de esta sección corresponden exclusivamente a esta organización.</small></div>'+btn("Cambiar empresa","goto:registros")+'</div>';
+function logo(r){
+ const source=imageSource(r);
+ return '<span class="company-mark">'+(source?thumbImg(r,source,"Logo de "+r.nombre):esc((r.nombre||"??").slice(0,2).toUpperCase()))+'</span>';
 }
-function selectPrompt(subject){
- return top(subject,"Selecciona primero una empresa del directorio. Cada organización tiene su propia información, cuentas y recursos visuales.","DIRECTORIO UYC")
- +'<div class="notice">Para evitar confusiones, UYC no mezcla la identidad ni las cuentas de empresas diferentes. Elige una ficha y después consulta sus apartados.</div>'
- +section("Selecciona una empresa",records.length+" "+(records.length===1?"registro disponible":"registros disponibles"))
- +'<div class="company-directory">'+(records.length?records.map(recordTile).join(""):'<div class="card empty">Aún no hay registros incorporados.</div>')+'</div>';
-}
-function items(r){return (r?.activos||[]).length}
-function countSocial(){return records.reduce((n,r)=>n+(r.redes||[]).length,0)}
-function countMedia(){return records.reduce((n,r)=>n+items(r),0)}
-function home(){
- const n=records.length;
- const metrics=[
-  [n,"Organizaciones","Empresas, marcas y plataformas incluidas en UYC."],
-  [countMedia(),"Recursos visuales","Logos, imágenes y elementos oficiales asociados a sus fichas."],
-  [countSocial(),"Perfiles sociales","Cuentas declaradas, incluidas las que siguen pendientes."],
-  [records.reduce((sum,r)=>sum+(r.cuentas||[]).length,0),"Cuentas asociadas","Servicios y accesos vinculados a los registros."]
- ];
- return top("Centro general de empresas y plataformas","Consulta y organiza las distintas empresas, marcas, aplicaciones y plataformas registradas en UYC. Cada una conserva sus propios datos, cuentas, enlaces e identidad visual.","DIRECTORIO CENTRAL · UYC")
- +'<section class="hero hero-general"><div class="hero-copy"><div class="pills"><span class="pill">CENTRO DE ORGANIZACIÓN</span><span class="pill warn">'+n+" "+(n===1?"registro disponible":"registros disponibles")+'</span></div><h2>Una sola página.<br><em>Cada empresa, bien organizada.</em></h2><p>Accede a la información desde un mismo lugar, sin mezclar las cuentas ni los recursos de una marca con los de otra. Abre la ficha de la organización que quieras consultar.</p><div class="actions">'+btn("Explorar directorio","goto:registros","primary")+'</div></div>'
- +'<div class="hero-overview" aria-label="Áreas de información"><span class="hero-overview-label">ORGANIZACIÓN DE UYC</span>'
- +'<div class="hero-step"><b>01</b><span><strong>Empresas y plataformas</strong><small>Nombre, actividad, descripción y estado de cada registro.</small></span></div>'
- +'<div class="hero-step"><b>02</b><span><strong>Identidad de cada marca</strong><small>Logos, imágenes oficiales y archivos descargables.</small></span></div>'
- +'<div class="hero-step"><b>03</b><span><strong>Cuentas y presencia digital</strong><small>Usuarios, redes sociales, sitios web y enlaces.</small></span></div></div></section>'
- +section("Resumen general","Las cifras representan todos los registros, no una sola empresa.")
- +'<div class="grid stats">'+metrics.map(x=>'<article class="card stat"><span>'+esc(x[1])+'</span><b>'+x[0]+'</b><small>'+esc(x[2])+'</small></article>').join("")+'</div>'
- +section("Directorio de empresas","Selecciona una organización para consultar su información completa.")
- +'<div class="company-directory">'+(records.length?records.map(recordTile).join(""):'<div class="card empty">Todavía no hay empresas o plataformas registradas.</div>')+'</div>'
- +section("Cómo se organiza la información","Las secciones son independientes para cada empresa registrada.")
- +'<div class="guide-grid">'
- +'<article class="card guide-card"><span class="guide-count">01 / INFORMACIÓN</span><h3>Ficha empresarial</h3><p>Reúne la descripción, misión, visión, propósito, datos principales y estado de la organización. Así puedes conocer claramente a qué se dedica cada empresa.</p></article>'
- +'<article class="card guide-card"><span class="guide-count">02 / IDENTIDAD</span><h3>Recursos visuales oficiales</h3><p>Cada empresa puede tener su propio logotipo, versiones e imágenes. Los recursos se consultan y descargan desde la ficha correspondiente, sin mezclarlos con otras marcas.</p></article>'
- +'<article class="card guide-card"><span class="guide-count">03 / CUENTAS</span><h3>Redes, accesos y enlaces</h3><p>Consulta usuarios, redes sociales, correos propuestos y sitios web. Los datos pendientes siguen señalados como pendientes y las contraseñas no se publican en GitHub.</p></article>'
- +'</div>'
- +'<p class="mini-note home-privacy">UYC es un directorio ampliable: podrás incorporar nuevas organizaciones sin sustituir las anteriores. Las contraseñas privadas no se incluyen en la página pública.</p>';
-}
-function allRecords(){
- const arr=records.filter(r=>norm(JSON.stringify(r)).includes(norm(filter)));
- return top("Directorio de empresas y plataformas","Aquí aparecen todas las organizaciones incorporadas a UYC. Cada tarjeta muestra su nombre, actividad y estado; al abrirla podrás consultar su información completa y sus recursos exclusivos.","CATÁLOGO GENERAL")
- +'<div class="catalog-explainer"><strong>'+arr.length+" "+(arr.length===1?"resultado":"resultados")+'</strong><span>Selecciona «Consultar ficha» para acceder a los apartados de una empresa. La información de las demás permanece independiente.</span></div>'
- +'<div class="company-directory">'+(arr.length?arr.map(recordTile).join(""):'<div class="card empty">No se encontraron empresas para esta búsqueda.</div>')+'</div>';
-}
-function detail(){
-const r=selected();if(!r)return selectPrompt("Ficha empresarial");
-return top(r.nombre,r.tipo,"FICHA EMPRESARIAL")+companyContext(r)
-+section("Información general")+'<div class="grid cards2">'
-+card("Descripción",'<div class="text-block">'+nl(r.descripcion)+'</div>',r.descripcion)
-+card("Identidad y estado",field("Nombre oficial",r.nombre)+field("Tipo",r.tipo)+field("Estado",r.estado)+field("Nombre correcto",r.identidad?.nombre_oficial))
-+'</div>'+section("Filosofía y desarrollo")
-+'<div class="grid cards2">'+card("Misión",'<div class="text-block">'+nl(r.mision)+'</div>',r.mision)+card("Visión",'<div class="text-block">'+nl(r.vision)+'</div>',r.vision)+card("Propósito",'<div class="text-block">'+nl(r.proposito)+'</div>',r.proposito)+card("Objetivo general",'<div class="text-block">'+nl(r.objetivo)+'</div>',r.objetivo)+'</div>'
-+section("Valores de la organización")+card("Valores institucionales",tags(r.valores),(r.valores||[]).join(", "))
-+section("Información principal")+'<div class="grid cards2">'+card("Identidad digital",field("Correo principal",r.contacto?.correo)+field("Estado del correo",r.contacto?.correo_estado,false)+field("Usuario principal",r.contacto?.usuario)+field("Categoría de la empresa",r.categoria||r.tipo)+field("Teléfono / WhatsApp",r.contacto?.whatsapp))
-+card("Presencia web",field("Sitio de presentación oficial",r.web?.url)+field("Tipo de proyecto",r.web?.tipo_proyecto)+field("Independencia del proyecto",r.web?.independencia)+field("Versión de la presentación",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+field("Repositorio de la presentación",r.web?.repositorio)+field("Dominio",r.web?.dominio)+field("Ruta",r.web?.ruta)+field("Hosting",r.web?.alojamiento,false)+field("Protocolo",r.web?.protocolo,false)+field("Estado indicado",r.web?.estado,false)+link("Abrir presentación oficial",r.web?.url))+'</div>'
-+(r.aplicacion?section("Aplicación y lanzamiento")+'<div class="grid cards2">'
-+card("Publicación de la aplicación",field("Estado",r.aplicacion.estado)+field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad pública",r.aplicacion.disponibilidad)+field("Sistema compatible",(r.aplicacion.plataformas||[]).join(", "))+field("Fecha de lanzamiento",r.aplicacion.lanzamiento)+field("Publicación en Google Play",r.aplicacion.google_play_estado))
-+card("Descarga oficial y soporte",field("Enlace de descarga",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url)+field("Repositorio de descargas",r.aplicacion.fuente_descarga)+field("Correo de soporte",r.soporte?.correo)+field("Canal de atención",r.soporte?.canal)+field("Atención al usuario",r.soporte?.atencion))
-+'</div>':"")
-+section("Completar datos pendientes")+'<div class="card pad pending-intro"><h3>Añadir información de esta empresa</h3><p>Completa enlaces, teléfono, estado de las cuentas y categoría. Los datos que introduzcas se guardan solo en este navegador.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>';
-}
-function assetInfo(r){
+function allAssets(r){
  if(!r)return [];
- const files=["image2.png","image3.png","image4.png","image5.png","image6.png","image1.png","image7.png","image8.png"];
- const dims=[[256,384],[1254,1254],[1254,1254],[2172,724],[1254,1254],[1672,941],[1254,1254],[1254,1254]];
- const filenames=["TaskFlow_logo-principal_256x384.png","TaskFlow_logo-secundario_1254x1254.png","TaskFlow_logo-cuadrado_1254x1254.png","TaskFlow_logo-horizontal_2172x724.png","TaskFlow_isotipo_1254x1254.png","TaskFlow_arte-hero_1672x941.png","TaskFlow_variante-complementaria-A_1254x1254.png","TaskFlow_variante-complementaria-B_1254x1254.png"];
- if(r.id==="taskflow")return (r.activos||[]).map((a,i)=>({...a,src:"assets/taskflow/"+files[i],thumb:"assets/taskflow/optimized/thumb-image"+[2,3,4,5,6,1,7,8][i]+".webp",file:files[i],filename:filenames[i],w:dims[i][0],h:dims[i][1],transparent:i!==5}));
+ if(r.id==="taskflow"){
+  const files=["image2.png","image3.png","image4.png","image5.png","image6.png","image1.png","image7.png","image8.png"];
+  const ids=[2,3,4,5,6,1,7,8],dims=[[256,384],[1254,1254],[1254,1254],[2172,724],[1254,1254],[1672,941],[1254,1254],[1254,1254]];
+  const filenames=["TaskFlow_logo-principal_256x384.png","TaskFlow_logo-secundario_1254x1254.png","TaskFlow_logo-cuadrado_1254x1254.png","TaskFlow_logo-horizontal_2172x724.png","TaskFlow_isotipo_1254x1254.png","TaskFlow_arte-hero_1672x941.png","TaskFlow_variante-complementaria-A_1254x1254.png","TaskFlow_variante-complementaria-B_1254x1254.png"];
+  return (r.activos||[]).map((a,i)=>({nombre:a.nombre,uso:a.uso,src:"assets/taskflow/"+files[i],thumb:"assets/taskflow/optimized/thumb-image"+ids[i]+".webp",archivo:filenames[i],ancho:dims[i][0],alto:dims[i][1],transparente:i!==5})).filter(x=>x.src);
+ }
  return (r.activos||[]).filter(a=>a.src||a.archivo).map(a=>{
-  const source=a.src||a.archivo;
-  const fname=source.split("/").pop();
-  return {...a,src:source,thumb:a.thumb||a.miniatura||source,file:fname,filename:a.filename||fname,w:Number(a.w||a.ancho||0),h:Number(a.h||a.alto||0),transparent:Boolean(a.transparent)};
+  const src=a.src||a.archivo;
+  return {nombre:a.nombre||"Recurso gráfico",uso:a.uso||"",src,thumb:a.thumb||a.miniatura||src,archivo:a.filename||src.split("/").pop(),ancho:a.w||a.ancho||null,alto:a.h||a.alto||null,transparente:a.transparent??a.transparente??null};
  });
 }
-function identity(){
- const r=selected();if(!r)return selectPrompt("Identidad visual");
- const entries=assetInfo(r);if(!entries.length)return top("Identidad visual de "+r.nombre,"Todavía no se han incorporado imágenes oficiales para esta empresa.","BIBLIOTECA VISUAL");
- carouselIndex=((carouselIndex%entries.length)+entries.length)%entries.length;
- const active=entries[carouselIndex];
- const label=a=>a.w+" × "+a.h+" px";
- const desc=active.uso||"Identidad visual de "+r.nombre;
- return top("Identidad visual de "+r.nombre,entries.length+" recursos oficiales asociados a esta empresa. Se conservan sus proporciones y formatos registrados.","RECURSOS DE "+r.nombre.toUpperCase())+companyContext(r)
- +'<div class="notice">Este apartado reúne los archivos oficiales de la empresa seleccionada. Las descargas conservan el contenido, las proporciones y la transparencia del archivo original.</div>'
- +'<div class="asset-showcase">'
- +'<div id="assetDisplay" class="asset-display '+(active.transparent?'transparent':'')+'"><button class="asset-arrow prev" type="button" aria-label="Recurso anterior" data-slide="-1">‹</button><img src="'+esc(active.thumb||active.src)+'" data-original-src="'+esc(active.src)+'" data-image-role="main" alt="'+esc(active.nombre)+'" draggable="false" fetchpriority="high" decoding="async"><div class="asset-placeholder">No se pudo cargar el recurso. <button type="button" class="btn sm asset-retry" data-retry-image>Reintentar imagen</button></div><button class="asset-arrow next" type="button" aria-label="Recurso siguiente" data-slide="1">›</button></div>'
- +'<div class="asset-info"><span class="mini-label">RECURSO '+String(carouselIndex+1).padStart(2,"0")+' / '+String(entries.length).padStart(2,"0")+'</span><h2>'+esc(active.nombre)+'</h2><p>'+esc(desc)+'</p>'
- +'<div class="asset-specs"><div><span>Resolución original</span><strong>'+label(active)+'</strong></div><div><span>Formato</span><strong>PNG original</strong></div><div><span>Fondo</span><strong>'+(active.transparent?'Transparente (alfa)':'Integrado en la imagen')+'</strong></div><div><span>Relación</span><strong>'+(active.w>active.h?'Horizontal':active.w<active.h?'Vertical':'Cuadrada 1:1')+'</strong></div><div><span>Nombre original en Word</span><strong>'+esc(active.file)+'</strong></div></div>'
- +'<div class="actions"><a class="btn primary" href="'+esc(active.src)+'" download="'+esc(active.filename)+'">↓ Descargar PNG</a><button class="btn" type="button" data-asset="'+esc(active.src)+'">Ver original ↗</button><button class="btn" type="button" data-copy-png="'+esc(active.src)+'">Copiar PNG</button></div></div></div>'
- +'<div class="asset-filmstrip" role="group" aria-label="Carrusel de imágenes de la empresa">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===carouselIndex?'active':'')+'" data-select-slide="'+i+'" aria-label="'+esc(a.nombre)+'" aria-pressed="'+(i===carouselIndex?'true':'false')+'"><span class="timg"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"></span><b>'+esc(a.nombre)+'</b><small>'+label(a)+'</small></button>').join("")+'</div>'
- +section("Todas las imágenes originales",entries.length+" recursos individuales")
- +'<div class="media-grid">'+entries.map((a,i)=>'<article class="card media"><div class="preview"><img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><span class="symbol" hidden>Imagen no disponible <button class="btn sm asset-retry" type="button" data-retry-image>Reintentar</button></span></div><b>'+esc(a.nombre)+'</b><small>'+a.w+' × '+a.h+' px • PNG '+(a.transparent?'transparente':'con fondo')+'</small><p>'+esc(a.uso||"")+'</p><div class="actions"><a class="btn primary sm" href="'+esc(a.src)+'" download="'+esc(a.filename)+'">↓ Descargar</a><button class="btn sm" data-select-slide="'+i+'">Ver</button></div></article>').join("")+'</div>'
- +section("Normas visuales")+card("Identidad de "+esc(r.nombre),'<p class="text-block">'+esc(r.identidad?.estilo)+'</p>'+tags(r.identidad?.colores));
+function dimension(a){return a.ancho&&a.alto?a.ancho+" × "+a.alto+" px":"Original sin dimensiones registradas"}
+function officialAsset(src){return !!(current()&&allAssets(current()).some(a=>a.src===src))}
+function directoryItem(r){
+ const num=allAssets(r).length;
+ return '<article class="company-card"><div class="company-card-top">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||r.tipo||"REGISTRO UYC")+'</span><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo||"Organización registrada")+'</p></div></div>'
+ +'<div class="company-card-bottom">'+status(r.estado)+'<button class="btn primary" type="button" data-open="'+esc(r.id)+'">Ver empresa →</button></div>'
+ +'<div class="under">'+num+' recursos gráficos · '+(r.redes||[]).length+' redes · información independiente</div></article>';
 }
-function social(){
-const r=selected();if(!r)return selectPrompt("Redes sociales");
-return top("Redes sociales",r.nombre+" · Cuentas oficiales, propuestas y pendientes.","IDENTIDAD DIGITAL")+companyContext(r)
-+'<div class="notice">Los datos de cada red social se presentan con el estado indicado en la ficha: una cuenta pendiente de crear o confirmar no se considera una cuenta activa.</div>'
-+'<div class="grid cards2">'+(r.redes||[]).map(s=>'<div class="card social"><div class="social-top"><b>'+esc(s.plataforma)+'</b><span class="status">'+esc(s.estado)+'</span></div>'
-+field("Nombre visible",s.nombre)+field("Usuario principal",s.usuario)+(s.alternativo?field("Usuario alternativo",s.alternativo):"")+field("Correo asociado",s.correo)+(s.dos_pasos?field("Verificación en dos pasos",s.dos_pasos,false):"")
-+field("Enlace",s.url)+link("Abrir cuenta",s.url)+'</div>').join("")+'</div>';
+function directory(){
+ const list=records.filter(r=>norm([r.nombre,r.tipo,r.categoria,r.estado,r.descripcion].join(" ")).includes(norm(filter)));
+ const totalAssets=records.reduce((n,r)=>n+allAssets(r).length,0),totalSocial=records.reduce((n,r)=>n+(r.redes||[]).length,0);
+ return '<div class="content-in">'
+ +'<section class="hero"><div><span class="hero-label">UYC · REGISTRO CENTRAL</span><h1>Todas tus marcas.<br><em>Un solo lugar.</em></h1><p>Explora empresas, consulta información oficial, copia datos importantes y descarga imágenes originales. Cada organización conserva su identidad, sus enlaces y sus recursos.</p>'+btn("Ver empresas","scroll-directory","primary")+'</div>'
+ +'<div class="hero-note"><span class="hero-note-title">Simple, ordenado y seguro</span>'
+ +'<div class="hero-feature"><span>01</span><div><strong>Selecciona una empresa</strong><small>Todo empieza desde su ficha oficial.</small></div></div>'
+ +'<div class="hero-feature"><span>02</span><div><strong>Consulta y copia</strong><small>La información pública solo se edita desde el código.</small></div></div>'
+ +'<div class="hero-feature"><span>03</span><div><strong>Descarga originales</strong><small>Logos PNG sin alteraciones; claves cifradas localmente.</small></div></div>'
+ +'</div></section>'
+ +'<div class="stats"><div class="stat"><strong>'+records.length+'</strong><span>Empresas</span><small>Registradas en UYC</small></div><div class="stat"><strong>'+totalAssets+'</strong><span>Imágenes</span><small>Recursos oficiales</small></div><div class="stat"><strong>'+totalSocial+'</strong><span>Redes</span><small>Perfiles vinculados</small></div></div>'
+ +'<section id="directoryList">'+heading("Directorio de empresas","Selecciona una ficha para consultar sus apartados.",list.length+" disponibles")+'</section>'
+ +(list.length?'<div class="company-grid">'+list.map(directoryItem).join("")+'</div>':'<div class="empty"><strong>Sin coincidencias</strong>Prueba otro nombre o categoría.</div>')
+ +'<p class="copyable-hint">◈ Los registros se mantienen desde el código de UYC. La web solo permite consultar, copiar y descargar.</p></div>';
 }
-function access(){
-const r=selected();if(!r)return selectPrompt("Accesos y seguridad");
-return top("Accesos y seguridad",r.nombre+" · Cuentas y contraseñas protegidas.","ACCESOS DEL SISTEMA")+companyContext(r)
-+'<div class="notice"><b>Protección de contraseñas:</b> el repositorio público no contiene credenciales reales. Puedes guardar contraseñas cifradas solo en este navegador. No se sincronizan entre dispositivos y necesitas recordar tu clave maestra.</div>'
-+'<div class="grid cards2">'+(r.cuentas||[]).map(c=>card(c.nombre,field("Usuario",c.usuario||"No registrado")+field("Correo",c.correo||"No registrado")+field("Repositorio",c.repositorio,false)+field("Estado",c.estado,false)+'<p class="mini-note">'+esc(c.notas)+'</p>'+link("Abrir enlace",c.url))).join("")+'</div>'
-+section("Caja fuerte local")+'<div class="card pad"><h3>Contraseñas en este dispositivo</h3><p class="text-block">Usa cifrado AES-GCM con una clave maestra creada por ti. Las credenciales nunca se incluyen en GitHub y no se comparten con otras personas o dispositivos.</p><div class="actions">'+btn(unlocked?"Gestionar contraseñas":"Configurar / abrir caja fuerte","vault","primary")+(unlocked?btn("Bloquear","vault-lock"):"")+'</div><div id="vaultFields"></div></div>'
-+section("Verificación adicional")+card("Autenticación de dos pasos",(r.seguridad?.correo_dos_pasos?field("Estado de Gmail",r.seguridad.correo_dos_pasos,false):"")+'<p class="mini-note">Plataformas recomendadas para activar la verificación:</p>'+tags(r.seguridad?.dos_pasos)+'<p class="mini-note">'+esc(r.seguridad?.separacion)+'</p>');
+function companyHeading(r){
+ const tabs=[["ficha","Ficha"],["imagenes","Imágenes"],["redes","Redes"],["enlaces","Enlaces y repositorios"],["claves","Claves"]];
+ return '<section class="company-heading">'+
+ '<div class="company-title">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Organización registrada")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Empresa")+'</p></div></div>'
+ +'<div class="company-summary">'+status(r.estado)+'<small>Información oficial de '+esc(r.nombre)+'</small></div></section>'
+ +'<nav class="company-tabs" aria-label="Apartados de '+esc(r.nombre)+'">'+tabs.map(([key,label])=>'<button type="button" data-tab="'+key+'" class="'+(tab===key?"active":"")+'" aria-current="'+(tab===key?"page":"false")+'">'+label+'</button>').join("")+'</nav>';
 }
-function links(){
-const r=selected();if(!r)return selectPrompt("Enlaces y pendientes");
-const done=new Set(r._localEdits?.done||[]);
-return top("Enlaces y pendientes",r.nombre+" · Recursos digitales y asuntos por confirmar.","CONTROL DE INFORMACIÓN")+companyContext(r)+'<div class="card pad pending-intro"><h3>Completar información pendiente</h3><p>Los datos que añadas se guardan únicamente en este navegador. No se publican automáticamente en GitHub. Para contraseñas utiliza la caja fuerte.</p><div class="actions">'+btn("Añadir o actualizar datos","edit-pending","primary")+'</div></div>'
-+'<div class="grid cards2">'
-+card("Sitios y repositorios",field("Página de presentación oficial",r.web?.url)+link("Abrir presentación",r.web?.url)+field("Repositorio de la presentación",r.web?.repositorio)+link("Abrir repositorio de presentación",r.web?.repositorio)+(r.web?.tipo_proyecto?field("Tipo de proyecto",r.web.tipo_proyecto):"")+(r.web?.independencia?field("Proyecto independiente",r.web.independencia):"")+(r.web?.version?field("Versión de la presentación",r.web.version):"")+(r.web?.ultima_actualizacion?field("Actualización de la presentación",r.web.ultima_actualizacion):"")+field("Propietario",r.web?.propietario)+(r.web?.anterior?field("Página de presentación anterior (histórico)",r.web.anterior):"")+field("Nota del repositorio",r.web?.nota_repositorio,false)+(r.aplicacion?.descarga_url?field("Descarga oficial de la aplicación",r.aplicacion.descarga_url)+link("Descargar aplicación",r.aplicacion.descarga_url):""))
-+card("Pendientes de confirmar",'<div class="rows">'+(r.pendientes||[]).map((p,i)=>'<div class="field pending-row"><label>'+(done.has(i)?"CONFIRMADO EN ESTE NAVEGADOR":"PENDIENTE")+': '+(i+1)+'</label><span>'+esc(p)+'</span></div>').join("")+'</div>')+'</div>'
-+section("Notas importantes")+card("Registro de observaciones",'<div class="rows">'+(r.notas||[]).map((n,i)=>'<div class="field"><span>'+esc((i+1)+". "+n)+'</span></div>').join("")+'</div>');
+function profile(r){
+ const main=card("Datos principales",field("Nombre oficial",r.nombre,true)+field("Categoría",r.categoria||r.tipo,true)+field("Estado",r.estado)+field("Correo oficial",r.contacto?.correo,true)+field("Usuario principal",r.contacto?.usuario,true));
+ const web=card("Página de presentación",field("Enlace oficial",r.web?.url,true)+field("Versión de presentación",r.web?.version)+field("Última actualización",r.web?.ultima_actualizacion)+external("Abrir página",r.web?.url,"small"));
+ const mainFacts='<div class="grid-two">'+main+web+'</div>';
+ const values=card("Valores institucionales",'<div class="taglist">'+(r.valores||[]).map(v=>'<span class="tag">'+esc(v)+'</span>').join("")+'</div>',(r.valores||[]).join(", "));
+ const sections=[["Descripción",r.descripcion],["Misión",r.mision],["Visión",r.vision],["Propósito",r.proposito],["Objetivo general",r.objetivo]];
+ const app=r.aplicacion?card("Aplicación o sistema",field("Versión actual",r.aplicacion.version)+field("Compilación",r.aplicacion.compilacion)+field("Disponibilidad",r.aplicacion.disponibilidad)+field("Plataformas",(r.aplicacion.plataformas||[]).join(", "))+field("Lanzamiento",r.aplicacion.lanzamiento)+field("Google Play",r.aplicacion.google_play_estado)+external("Descargar aplicación",r.aplicacion.descarga_url,"small primary")):"";
+ return heading("Ficha empresarial","Consulta la información registrada; copia cada apartado cuando lo necesites.")
+ +mainFacts
+ +heading("Identidad y filosofía","Información oficial de "+r.nombre)
+ +'<div class="grid-two">'+sections.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")+'</div>'
+ +heading("Valores y producto")
+ +'<div class="grid-two">'+values+(app||card("Aplicación o sistema","<p class='under'>No aplica o aún no se ha registrado.</p>"))+'</div>';
 }
-
-function pendingEditor(){
- const r=selected();if(!r)return;
- const patch=editsFor(r.id);
- const base=records.find(x=>x.id===r.id);
- const value=(key,fallback)=>String(patch.fields[key]??fallback??"");
- const input=(label,key,type,fallback)=>'<label class="pending-input"><span>'+esc(label)+'</span><input name="'+esc(key)+'" type="'+esc(type)+'" value="'+esc(value(key,fallback))+'" maxlength="400" autocomplete="off"></label>';
- const status=(label,key,fallback)=>{
-  const current=value(key,fallback),original=fallback||"Pendiente de confirmar";
-  return '<label class="pending-input"><span>'+esc(label)+'</span><select name="'+esc(key)+'">'
-   +'<option value="'+esc(original)+'" '+(current===original?"selected":"")+'>'+esc(original)+'</option>'
-   +'<option value="Confirmado" '+(current==="Confirmado"?"selected":"")+'>Confirmado</option></select></label>';
- };
- const socials=(r.redes||[]).map(account=>'<div class="pending-social"><strong>'+esc(account.plataforma)+'</strong>'
-  +input("Enlace oficial","redes."+account.plataforma+".url","url",account.url)
-  +status("Estado de la cuenta","redes."+account.plataforma+".estado",base.redes?.find(a=>a.plataforma===account.plataforma)?.estado)
-  +'</div>').join("");
- const checks=(base.pendientes||[]).map((text,i)=>'<label class="pending-check"><input type="checkbox" name="done" value="'+i+'" '+(patch.done.includes(i)?"checked":"")+'><span>'+esc(text)+'</span></label>').join("");
- showModal('<div class="pending-modal"><h2>Completar información de '+esc(r.nombre)+'</h2><p class="editor-help">Los datos que añadas se guardan únicamente en este navegador; no modifican el registro oficial publicado en GitHub.</p>'
-  +'<form id="pendingForm" class="pending-form"><h3>Datos de la empresa</h3><div class="pending-form-grid">'
-  +input("Categoría de la empresa","categoria","text",r.categoria||r.tipo)
-  +input("Correo principal","contacto.correo","email",r.contacto?.correo)
-  +status("Estado del correo","contacto.correo_estado",base.contacto?.correo_estado)
-  +input("Usuario principal","contacto.usuario","text",r.contacto?.usuario)
-  +status("Estado del usuario","contacto.usuario_estado",base.contacto?.usuario_estado)
-  +input("Teléfono / WhatsApp","contacto.whatsapp","tel",r.contacto?.whatsapp==="No tiene / Pendiente de definir"?"":r.contacto?.whatsapp)
-  +input("Página web oficial","web.url","url",r.web?.url)
-  +'</div><h3>Redes sociales</h3><div class="pending-social-grid">'+socials+'</div>'
-  +'<h3>Información por confirmar</h3><div class="pending-checks">'+checks+'</div>'
-  +'<p class="editor-warning">No introduzcas contraseñas aquí. Para contraseñas utiliza la caja fuerte cifrada. Esta información no se sincroniza entre dispositivos.</p>'
-  +'<div class="actions pending-modal-actions"><button class="btn primary" type="submit">Guardar información</button>'
-  +'<button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form></div>');
+function social(r){
+ const items=r.redes||[];
+ const shared=card("Identidad digital compartida",field("Usuario principal",r.contacto?.usuario,true)+field("Correo principal",r.contacto?.correo,true)+field("Estado del correo",r.contacto?.correo_estado));
+ const support=card("Atención y soporte",field("Canal",r.soporte?.canal||"PENDIENTE")+field("Correo de soporte",r.soporte?.correo,true)+field("Atención",r.soporte?.atencion)+field("Teléfono",r.soporte?.telefono||r.contacto?.telefono));
+ return heading("Redes y contacto","Usuario y correo comunes cuando así lo indique la empresa.")
+ +'<div class="grid-two">'+shared+support+'</div>'
+ +heading("Perfiles registrados","Cada red tiene su enlace y estado independiente.",items.length+" redes")
+ +(items.length?'<div class="social-grid">'+items.map(a=>'<article class="surface social-card"><div class="social-head"><h3>'+esc(a.plataforma)+'</h3>'+status(a.estado)+'</div>'
+ +field("Nombre visible",a.nombre)+field("Usuario",a.usuario||r.contacto?.usuario,true)+field("Correo",a.correo||r.contacto?.correo,true)+field("Enlace oficial",a.url,true)+field("Verificación en dos pasos",a.dos_pasos||"PENDIENTE")
+ +'<div class="btn-row">'+external("Abrir "+a.plataforma,a.url,"small")+'</div></article>').join("")+'</div>':'<div class="empty"><strong>Sin redes registradas</strong>Podrás agregarlas desde el archivo de datos, sin alterar otras empresas.</div>');
 }
-function savePending(form){
- const r=selected();if(!r)return;
- const fields={},done=[];
- const allowed=new Set(["categoria","contacto.correo","contacto.correo_estado","contacto.usuario","contacto.usuario_estado","contacto.whatsapp","web.url"]);
- for(const account of r.redes||[])for(const prop of ["url","estado"])allowed.add("redes."+account.plataforma+"."+prop);
- for(const [key,value] of new FormData(form).entries()){
-  if(key==="done"){
-   const i=Number(value);
-   if(Number.isInteger(i)&&i>=0&&i<(r.pendientes||[]).length)done.push(i);
-  }else if(allowed.has(key)&&typeof value==="string")fields[key]=value.trim().slice(0,400);
- }
+function repoCard(kind,obj){
+ const badge=kind==="sistema"?"01 · REPOSITORIO DEL SISTEMA":"02 · REPOSITORIO DE PRESENTACIÓN";
+ const label=kind==="sistema"?"Sistema o programa":"Página demostrativa o informativa";
+ if(!obj||!obj.url)return '<div class="surface pad repo-card"><span class="repo-badge">'+badge+'</span><h3>'+label+'</h3><p>Pendiente de registrar en el código de UYC.</p></div>';
+ const site=obj.pagina?'<div>'+field("Página visible",obj.pagina,true)+external("Ver presentación",obj.pagina,"small")+'</div>':"";
+ const spec=obj.version?field("Versión de presentación",obj.version):"";
+ const date=obj.actualizacion?field("Última actualización",obj.actualizacion):"";
+ return '<article class="surface pad repo-card"><span class="repo-badge">'+badge+'</span><h3>'+label+'</h3><p>'+esc(obj.descripcion||"Repositorio oficial de la empresa")+'</p><strong>'+esc(obj.nombre||"Repositorio GitHub")+'</strong><span class="repo-url">'+esc(obj.url)+'</span>'
+ +'<div>'+spec+date+site+'</div><div class="btn-row">'+copyBtn(obj.url,"Copiar enlace")+external("Abrir repositorio",obj.url,"primary small")+'</div></article>';
+}
+function repositories(r){
+ const repos=r.repositorios||{},web=r.web||{},apk=r.aplicacion||{};
+ const webUrl=repos.presentacion?.pagina||web.url;
+ return heading("Enlaces y repositorios","El código del programa y la página informativa son proyectos independientes.")
+ +'<div class="grid-two">'+repoCard("sistema",repos.sistema)+repoCard("presentacion",repos.presentacion)+'</div>'
+ +heading("Otros enlaces oficiales","Consulta sin confundir sistema, página informativa y aplicación descargable.")
+ +'<div class="grid-two">'+card("Página de presentación",field("Enlace",webUrl,true)+field("Versión",web.version||repos.presentacion?.version)+field("Tipo de proyecto",web.tipo_proyecto||"Página informativa")+external("Visitar página",webUrl,"small"))
+ +card("Aplicación descargable",field("Plataformas",(apk.plataformas||[]).join(", "))+field("Versión",apk.version)+field("Enlace de descarga",apk.descarga_url,true)+external("Descargar APK",apk.descarga_url,"small primary"))+'</div>'
+ +heading("Notas y asuntos pendientes","Estos datos también se actualizan desde el código.")
+ +'<div class="grid-two">'+card("Pendientes",'<div class="copy-text">'+(r.pendientes?.length?r.pendientes.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join(""):"Sin asuntos pendientes")+'</div>')+
+ card("Observaciones",'<div class="copy-text">'+(r.notas?.length?r.notas.map((x,i)=>'<p><strong>'+String(i+1)+'.</strong> '+esc(x)+'</p>').join(""):"Sin observaciones registradas")+'</div>')+'</div>';
+}
+function identity(r){
+ const entries=allAssets(r);
+ if(!entries.length)return heading("Identidad visual","Los logos e imágenes solo se mostrarán cuando estén registrados en el código.")+
+ '<div class="empty"><strong>Identidad visual pendiente</strong>Esta empresa todavía no tiene archivos visuales publicados. No se mostrarán imágenes inventadas ni descargas vacías.</div>';
+ imageIndex=(imageIndex+entries.length)%entries.length;
+ const chosen=entries[imageIndex];
+ return heading("Identidad visual oficial","Vista previa ligera; los botones descargan el archivo original sin cambios.",entries.length+" archivos")
+ +'<div class="surface asset-stage"><div class="asset-visual" id="assetVisual">'
+ +'<button class="asset-step prev" data-step="-1" aria-label="Imagen anterior" type="button">‹</button>'
+ +'<img src="'+esc(chosen.thumb||chosen.src)+'" data-original-src="'+esc(chosen.src)+'" alt="'+esc(chosen.nombre)+'" decoding="async" fetchpriority="high">'
+ +'<div class="asset-error">No se pudo cargar la imagen. '+btn("Reintentar","retry-image","small")+'</div>'
+ +'<button class="asset-step next" data-step="1" aria-label="Siguiente imagen" type="button">›</button></div>'
+ +'<div class="asset-panel"><span class="small-overline">RECURSO '+(imageIndex+1)+' / '+entries.length+'</span><h2>'+esc(chosen.nombre)+'</h2><p>'+esc(chosen.uso||"Imagen oficial de la empresa")+'</p>'
+ +'<div class="asset-attributes">'+field("Resolución original",dimension(chosen))+field("Formato","PNG original")+field("Transparencia",chosen.transparente===true?"Con transparencia":chosen.transparente===false?"Con fondo":"Según el archivo original")+field("Nombre del archivo",chosen.archivo)+'</div>'
+ +'<div class="asset-actions"><a class="btn primary" download="'+esc(chosen.archivo)+'" href="'+esc(chosen.src)+'">↓ Descargar PNG</a>'
+ +'<button type="button" class="btn" data-preview="'+esc(chosen.src)+'">Ver tamaño original</button>'
+ +'<button type="button" class="btn subtle" data-copy-png="'+esc(chosen.src)+'">Copiar PNG</button></div></div></div>'
+ +'<div class="asset-thumbs" role="group" aria-label="Seleccionar imagen">'+entries.map((a,i)=>'<button class="asset-thumb '+(i===imageIndex?'active':'')+'" type="button" data-image="'+i+'" aria-pressed="'+(i===imageIndex)+'">'+
+ '<img src="'+esc(a.thumb||a.src)+'" data-original-src="'+esc(a.src)+'" loading="lazy" decoding="async" alt="'+esc(a.nombre)+'"><strong>'+esc(a.nombre)+'</strong></button>').join("")+'</div>'
+ +heading("Biblioteca completa","Descarga individual de los PNG originales.")
+ +'<div class="asset-grid">'+entries.map((a,i)=>'<article class="surface asset-card"><div class="asset-card-image">'+thumbImg(r,a.src,a.nombre)+'</div><h3>'+esc(a.nombre)+'</h3><small>'+esc(dimension(a))+'</small>'
+ +'<div class="btn-row"><a class="btn primary" href="'+esc(a.src)+'" download="'+esc(a.archivo)+'">↓ PNG</a><button class="btn" type="button" data-image="'+i+'">Ver</button></div></article>').join("")+'</div>';
+}
+const vaultKey=()=>current()?"uyc:vault:"+current().id+":v1":null;
+function hasVault(){try{return !!localStorage.getItem(vaultKey())}catch{return false}}
+const encoder=new TextEncoder(),decoder=new TextDecoder();
+function toB64(u){let s="";for(const n of u)s+=String.fromCharCode(n);return btoa(s)}
+function fromB64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
+async function deriveKey(master,salt,iterations=220000){
+ const secret=await crypto.subtle.importKey("raw",encoder.encode(master),"PBKDF2",false,["deriveKey"]);
+ return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations,hash:"SHA-256"},secret,{name:"AES-GCM",length:256},false,["encrypt","decrypt"]);
+}
+async function seal(master,values){
+ const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
+ const key=await deriveKey(master,salt);
+ const payload=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,encoder.encode(JSON.stringify(values)));
+ return {v:1,salt:toB64(salt),iv:toB64(iv),ct:toB64(new Uint8Array(payload))};
+}
+async function unseal(master){
+ const item=JSON.parse(localStorage.getItem(vaultKey()));
+ if(!item||item.v!==1)throw Error("Datos cifrados no compatibles");
+ const key=await deriveKey(master,fromB64(item.salt));
+ const result=await crypto.subtle.decrypt({name:"AES-GCM",iv:fromB64(item.iv)},key,fromB64(item.ct));
+ const v=JSON.parse(decoder.decode(result));
+ if(!v||typeof v!=="object")throw Error("Datos inválidos");
+ return {email:typeof v.email==="string"?v.email:"",redes:typeof v.redes==="string"?v.redes:""};
+}
+function vault(r){
+ const hasCrypto=!!crypto?.subtle;
+ const hdr='<div class="vault-hero"><span class="vault-symbol">♙</span><div><h2>Claves generales de '+esc(r.nombre)+'</h2><p>Única sección editable. Los datos se cifran en este navegador y nunca se incluyen en GitHub.</p></div></div>';
+ if(!hasCrypto)return heading("Contraseñas protegidas")+hdr+'<p class="notice">Este navegador no permite almacenar contraseñas cifradas. Abre la página mediante HTTPS con un navegador compatible.</p>';
+ const intro=heading("Caja fuerte local","Solo dos campos: contraseña del correo principal y contraseña compartida de redes sociales.");
+ if(!vaultValues)return intro+hdr+'<section class="surface pad" style="margin-top:16px"><h3>'+(hasVault()?"Caja fuerte bloqueada":"Caja fuerte sin configurar")+'</h3><p class="under">'+(hasVault()?"Introduce tu clave maestra para consultar las contraseñas guardadas.":"Crea una clave maestra para guardar las contraseñas de forma cifrada únicamente en este dispositivo.")+'</p><div class="btn-row">'+btn(hasVault()?"Desbloquear":"Crear caja fuerte","vault-start","primary")+'</div></section>'
+ +'<p class="vault-warning">La clave maestra no se almacena y no existe recuperación automática. Si borras los datos del navegador, también se perderán las contraseñas. Para cuentas importantes, se recomienda un gestor de contraseñas especializado.</p>';
+ return intro+hdr+'<div class="grid-two" style="margin-top:18px">'
+ +secretRow("Contraseña del correo principal","email")+secretRow("Contraseña general de redes sociales","redes")+'</div>'
+ +'<div class="btn-row" style="margin-top:17px">'+btn("Actualizar contraseñas","vault-edit","primary")+btn("Bloquear caja fuerte","vault-lock")+btn("Eliminar claves locales","vault-delete","subtle")+'</div>'
+ +'<p class="vault-warning">Estas claves no se sincronizan entre dispositivos ni se publican en el repositorio. Usa contraseñas distintas para servicios independientes cuando sea posible.</p>';
+}
+function secretRow(label,key){
+ const value=vaultValues?.[key]||"",show=revealed.has(key);
+ return '<div class="vault-secret"><div><strong>'+esc(label)+'</strong><span class="secret">'+(show?esc(value||"No registrada"):"••••••••••")+'</span></div>'
+ +'<div class="btn-row"><button class="btn small" type="button" data-secret-show="'+key+'">'+(show?"Ocultar":"Mostrar")+'</button>'+('<button class="btn small primary" type="button" data-secret-copy="'+key+'">Copiar</button>')+'</div></div>';
+}
+function vaultForm(isNew=false){
+ return '<h2>'+(isNew?"Crear caja fuerte de "+esc(current().nombre):"Desbloquear caja fuerte")+'</h2>'
+ +'<p>'+(isNew?"Una clave maestra larga protege los dos campos de contraseña. No se comparte ni se publica.":"Introduce la clave maestra creada en este dispositivo.")+'</p>'
+ +'<form id="'+(isNew?"vaultCreate":"vaultUnlock")+'"><label class="form-field">Clave maestra<input type="password" name="master" minlength="12" autocomplete="'+(isNew?"new-password":"current-password")+'" required></label>'
+ +(isNew?'<label class="form-field">Repetir clave maestra<input type="password" name="repeat" minlength="12" required autocomplete="new-password"></label><label class="form-field">Contraseña del correo<input type="password" name="email" autocomplete="off"></label><label class="form-field">Contraseña compartida de redes<input type="password" name="redes" autocomplete="off"></label>':"")
+ +'<div class="btn-row"><button class="btn primary" type="submit">'+(isNew?"Guardar cifrado":"Desbloquear")+'</button>'+btn("Cancelar","modal-close")+'</div></form>';
+}
+function editForm(){
+ return '<h2>Actualizar claves generales</h2><p>Introduce tu clave maestra para autenticar el cambio. Se actualizarán exclusivamente las contraseñas de esta empresa en este dispositivo.</p>'
+ +'<form id="vaultEdit"><label class="form-field">Clave maestra actual<input type="password" name="master" minlength="12" required autocomplete="current-password"></label>'
+ +'<label class="form-field">Contraseña del correo<input type="password" name="email" autocomplete="off" value="'+esc(vaultValues?.email||"")+'"></label>'
+ +'<label class="form-field">Contraseña general de redes<input type="password" name="redes" autocomplete="off" value="'+esc(vaultValues?.redes||"")+'"></label>'
+ +'<div class="btn-row"><button class="btn primary" type="submit">Actualizar cifrado</button>'+btn("Cancelar","modal-close")+'</div></form>';
+}
+function showModal(content,wide=false){
+ $("#modalBox").classList.toggle("wide",wide);
+ $("#modalBody").innerHTML=content;
+ $("#modalCover").hidden=false;
+ document.body.style.overflow="hidden";
+}
+function hideModal(){
+ $("#modalCover").hidden=true;
+ $("#modalBody").innerHTML="";
+ document.body.style.overflow="";
+}
+function toast(message){
+ clearTimeout(toastTimer);const el=$("#toast");el.textContent=message;el.hidden=false;
+ toastTimer=setTimeout(()=>el.hidden=true,2700);
+}
+async function writeText(value){
  try{
-  const next={fields,done:[...new Set(done)]};
-  localStorage.setItem(editsKey(r.id),JSON.stringify(next));
-  localEdits.set(r.id,next);
-  closeModal();render();toast("Datos guardados en este dispositivo");
- }catch{toast("No se pudieron guardar los cambios; revisa el almacenamiento del navegador")}
-}
-
-const pages={inicio:home,registros:allRecords,ficha:detail,identidad:identity,redes:social,accesos:access,enlaces:links};
-
-/* Las miniaturas siempre dan una vista rapida. Solo se carga un PNG grande a la vez. */
-/* Miniaturas ligeras sin listeners duplicados ni PNG completos precargados. */
-let assetListenersAttached=false;
-function connectAssetImages(){
- if(assetListenersAttached)return;
- assetListenersAttached=true;
- document.addEventListener("error",e=>{
-  const img=e.target;
-  if(!img?.matches?.("img[data-original-src]"))return;
-  const original=img.dataset.originalSrc;
-  const stage=Number(img.dataset.uycFallback||"0");
-  const originalURL=new URL(original,window.location.href).href;
-  if(stage===0&&img.src!==originalURL){
-   img.dataset.uycFallback="1";img.src=original+"?v=2.6.0";return;
+  if(clipboardSupported())await navigator.clipboard.writeText(value);
+  else{
+   const t=document.createElement("textarea");t.value=value;t.style.position="fixed";t.style.opacity="0";document.body.appendChild(t);t.select();
+   if(!document.execCommand("copy"))throw Error("clipboard");
+   t.remove();
   }
-  if(stage<=1&&original.startsWith("assets/taskflow/")){
-   img.dataset.uycFallback="2";
-   img.src="https://raw.githubusercontent.com/novaprimegt-coder/UYC/main/"+original+"?v=2.6.0";
-   return;
-  }
-  img.dataset.uycFallback="3";
-  const frame=img.closest(".asset-display");
-  if(frame)frame.classList.add("missing");
-  else if(img.nextElementSibling?.classList?.contains("symbol")){
-   img.hidden=true;img.nextElementSibling.hidden=false;
-  }else img.hidden=true;
- },true);
- document.addEventListener("load",e=>{
-  const img=e.target;
-  if(!img?.matches?.("img[data-original-src]"))return;
-  img.hidden=false;
-  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
-  img.closest(".asset-display")?.classList.remove("missing");
- },true);
+  toast("Copiado al portapapeles");
+ }catch{toast("No se pudo copiar en este navegador")}
 }
 function render(){
-document.title="UYC · "+names[view];
-$("#crumb").textContent=names[view];
-document.querySelectorAll("[data-view]").forEach(x=>{x.classList.toggle("active",x.dataset.view===view);x.setAttribute("aria-current",x.dataset.view===view?"page":"false")});
-connectAssetImages();
-$("#page").innerHTML=pages[view]();
-/* El PNG grande solo se carga bajo petición del usuario. */
-if(view==="accesos")renderVaultFields();
+ const selected=current();
+ document.title="UYC · "+(selected?selected.nombre:"Directorio empresarial");
+ directoryButton.hidden=!selected;
+ mount.innerHTML=selected?companyHeading(selected)+'<div class="content-in">'+({ficha:profile,imagenes:identity,redes:social,enlaces:repositories,claves:vault}[tab]||profile)(selected)+'</div>':directory();
 }
-function navigate(v){if(!pages[v])return;view=v;filter="";$("#search").value="";render();closeMenu();window.scrollTo(0,0)}
-function openRecord(id){if(records.some(r=>r.id===id)){if(current!==id){unlocked=null;visible.clear();carouselIndex=0;}current=id;navigate("ficha")}}
-function toast(msg){clearTimeout(toastTimer);const el=$("#toast");el.textContent=msg;el.hidden=false;toastTimer=setTimeout(()=>el.hidden=true,2600)}
-async function copy(value){try{await navigator.clipboard.writeText(value);toast("Copiado correctamente")}catch{toast("No se pudo copiar; revisa los permisos del navegador")}}
-/* La información de consulta no se selecciona; los inputs de búsqueda y
-   la caja fuerte siguen permitiendo editar/copiar su contenido propio. */
-const isEditableElement=el=>!!(el&&el.closest?.('input, textarea, [contenteditable="true"], [contenteditable=""]'));
-const isOfficialAsset=source=>!!(selected()&&assetInfo(selected()).some(a=>{
- try{return new URL(a.src,window.location.href).href===new URL(source,window.location.href).href}
- catch{return false}
-}));
-document.addEventListener("selectstart",e=>{if(!isEditableElement(e.target))e.preventDefault()});
-document.addEventListener("copy",e=>{if(!isEditableElement(e.target))e.preventDefault()});
-document.addEventListener("cut",e=>{if(!isEditableElement(e.target))e.preventDefault()});
-document.addEventListener("contextmenu",e=>{if(!isEditableElement(e.target))e.preventDefault()});
-document.addEventListener("dragstart",e=>{if(!isEditableElement(e.target))e.preventDefault()});
+function goHome(){selectedId=null;tab="ficha";imageIndex=0;vaultValues=null;revealed.clear();render();window.scrollTo(0,0)}
+function openCompany(id){
+ if(!records.some(r=>r.id===id))return;
+ if(selectedId!==id){vaultValues=null;revealed.clear();}
+ selectedId=id;tab="ficha";imageIndex=0;filter="";search.value="";
+ render();window.scrollTo(0,0);
+}
+function openTab(which){
+ if(!sectionTitles[which])return;
+ tab=which;render();window.scrollTo({top:0,behavior:"instant"});
+}
+async function submitVault(form){
+ if(working)return;working=true;
+ const submit=$('[type="submit"]',form);if(submit)submit.disabled=true;
+ const type=form.id,values=new FormData(form),master=String(values.get("master")||"");
+ try{
+  if(master.length<12)throw Error("La clave maestra debe tener al menos 12 caracteres");
+  if(type==="vaultCreate"){
+   if(hasVault())throw Error("La caja fuerte ya existe");
+   if(values.get("repeat")!==master)throw Error("Las claves maestras no coinciden");
+   const next={email:String(values.get("email")||""),redes:String(values.get("redes")||"")};
+   if(!next.email&&!next.redes)throw Error("Escribe al menos una contraseña para guardar");
+   const item=await seal(master,next);localStorage.setItem(vaultKey(),JSON.stringify(item));vaultValues=next;
+   toast("Claves cifradas y guardadas");
+  }else if(type==="vaultUnlock"){
+   vaultValues=await unseal(master);toast("Caja fuerte desbloqueada");
+  }else if(type==="vaultEdit"){
+   await unseal(master);
+   const next={email:String(values.get("email")||""),redes:String(values.get("redes")||"")};
+   if(!next.email&&!next.redes)throw Error("Escribe al menos una contraseña");
+   const item=await seal(master,next);localStorage.setItem(vaultKey(),JSON.stringify(item));vaultValues=next;
+   toast("Contraseñas actualizadas");
+  }
+  revealed.clear();hideModal();render();
+ }catch(error){toast(error.message?.includes("clave")||error.message?.includes("contraseña")||error.message?.includes("caja")||error.message?.includes("Escribe")?error.message:"Clave incorrecta o almacenamiento no disponible")}
+ finally{working=false;if(submit?.isConnected)submit.disabled=false}
+}
+async function copyPng(source){
+ if(!officialAsset(source)){toast("Archivo no autorizado");return}
+ try{
+  if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("No compatible");
+  const response=await fetch(source);
+  if(!response.ok)throw Error("Archivo no disponible");
+  const blob=await response.blob();
+  const image=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});
+  await navigator.clipboard.write([new ClipboardItem({"image/png":image})]);
+  toast("Imagen PNG copiada");
+ }catch{toast("No se pudo copiar. Usa «Descargar PNG».")}
+}
+document.addEventListener("click",async event=>{
+ const el=event.target;
+ const download=el.closest("a[download]");
+ if(download){
+  const path=download.getAttribute("href");
+  if(!officialAsset(path)){event.preventDefault();toast("Solo se descargan imágenes oficiales");}
+  return;
+ }
+ const open=el.closest("[data-open]");if(open){openCompany(open.dataset.open);return}
+ const switcher=el.closest("[data-tab]");if(switcher){openTab(switcher.dataset.tab);return}
+ const copy=el.closest("[data-copy]");if(copy){writeText(copy.dataset.copy);return}
+ const image=el.closest("[data-image]");if(image){imageIndex=Number(image.dataset.image);tab="imagenes";render();$("#assetVisual")?.scrollIntoView({behavior:"smooth",block:"center"});return}
+ const step=el.closest("[data-step]");if(step){const n=allAssets(current()).length;if(n){imageIndex=(imageIndex+Number(step.dataset.step)+n)%n;render()}return}
+ const preview=el.closest("[data-preview]");
+ if(preview){
+  const source=preview.dataset.preview;
+  if(!officialAsset(source))return;
+  const a=allAssets(current()).find(x=>x.src===source);
+  showModal('<h2>'+esc(a.nombre)+'</h2><p>Visualización del archivo original. La descarga conserva el PNG sin alteraciones.</p><figure><img src="'+esc(a.src)+'" alt="'+esc(a.nombre)+'" draggable="false"></figure><div class="btn-row" style="margin-top:14px"><a href="'+esc(a.src)+'" class="btn primary" download="'+esc(a.archivo)+'">Descargar PNG</a></div>',true);
+  return;
+ }
+ const png=el.closest("[data-copy-png]");if(png){copyPng(png.dataset.copyPng);return}
+ const secret=el.closest("[data-secret-show]");
+ if(secret){
+  if(!vaultValues)return;
+  const key=secret.dataset.secretShow;
+  if(!vaultValues[key]){toast("No hay contraseña guardada");return}
+  revealed.has(key)?revealed.delete(key):revealed.add(key);
+  render();if(revealed.has(key))setTimeout(()=>{revealed.delete(key);if(tab==="claves"&&current())render()},12000);
+  return;
+ }
+ const secretCopy=el.closest("[data-secret-copy]");
+ if(secretCopy){const value=vaultValues?.[secretCopy.dataset.secretCopy];value?writeText(value):toast("Contraseña no registrada");return}
+ const action=el.closest("[data-action]");if(!action)return;
+ switch(action.dataset.action){
+ case "scroll-directory":$("#directoryList")?.scrollIntoView({behavior:"smooth",block:"start"});break;
+ case "vault-start":if(!crypto?.subtle){toast("Cifrado no disponible");return}showModal(vaultForm(!hasVault()));break;
+ case "vault-edit":if(vaultValues)showModal(editForm());break;
+ case "vault-lock":vaultValues=null;revealed.clear();render();toast("Caja fuerte bloqueada");break;
+ case "vault-delete":
+  if(!confirm("¿Eliminar todas las contraseñas cifradas de esta empresa guardadas en ESTE navegador? La acción no se puede deshacer."))return;
+  try{localStorage.removeItem(vaultKey());vaultValues=null;revealed.clear();render();toast("Claves locales eliminadas")}
+  catch{toast("No se pudo eliminar el almacenamiento local")}break;
+ case "modal-close":hideModal();break;
+ case "retry-image":{
+  const img=$("#assetVisual img");if(img){img.dataset.failed="";$("#assetVisual")?.classList.remove("broken");img.src=img.dataset.originalSrc+"?r="+Date.now()}break;
+ }
+ }
+});
+document.addEventListener("submit",e=>{
+ if(e.target.matches("#vaultCreate,#vaultUnlock,#vaultEdit")){e.preventDefault();submitVault(e.target)}
+});
+homeButton.addEventListener("click",goHome);
+directoryButton.addEventListener("click",goHome);
+search.addEventListener("input",e=>{filter=e.target.value;selectedId=null;vaultValues=null;tab="ficha";render()});
+$("#closeModal").addEventListener("click",hideModal);
+$("#modalCover").addEventListener("click",e=>{if(e.target.id==="modalCover")hideModal()});
 document.addEventListener("keydown",e=>{
- const editable=isEditableElement(e.target)||isEditableElement(document.activeElement);
- const key=e.key.toLowerCase();
- if((e.ctrlKey||e.metaKey)&&!editable&&["c","x"].includes(key))e.preventDefault();
- if((e.ctrlKey||e.metaKey)&&["=","+","-","0","add","subtract","numpadadd","numpadsubtract","numpad0"].includes(key))e.preventDefault();
-},{capture:true});
+ if(e.key==="Escape")hideModal();
+ else if(tab==="imagenes"&&current()&&["ArrowLeft","ArrowRight"].includes(e.key)&&!e.target.closest("input,textarea")){
+  const n=allAssets(current()).length;if(!n)return;
+  imageIndex=(imageIndex+(e.key==="ArrowRight"?1:-1)+n)%n;render();
+ }
+});
+let touchStart=null;
+document.addEventListener("touchstart",e=>{
+ if(tab!=="imagenes"||!e.target.closest("#assetVisual"))return;
+ const t=e.changedTouches?.[0];if(t)touchStart={x:t.clientX,y:t.clientY};
+},{passive:true});
+document.addEventListener("touchend",e=>{
+ if(!touchStart||tab!=="imagenes"||!current())return;
+ const t=e.changedTouches?.[0];if(!t)return;
+ const dx=t.clientX-touchStart.x,dy=t.clientY-touchStart.y;touchStart=null;
+ if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.4){
+  const n=allAssets(current()).length;if(n){imageIndex=(imageIndex+(dx<0?1:-1)+n)%n;render()}
+ }
+},{passive:true});
+document.addEventListener("error",e=>{
+ const img=e.target;
+ if(img?.tagName!=="IMG"||!img.dataset.originalSrc)return;
+ if(img.dataset.failed!=="yes"&&img.src.indexOf(img.dataset.originalSrc)===-1){
+  img.dataset.failed="yes";img.src=img.dataset.originalSrc;return;
+ }
+ const area=img.closest(".asset-visual");
+ if(area)area.classList.add("broken");
+ else{img.style.visibility="hidden";img.setAttribute("aria-label","Imagen no disponible")}
+},true);
+document.addEventListener("load",e=>{
+ const img=e.target;if(img?.tagName!=="IMG")return;
+ img.closest(".asset-visual")?.classList.remove("broken");
+},true);
+document.addEventListener("selectstart",e=>{if(!e.target.closest("input,textarea"))e.preventDefault()});
+document.addEventListener("copy",e=>{if(!e.target.closest("input,textarea"))e.preventDefault()});
+document.addEventListener("contextmenu",e=>{if(!e.target.closest("input,textarea"))e.preventDefault()});
+document.addEventListener("dragstart",e=>{if(e.target.tagName==="IMG")e.preventDefault()});
 document.addEventListener("wheel",e=>{if(e.ctrlKey||e.metaKey)e.preventDefault()},{passive:false});
 document.addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});
 document.addEventListener("gesturechange",e=>e.preventDefault(),{passive:false});
-document.addEventListener("touchmove",e=>{if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false});
-
-function closeMenu(){$("#side").classList.remove("open");$("#overlay").classList.remove("open")}
-function closeModal(){$("#modalCover").hidden=true;$("#modalBody").innerHTML=""}
-function showModal(html){$("#modalBody").innerHTML=html;$("#modalCover").hidden=false}
-const keyFor=()=> "uyc:vault:"+selected().id+":v1";
-function hasVault(){try{return !!localStorage.getItem(keyFor())}catch{return false}}
-function b64(u){let s="";u.forEach(n=>s+=String.fromCharCode(n));return btoa(s)}
-function ub64(s){return Uint8Array.from(atob(s),c=>c.charCodeAt(0))}
-const enc=new TextEncoder(),dec=new TextDecoder();
-async function derive(pass,salt,n=220000){const passKey=await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveKey"]);return crypto.subtle.deriveKey({name:"PBKDF2",salt,iterations:n,hash:"SHA-256"},passKey,{name:"AES-GCM",length:256},false,["encrypt","decrypt"])}
-async function encrypt(pass,data){const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));const key=await derive(pass,salt);const result=await crypto.subtle.encrypt({name:"AES-GCM",iv},key,enc.encode(JSON.stringify(data)));return {v:1,salt:b64(salt),iv:b64(iv),ct:b64(new Uint8Array(result))}}
-async function decrypt(pass){const obj=JSON.parse(localStorage.getItem(keyFor()));const k=await derive(pass,ub64(obj.salt));const r=await crypto.subtle.decrypt({name:"AES-GCM",iv:ub64(obj.iv)},k,ub64(obj.ct));return JSON.parse(dec.decode(r))}
-function renderVaultFields(){const el=$("#vaultFields");if(!el)return;if(!unlocked){el.innerHTML='<p class="fineprint">Caja fuerte '+(hasVault()?"configurada, actualmente bloqueada":"todavía no configurada")+'.</p>';return}el.innerHTML='<div class="field"><label>Contraseña principal del correo</label><div class="value"><span>'+(visible.has("email")?esc(unlocked.email||"No registrada"):"••••••••")+'</span><div class="actions"><button class="btn sm" data-secret="email">Mostrar / ocultar</button><button class="btn copy" data-secret-copy="email">Copiar</button></div></div></div><div class="field"><label>Contraseña general de redes sociales</label><div class="value"><span>'+(visible.has("redes")?esc(unlocked.redes||"No registrada"):"••••••••")+'</span><div class="actions"><button class="btn sm" data-secret="redes">Mostrar / ocultar</button><button class="btn copy" data-secret-copy="redes">Copiar</button></div></div></div>'}
-function vaultModal(){if(!crypto?.subtle){toast("El cifrado no está disponible en este navegador");return}if(unlocked){showModal('<h2>Administrar caja fuerte</h2><p>Para modificar las credenciales bloquea y vuelve a abrir con tu clave maestra.</p><div class="actions"><button class="btn" data-action="vault-lock">Bloquear</button><button class="btn" data-action="vault-delete">Eliminar datos locales</button></div>');return}if(hasVault()){showModal('<h2>Desbloquear caja fuerte</h2><p>La contraseña maestra nunca se almacena.</p><form id="unlockForm"><label for="masterUnlock">Clave maestra</label><input id="masterUnlock" type="password" required autocomplete="current-password"><div class="actions"><button class="btn primary" type="submit">Desbloquear</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>');return}showModal('<h2>Crear caja fuerte local</h2><p>Estos valores se cifrarán únicamente en este navegador, con tu clave maestra personal.</p><form id="createForm"><label for="masterCreate">Nueva clave maestra (mínimo 12 caracteres)</label><input id="masterCreate" type="password" minlength="12" required autocomplete="new-password"><label for="masterAgain">Confirmar clave maestra</label><input id="masterAgain" type="password" minlength="12" required autocomplete="new-password"><label for="passwordEmail">Contraseña de correo</label><input id="passwordEmail" type="password" autocomplete="off"><label for="passwordRedes">Contraseña de redes sociales</label><input id="passwordRedes" type="password" autocomplete="off"><div class="actions"><button class="btn primary" type="submit">Guardar cifrado</button><button class="btn" type="button" data-action="close-modal">Cancelar</button></div></form>')}
-async function handleVaultForm(form){const b=form.querySelector('[type="submit"]');b.disabled=true;try{if(form.id==="createForm"){const m=$("#masterCreate").value;if(m.length<12||m!==$("#masterAgain").value){toast("La clave maestra no coincide");return}const values={email:$("#passwordEmail").value,redes:$("#passwordRedes").value};localStorage.setItem(keyFor(),JSON.stringify(await encrypt(m,values)));unlocked=values;toast("Credenciales cifradas en este dispositivo")}else{unlocked=await decrypt($("#masterUnlock").value);toast("Caja fuerte desbloqueada")}visible.clear();closeModal();render()}catch{toast("No se pudo validar o guardar la caja fuerte")}finally{if(b.isConnected)b.disabled=false}}
-document.addEventListener("click",async e=>{
-const copyPNG=e.target.closest("[data-copy-png]");if(copyPNG){if(!isOfficialAsset(copyPNG.dataset.copyPng)){toast("Imagen no autorizada");return}try{if(!navigator.clipboard?.write||typeof ClipboardItem==="undefined")throw Error("unsupported");const res=await fetch(copyPNG.dataset.copyPng);if(!res.ok)throw Error("missing");const blob=await res.blob();const png=blob.type==="image/png"?blob:new Blob([blob],{type:"image/png"});await navigator.clipboard.write([new ClipboardItem({"image/png":png})]);toast("Imagen PNG copiada")}catch{toast("Este navegador no permite copiar la imagen. Puedes descargarla.")}return}
-const retry=e.target.closest("[data-retry-image]");
-if(retry){
- const frame=retry.closest(".asset-display, .preview");
- const img=frame?.querySelector("img[data-original-src]");
- if(img){
-  img.dataset.uycFallback="1";img.hidden=false;
-  frame.classList.remove("missing");
-  if(img.nextElementSibling?.classList?.contains("symbol"))img.nextElementSibling.hidden=true;
-  img.src=img.dataset.originalSrc+"?retry="+Date.now();
- }
- return;
-}
-const download=e.target.closest("a[download]");
-if(download){
- if(!isOfficialAsset(download.href)){
-  e.preventDefault();toast("Solo se descargan recursos oficiales de la empresa seleccionada");
- }
- return;
-}
-const slide=e.target.closest("[data-select-slide]");if(slide){carouselIndex=Number(slide.dataset.selectSlide);if(view!=="identidad")navigate("identidad");else render();return}
-const step=e.target.closest("[data-slide]");if(step){const len=assetInfo(selected()).length;carouselIndex=(carouselIndex+Number(step.dataset.slide)+len)%len;render();return}
-const nav=e.target.closest("[data-view]");if(nav){navigate(nav.dataset.view);return}
-const rec=e.target.closest("[data-open]");if(rec){openRecord(rec.dataset.open);return}
-const c=e.target.closest("[data-copy]");if(c){await copy(c.dataset.copy);return}
-const s=e.target.closest("[data-secret]");if(s){const k=s.dataset.secret;if(!unlocked?.[k]){toast("Esta contraseña no está registrada");return}visible.has(k)?visible.delete(k):visible.add(k);renderVaultFields();if(visible.has(k))setTimeout(()=>{visible.delete(k);renderVaultFields()},15000);return}
-const sc=e.target.closest("[data-secret-copy]");if(sc){const val=unlocked?.[sc.dataset.secret];val?copy(val):toast("Contraseña no registrada");return}
-const asset=e.target.closest("[data-asset]");
-if(asset){
- const url=asset.dataset.asset;
- if(!isOfficialAsset(url)){toast("Imagen no autorizada");return}
- const info=assetInfo(selected()).find(a=>a.src===url);
- if(!info)return;
- showModal('<h2>'+esc(info.nombre)+'</h2><p>Vista previa del archivo oficial. Para guardar el PNG original utiliza el botón de descarga de la galería.</p><div class="asset-modal-preview"><img src="'+esc(info.src)+'" draggable="false" alt="'+esc(info.nombre)+'"></div><p class="fineprint">Original · '+info.w+' × '+info.h+' px</p>');
- return;
-}
-const ac=e.target.closest("[data-action]");if(!ac)return;
-const action=ac.dataset.action;if(action.startsWith("goto:"))return navigate(action.slice(5));
-if(action==="edit-pending")return pendingEditor();
-if(action==="vault")return vaultModal();
-if(action==="close-modal")return closeModal();
-if(action==="vault-lock"){unlocked=null;visible.clear();closeModal();render();toast("Caja fuerte bloqueada");return}
-if(action==="vault-delete"){if(!confirm("¿Eliminar las credenciales cifradas de ESTE dispositivo? No se pueden recuperar después."))return;localStorage.removeItem(keyFor());unlocked=null;visible.clear();closeModal();render();toast("Credenciales locales eliminadas");return}
-});
-document.addEventListener("submit",e=>{if(e.target.matches("#pendingForm")){e.preventDefault();savePending(e.target);return}if(!e.target.matches("#createForm,#unlockForm"))return;e.preventDefault();handleVaultForm(e.target)});
-$("#search").addEventListener("input",e=>{filter=e.target.value;if(filter&&!["registros"].includes(view))view="registros";render()});
-$("#hamb").addEventListener("click",()=>{$("#side").classList.toggle("open");$("#overlay").classList.toggle("open")});
-$("#overlay").addEventListener("click",closeMenu);
-$("#closeModal").addEventListener("click",closeModal);
-$("#modalCover").addEventListener("click",e=>{if(e.target.id==="modalCover")closeModal()});
-let touchGalleryStart=null;
-document.addEventListener("touchstart",e=>{if(view!=="identidad"||!e.target.closest(".asset-display"))return;const t=e.changedTouches?.[0];if(t)touchGalleryStart={x:t.clientX,y:t.clientY}},{passive:true});
-document.addEventListener("touchend",e=>{if(!touchGalleryStart||view!=="identidad"||!selected())return;const t=e.changedTouches?.[0];if(!t)return;const dx=t.clientX-touchGalleryStart.x,dy=t.clientY-touchGalleryStart.y;touchGalleryStart=null;if(Math.abs(dx)>55&&Math.abs(dx)>Math.abs(dy)*1.25){const n=assetInfo(selected()).length;carouselIndex=(carouselIndex+(dx<0?1:-1)+n)%n;render()}},{passive:true});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeModal();closeMenu()}else if(view==="identidad"&&["ArrowRight","ArrowLeft"].includes(e.key)&&!["INPUT","TEXTAREA"].includes(document.activeElement?.tagName)){const n=assetInfo(selected()).length;if(!n)return;carouselIndex=(carouselIndex+(e.key==="ArrowRight"?1:-1)+n)%n;render()}});
+document.addEventListener("touchmove",e=>{if(e.touches?.length>1)e.preventDefault()},{passive:false});
+document.addEventListener("keydown",e=>{
+ if((e.ctrlKey||e.metaKey)&&["=","+","-","0"].includes(e.key))e.preventDefault();
+},{capture:true});
 render();
 })();
