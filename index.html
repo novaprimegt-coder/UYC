@@ -3,29 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#5c4034">
+<meta name="theme-color" content="#253a34">
 <meta name="description" content="UYC: catálogo maestro de empresas, marcas, aplicaciones, redes, recursos gráficos y repositorios. Consulta, copia y descarga contenidos oficiales.">
 <title>UYC · Directorio empresarial</title>
-<link rel="stylesheet" href="css/styles.css?v=3.0.0">
-<script defer src="data/records.js?v=3.0.0"></script>
-<script defer src="js/app.js?v=3.0.0"></script>
+<link rel="stylesheet" href="css/styles.css?v=3.1.0">
+<script defer src="data/records.js?v=3.1.0"></script>
+<script defer src="js/app.js?v=3.1.0"></script>
 </head>
 <body>
 <div class="site">
 <header class="topbar">
  <div class="top-inner">
-  <button class="brand" id="brandHome" type="button" aria-label="Ir al directorio UYC">
-    <span class="brand-mark" aria-hidden="true">U<span>Y</span>C</span>
-    <span class="brand-copy"><strong>UYC</strong><small>Directorio maestro</small></span>
+  <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menú de navegación" aria-expanded="false" aria-controls="siteMenu">
+   <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
   </button>
-  <div class="header-search"><span class="search-icon" aria-hidden="true">⌕</span><input id="search" type="search" placeholder="Buscar empresa o plataforma" autocomplete="off" aria-label="Buscar empresas registradas"></div>
-  <button type="button" id="goDirectory" class="header-back">Directorio <span aria-hidden="true">↗</span></button>
+  <button class="brand" id="brandHome" type="button" aria-label="Ir al inicio de UYC">
+   <span class="brand-wordmark">UYC<span class="brand-accent">.</span></span>
+   <span class="brand-copy"><strong>Centro de marcas</strong><small>Directorio empresarial</small></span>
+  </button>
+  <button type="button" id="goDirectory" class="header-back" hidden><span aria-hidden="true">←</span> Empresas</button>
+ </div>
+ <div class="search-band">
+  <label class="header-search"><span class="search-icon" aria-hidden="true">⌕</span>
+   <input id="search" type="search" placeholder="Buscar empresa, marca o plataforma" autocomplete="off" aria-label="Buscar empresas registradas">
+  </label>
  </div>
 </header>
+<div id="menuBackdrop" class="menu-backdrop" hidden></div>
+<aside id="siteMenu" class="site-menu" aria-label="Menú de navegación de UYC" aria-hidden="true" hidden>
+ <div class="menu-head">
+  <div><strong>UYC<span class="brand-accent">.</span></strong><small>Navegación</small></div>
+  <button id="menuClose" type="button" class="menu-close" aria-label="Cerrar menú">✕</button>
+ </div>
+ <nav id="menuLinks" class="menu-links" aria-label="Páginas y secciones"></nav>
+ <p class="menu-footnote">Consulta los datos, copia lo necesario y descarga archivos originales. La información de empresas se actualiza desde el código.</p>
+</aside>
 <main id="app" class="layout" aria-live="polite">
  <div class="loading"><span class="loading-dot"></span>Cargando directorio…</div>
 </main>
-<footer class="footer"><div class="footer-inner"><strong>UYC</strong><span>Un directorio para todas tus empresas y proyectos.</span><span>Los datos empresariales se actualizan exclusivamente desde el código.</span></div></footer>
+<footer class="footer"><div class="footer-inner"><strong>UYC<span class="brand-accent">.</span></strong><span>Identidades independientes. Información ordenada.</span><span>Consulta · Copia · Descarga</span></div></footer>
 </div>
 <div id="modalCover" class="modal-cover" hidden><div class="modal" role="dialog" aria-modal="true" aria-label="Vista y gestión de contenido" id="modalBox">
  <button type="button" class="modal-close" id="closeModal" aria-label="Cerrar ventana">✕</button>

@@ -1,4 +1,4 @@
-/* UYC 3.0.0 · Catálogo de lectura, descargas y contraseñas locales cifradas. */
+/* UYC 3.1.0 · Menú funcional, interfaz simplificada y biblioteca de solo lectura. */
 (function(){
 "use strict";
 const records=Array.isArray(window.UYC_RECORDS)?window.UYC_RECORDS:[];
@@ -11,7 +11,7 @@ const missingText=v=>!exists(v)||/^(PENDIENTE|NO APLICA|PROPONER)$/i.test(String
 const clipboardSupported=()=>!!navigator.clipboard?.writeText;
 let selectedId=null,tab="ficha",filter="",imageIndex=0;
 let vaultValues=null,revealed=new Set(),toastTimer,working=false;
-const homeButton=$("#brandHome"),directoryButton=$("#goDirectory"),search=$("#search"),mount=$("#app");
+const homeButton=$("#brandHome"),directoryButton=$("#goDirectory"),search=$("#search"),mount=$("#app"),menuToggle=$("#menuToggle"),menuClose=$("#menuClose"),menu=$("#siteMenu"),menuBackdrop=$("#menuBackdrop"),menuLinks=$("#menuLinks");
 const sectionTitles={ficha:"Ficha empresarial",imagenes:"Identidad visual",redes:"Redes y contacto",enlaces:"Repositorios y enlaces",claves:"Claves protegidas"};
 function current(){return records.find(r=>r.id===selectedId)||null}
 function textBlock(v){return esc(v||"PENDIENTE").replace(/\n/g,"<br>")}
@@ -72,32 +72,27 @@ function allAssets(r){
 function dimension(a){return a.ancho&&a.alto?a.ancho+" × "+a.alto+" px":"Original sin dimensiones registradas"}
 function officialAsset(src){return !!(current()&&allAssets(current()).some(a=>a.src===src))}
 function directoryItem(r){
- const num=allAssets(r).length;
- return '<article class="company-card"><div class="company-card-top">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||r.tipo||"REGISTRO UYC")+'</span><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.tipo||"Organización registrada")+'</p></div></div>'
- +'<div class="company-card-bottom">'+status(r.estado)+'<button class="btn primary" type="button" data-open="'+esc(r.id)+'">Ver empresa →</button></div>'
- +'<div class="under">'+num+' recursos gráficos · '+(r.redes||[]).length+' redes · información independiente</div></article>';
+ const number=allAssets(r).length;
+ return '<article class="company-card"><div class="company-card-top">'+logo(r)+'<div><span class="company-overline">REGISTRO OFICIAL</span><h3>'+esc(r.nombre)+'</h3><p>'+esc(r.categoria||r.tipo||"Organización")+'</p></div></div>'
+ +'<div class="company-card-bottom"><div class="company-card-details">'+status(r.estado)+'<small>'+number+' recursos oficiales</small></div><button class="btn primary" type="button" data-open="'+esc(r.id)+'">Abrir ficha <span aria-hidden="true">↗</span></button></div></article>';
 }
 function directory(){
  const list=records.filter(r=>norm([r.nombre,r.tipo,r.categoria,r.estado,r.descripcion].join(" ")).includes(norm(filter)));
- const totalAssets=records.reduce((n,r)=>n+allAssets(r).length,0),totalSocial=records.reduce((n,r)=>n+(r.redes||[]).length,0);
- return '<div class="content-in">'
- +'<section class="hero"><div><span class="hero-label">UYC · REGISTRO CENTRAL</span><h1>Todas tus marcas.<br><em>Un solo lugar.</em></h1><p>Explora empresas, consulta información oficial, copia datos importantes y descarga imágenes originales. Cada organización conserva su identidad, sus enlaces y sus recursos.</p>'+btn("Ver empresas","scroll-directory","primary")+'</div>'
- +'<div class="hero-note"><span class="hero-note-title">Simple, ordenado y seguro</span>'
- +'<div class="hero-feature"><span>01</span><div><strong>Selecciona una empresa</strong><small>Todo empieza desde su ficha oficial.</small></div></div>'
- +'<div class="hero-feature"><span>02</span><div><strong>Consulta y copia</strong><small>La información pública solo se edita desde el código.</small></div></div>'
- +'<div class="hero-feature"><span>03</span><div><strong>Descarga originales</strong><small>Logos PNG sin alteraciones; claves cifradas localmente.</small></div></div>'
- +'</div></section>'
- +'<div class="stats"><div class="stat"><strong>'+records.length+'</strong><span>Empresas</span><small>Registradas en UYC</small></div><div class="stat"><strong>'+totalAssets+'</strong><span>Imágenes</span><small>Recursos oficiales</small></div><div class="stat"><strong>'+totalSocial+'</strong><span>Redes</span><small>Perfiles vinculados</small></div></div>'
- +'<section id="directoryList">'+heading("Directorio de empresas","Selecciona una ficha para consultar sus apartados.",list.length+" disponibles")+'</section>'
- +(list.length?'<div class="company-grid">'+list.map(directoryItem).join("")+'</div>':'<div class="empty"><strong>Sin coincidencias</strong>Prueba otro nombre o categoría.</div>')
- +'<p class="copyable-hint">◈ Los registros se mantienen desde el código de UYC. La web solo permite consultar, copiar y descargar.</p></div>';
+ const totalAssets=records.reduce((n,r)=>n+allAssets(r).length,0);
+ return '<div class="content-in directory-view">'
+ +'<section class="welcome"><div class="welcome-copy"><span class="eyebrow">UYC / ORGANIZADOR GENERAL</span>'
+ +'<h1>Tu espacio de <em>marcas.</em></h1><p>Información, enlaces e identidad visual. Cada empresa en su lugar, sin complicaciones.</p></div>'
+ +'<div class="welcome-index"><strong>'+String(records.length).padStart(2,"0")+'</strong><span>'+(records.length===1?"Empresa registrada":"Empresas registradas")+'</span><small>'+totalAssets+' recursos visuales en el catálogo</small></div></section>'
+ +'<section id="directoryList">'+heading("Tus empresas","Elige una empresa para consultar su información.",list.length+" "+(list.length===1?"registro":"registros"))+'</section>'
+ +(list.length?'<div class="company-grid">'+list.map(directoryItem).join("")+'</div>':'<div class="empty"><strong>Sin coincidencias</strong>Busca con otro nombre o categoría.</div>')
+ +'<div class="directory-tip"><span aria-hidden="true">✦</span><span>Los datos se mantienen desde el código de UYC. Aquí solo consultas, copias y descargas.</span></div></div>';
 }
 function companyHeading(r){
- const tabs=[["ficha","Ficha"],["imagenes","Imágenes"],["redes","Redes"],["enlaces","Enlaces y repositorios"],["claves","Claves"]];
- return '<section class="company-heading">'+
- '<div class="company-title">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Organización registrada")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Empresa")+'</p></div></div>'
- +'<div class="company-summary">'+status(r.estado)+'<small>Información oficial de '+esc(r.nombre)+'</small></div></section>'
- +'<nav class="company-tabs" aria-label="Apartados de '+esc(r.nombre)+'">'+tabs.map(([key,label])=>'<button type="button" data-tab="'+key+'" class="'+(tab===key?"active":"")+'" aria-current="'+(tab===key?"page":"false")+'">'+label+'</button>').join("")+'</nav>';
+ const tabs=[["ficha","Ficha"],["imagenes","Imágenes"],["redes","Redes"],["enlaces","Enlaces"],["claves","Claves"]];
+ return '<section class="company-heading">'
+ +'<div class="company-title">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Organización registrada")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Empresa")+'</p></div></div>'
+ +'<div class="company-summary">'+status(r.estado)+'</div></section>'
+ +'<nav class="company-tabs" aria-label="Secciones de '+esc(r.nombre)+'">'+tabs.map(([key,label])=>'<button type="button" data-tab="'+key+'" class="'+(tab===key?"active":"")+'" aria-current="'+(tab===key?"page":"false")+'">'+label+'</button>').join("")+'</nav>';
 }
 function profile(r){
  const main=card("Datos principales",field("Nombre oficial",r.nombre,true)+field("Categoría",r.categoria||r.tipo,true)+field("Estado",r.estado)+field("Correo oficial",r.contacto?.correo,true)+field("Usuario principal",r.contacto?.usuario,true));
@@ -250,21 +245,49 @@ async function writeText(value){
   toast("Copiado al portapapeles");
  }catch{toast("No se pudo copiar en este navegador")}
 }
+const menuTargets=[["ficha","Ficha empresarial"],["imagenes","Identidad visual"],["redes","Redes sociales"],["enlaces","Repositorios y enlaces"],["claves","Claves protegidas"]];
+function updateMenu(){
+ const selected=current();
+ let content='<span class="menu-section-label">DIRECTORIO</span>'
+ +'<button class="menu-link '+(!selected?"selected":"")+'" data-menu-home type="button"><span class="menu-link-icon">⌂</span><span>Inicio y empresas</span><span class="menu-chevron">›</span></button>';
+ if(selected){
+  content+='<span class="menu-section-label">EMPRESA · '+esc(selected.nombre)+'</span>';
+  content+=menuTargets.map(([key,label],i)=>'<button class="menu-link '+(tab===key?"selected":"")+'" data-menu-tab="'+key+'" type="button"><span class="menu-link-icon">'+["▣","▧","◎","↗","◇"][i]+'</span><span>'+esc(label)+'</span><span class="menu-chevron">›</span></button>').join("");
+ }else{
+  content+='<span class="menu-section-label">EMPRESAS REGISTRADAS</span>';
+  content+=records.map(r=>'<button class="menu-link" type="button" data-menu-company="'+esc(r.id)+'"><span class="menu-link-icon">◆</span><span>'+esc(r.nombre)+'</span><span class="menu-chevron">›</span></button>').join("");
+ }
+ menuLinks.innerHTML=content;
+}
+function setMenuOpen(open){
+ menu.hidden=!open;menuBackdrop.hidden=!open;
+ menu.setAttribute("aria-hidden",open?"false":"true");
+ menuToggle.setAttribute("aria-expanded",open?"true":"false");
+ menuToggle.setAttribute("aria-label",open?"Cerrar menú de navegación":"Abrir menú de navegación");
+ document.body.classList.toggle("menu-open",open);
+ if(open){updateMenu();menuClose.focus();}
+ else menuToggle.focus({preventScroll:true});
+}
+function closeSiteMenu(){if(!menu.hidden)setMenuOpen(false)}
+
 function render(){
  const selected=current();
  document.title="UYC · "+(selected?selected.nombre:"Directorio empresarial");
  directoryButton.hidden=!selected;
+ updateMenu();
  mount.innerHTML=selected?companyHeading(selected)+'<div class="content-in">'+({ficha:profile,imagenes:identity,redes:social,enlaces:repositories,claves:vault}[tab]||profile)(selected)+'</div>':directory();
 }
-function goHome(){selectedId=null;tab="ficha";imageIndex=0;vaultValues=null;revealed.clear();render();window.scrollTo(0,0)}
+function goHome(){closeSiteMenu();selectedId=null;tab="ficha";imageIndex=0;vaultValues=null;revealed.clear();render();window.scrollTo(0,0)}
 function openCompany(id){
  if(!records.some(r=>r.id===id))return;
+ closeSiteMenu();
  if(selectedId!==id){vaultValues=null;revealed.clear();}
  selectedId=id;tab="ficha";imageIndex=0;filter="";search.value="";
  render();window.scrollTo(0,0);
 }
 function openTab(which){
  if(!sectionTitles[which])return;
+ closeSiteMenu();
  tab=which;render();window.scrollTo({top:0,behavior:"instant"});
 }
 async function submitVault(form){
@@ -307,6 +330,9 @@ async function copyPng(source){
 }
 document.addEventListener("click",async event=>{
  const el=event.target;
+ const menuHome=el.closest("[data-menu-home]");if(menuHome){goHome();return}
+ const menuTab=el.closest("[data-menu-tab]");if(menuTab){openTab(menuTab.dataset.menuTab);return}
+ const menuCompany=el.closest("[data-menu-company]");if(menuCompany){openCompany(menuCompany.dataset.menuCompany);return}
  const download=el.closest("a[download]");
  if(download){
   const path=download.getAttribute("href");
@@ -359,11 +385,14 @@ document.addEventListener("submit",e=>{
 });
 homeButton.addEventListener("click",goHome);
 directoryButton.addEventListener("click",goHome);
+menuToggle.addEventListener("click",()=>setMenuOpen(menu.hidden));
+menuClose.addEventListener("click",closeSiteMenu);
+menuBackdrop.addEventListener("click",closeSiteMenu);
 search.addEventListener("input",e=>{filter=e.target.value;selectedId=null;vaultValues=null;tab="ficha";render()});
 $("#closeModal").addEventListener("click",hideModal);
 $("#modalCover").addEventListener("click",e=>{if(e.target.id==="modalCover")hideModal()});
 document.addEventListener("keydown",e=>{
- if(e.key==="Escape")hideModal();
+ if(e.key==="Escape"){hideModal();closeSiteMenu();}
  else if(tab==="imagenes"&&current()&&["ArrowLeft","ArrowRight"].includes(e.key)&&!e.target.closest("input,textarea")){
   const n=allAssets(current()).length;if(!n)return;
   imageIndex=(imageIndex+(e.key==="ArrowRight"?1:-1)+n)%n;render();
