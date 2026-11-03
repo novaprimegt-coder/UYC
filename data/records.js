@@ -1,4 +1,4 @@
-/* UYC · Fuente pública de datos empresariales. Editar solo desde el código; nunca guardar contraseñas aquí. */
+/* UYC — datos institucionales públicos. Modificar únicamente en código. No incluir contraseñas. */
 window.UYC_RECORDS = [
   {
     "id": "taskflow",
@@ -206,7 +206,7 @@ window.UYC_RECORDS = [
     },
     "pendientes": [
       "Verificación en dos pasos del correo Gmail: pendiente de activar o confirmar",
-        "Definir si TaskFlow se publicará en Google Play",
+      "Definir si TaskFlow se publicará en Google Play",
       "Agregar el enlace oficial de Google Play si se publica la aplicación"
     ],
     "notas": [
@@ -265,5 +265,161 @@ window.UYC_RECORDS = [
         "actualizacion": "15 de octubre de 2026, 9:58 p. m. (Guatemala)"
       }
     }
+  },
+  {
+    "id": "novavisiongt",
+    "nombre": "NovaVision GT",
+    "tipo": "Empresa",
+    "categoria": "Marketing Digital y Desarrollo Web",
+    "estado": "Estado empresarial pendiente de confirmación",
+    "descripcion": "NovaVision GT es una empresa enfocada exclusivamente en Marketing Digital y Desarrollo Web. Su trabajo se concentra en crear y fortalecer la presencia digital de empresas, marcas, comercios, emprendimientos y proyectos mediante soluciones de desarrollo y comunicación visual.\n\nEn el área de desarrollo, NovaVision GT crea páginas, tiendas, biografías, chatbots web o para WhatsApp y aplicaciones. Asimismo, dentro del alcance indicado por el propietario, se registra el servicio: “Subimos aplicación a PlayStation/ solo desarmadas por nuestro equipo.”\n\nEn Marketing Digital, la empresa desarrolla videos publicitarios con inteligencia artificial o desde cero, realiza edición, crea imágenes publicitarias y diseña campañas publicitarias. El alcance de NovaVision GT queda limitado a estos servicios mientras el propietario no autorice una ampliación.",
+    "mision": "PENDIENTE",
+    "vision": "PENDIENTE",
+    "proposito": "PENDIENTE",
+    "objetivo": "PENDIENTE",
+    "valores": [],
+    "contacto": {
+      "correo": "PENDIENTE",
+      "correo_estado": "No creado; propuesta pendiente de confirmar",
+      "usuario": "PENDIENTE",
+      "telefono": "PENDIENTE",
+      "whatsapp": "PENDIENTE"
+    },
+    "redes": [
+      {
+        "plataforma": "Facebook",
+        "nombre": "NovaVision GT",
+        "usuario": "PENDIENTE",
+        "correo": "PENDIENTE",
+        "url": "",
+        "estado": "Pendiente de creación",
+        "dos_pasos": "PENDIENTE"
+      },
+      {
+        "plataforma": "Instagram",
+        "nombre": "NovaVision GT",
+        "usuario": "PENDIENTE",
+        "correo": "PENDIENTE",
+        "url": "",
+        "estado": "Pendiente de creación",
+        "dos_pasos": "PENDIENTE"
+      },
+      {
+        "plataforma": "TikTok",
+        "nombre": "NovaVision GT",
+        "usuario": "PENDIENTE",
+        "correo": "PENDIENTE",
+        "url": "",
+        "estado": "Pendiente de creación",
+        "dos_pasos": "PENDIENTE"
+      },
+      {
+        "plataforma": "Clapper",
+        "nombre": "NovaVision GT",
+        "usuario": "PENDIENTE",
+        "correo": "PENDIENTE",
+        "url": "",
+        "estado": "Pendiente de creación",
+        "dos_pasos": "PENDIENTE"
+      }
+    ],
+    "cuentas": [],
+    "web": {
+      "nombre": "NovaVision GT",
+      "url": "",
+      "original": "",
+      "dominio": "PENDIENTE",
+      "ruta": "PENDIENTE",
+      "alojamiento": "PENDIENTE",
+      "protocolo": "PENDIENTE",
+      "estado": "PENDIENTE",
+      "propietario": "PENDIENTE",
+      "repositorio": "",
+      "tipo_proyecto": "Página de presentación (pendiente de confirmar)",
+      "version": "PENDIENTE",
+      "ultima_actualizacion": "PENDIENTE"
+    },
+    "identidad": {
+      "nombre": "NovaVision GT",
+      "estado": "Referencias visuales entregadas; aprobación de los 8 usos pendiente",
+      "paleta": "Azul oscuro, azul, cian y blanco",
+      "fuente": "NovaVision_GT_UYC_Completo.docx",
+      "observacion": "El documento incorpora 7 PNG distintos y describe 8 recursos: logo principal y logo horizontal corresponden al mismo PNG. No se publican como aprobados hasta autorización."
+    },
+    "activos": [],
+    "seguridad": {
+      "dos_pasos_correo": "PENDIENTE",
+      "politica": "No introducir contraseñas en los archivos del repositorio. La caja fuerte local es la única sección editable de UYC."
+    },
+    "pendientes": [
+      "Confirmar el nombre corto NovaVision y el ID interno novavisiongt (propuestos).",
+      "Confirmar fecha de creación, fecha de lanzamiento y estado empresarial.",
+      "Confirmar razón social, empresa matriz o grupo y relaciones con otras marcas, si existen.",
+      "Aprobar o corregir la misión, visión, propósito, objetivos, valores y eslogan preparados por el chat audiovisual.",
+      "Aprobar los recursos visuales preparados e indicar si el logo principal y el horizontal deben compartir un mismo PNG.",
+      "Identificar el repositorio oficial de presentación: existen NovaVision_GT y NovaVision-GT; no se ha confirmado cuál corresponde.",
+      "Confirmar la URL de la página web oficial, su versión, su hosting y su última actualización.",
+      "Confirmar si existe un repositorio de sistema o programa propio, distinto al de presentación (el expediente dice NO APLICA).",
+      "Confirmar el correo novavisiongt@gmail.com y el usuario @novavisiongt propuestos cuando se creen realmente.",
+      "Crear y confirmar las cuentas y URLs reales de Facebook, Instagram, TikTok y Clapper, así como 2FA.",
+      "Confirmar teléfono empresarial, WhatsApp, correo de soporte y horario de atención.",
+      "Confirmar país y área de cobertura."
+    ],
+    "notas": [
+      "Registro inicial creado con información empresarial confirmada y campos sin aprobar claramente pendientes.",
+      "El expediente institucional se mantiene como documento fuente de propuestas. Las propuestas no se muestran como misión, visión ni identidad digital aprobadas.",
+      "El documento adjunto contiene 7 PNG únicos para 8 tipos de recurso visual. No se publican enlaces a PNG inexistentes o sin autorización."
+    ],
+    "soporte": {
+      "correo": "PENDIENTE",
+      "canal": "PENDIENTE",
+      "enlace": "",
+      "atencion": "PENDIENTE",
+      "telefono": "PENDIENTE",
+      "whatsapp": "PENDIENTE"
+    },
+    "repositorios": {
+      "sistema": {
+        "tipo": "Sistema o programa",
+        "nombre": "NO APLICA actualmente (por confirmar)",
+        "url": "",
+        "descripcion": "No se ha confirmado un sistema propio independiente de la empresa. No confundir con los sistemas desarrollados para clientes."
+      },
+      "presentacion": {
+        "tipo": "Página demostrativa o informativa",
+        "nombre": "Pendiente de identificar",
+        "url": "",
+        "descripcion": "Existen dos posibles repositorios en la cuenta GitHub del propietario; falta identificar el oficial.",
+        "pagina": "",
+        "version": "PENDIENTE",
+        "actualizacion": "PENDIENTE"
+      }
+    },
+    "propuestas": {
+      "id": "novavisiongt",
+      "nombre_corto": "NovaVision",
+      "usuario": "@novavisiongt",
+      "correo": "novavisiongt@gmail.com",
+      "mision": "Crear soluciones de marketing digital y desarrollo web que permitan a empresas, marcas, comercios y proyectos construir una presencia digital profesional, funcional y coherente, mediante páginas, tiendas, biografías, chatbots, aplicaciones, contenido publicitario y campañas adaptadas a sus necesidades.",
+      "vision": "Consolidar a NovaVision GT como una empresa reconocida por integrar desarrollo web y marketing digital en soluciones claras, modernas y funcionales, capaces de acompañar el crecimiento digital de marcas y negocios con una identidad profesional y consistente.",
+      "proposito": "Convertir ideas y necesidades de negocio en herramientas digitales y materiales de comunicación que ayuden a una marca a presentarse, comunicarse y desarrollarse mejor en entornos digitales.",
+      "objetivo": "Desarrollar soluciones de presencia digital y marketing que integren tecnología, diseño y comunicación para mejorar la forma en que los clientes presentan y promocionan sus proyectos en internet.",
+      "eslogan": "Tu visión, llevada al mundo digital.",
+      "horario": "Lunes a sábado, 08:00 a 18:00, hora de Guatemala",
+      "alcance": "Guatemala, con atención de servicios digitales en línea",
+      "estado_aprobacion": "PROPUESTAS — NO CONFIRMADAS"
+    },
+    "servicios": [
+      "Páginas",
+      "Tiendas",
+      "Biografías",
+      "Chatbot web o para WhatsApp",
+      "Desarrollo de aplicaciones",
+      "Subimos aplicación a PlayStation/ solo desarmadas por nuestro equipo",
+      "Videos publicitarios con IA o desarrollados desde cero",
+      "Edición",
+      "Imágenes publicitarias",
+      "Creación de campañas publicitarias"
+    ]
   }
 ];
