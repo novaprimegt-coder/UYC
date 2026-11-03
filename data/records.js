@@ -290,19 +290,20 @@ window.UYC_RECORDS = [
       "Compromiso"
     ],
     "contacto": {
-      "correo": "novavisiongt.oficial@gmail.com",
-      "correo_estado": "PENDIENTE DE CONFIRMACIÓN — la agenda indica que no está disponible, pero también lo marca como verificado y con contraseña configurada.",
+      "correo": "PENDIENTE",
+      "correo_estado": "novavisiongt.oficial@gmail.com NO ESTÁ DISPONIBLE — se requiere definir y crear un correo empresarial alternativo.",
       "usuario": "novavisiongt",
       "usuario_estado": "Identidad principal confirmada. TikTok utiliza el usuario propio novavision.gt.",
       "whatsapp": "No aplica",
-      "telefono": "No aplica"
+      "telefono": "No aplica",
+      "correo_propuesto": "novavisiongt.oficial@gmail.com"
     },
     "redes": [
       {
         "plataforma": "Facebook",
         "nombre": "NovaVision GT",
         "usuario": "novavisiongt",
-        "correo": "novavisiongt.oficial@gmail.com",
+        "correo": "PENDIENTE — correo empresarial alternativo por definir",
         "url": "https://www.facebook.com/share/1DCqTj9Fx5/",
         "estado": "Activa",
         "dos_pasos": "Desactivada"
@@ -311,7 +312,7 @@ window.UYC_RECORDS = [
         "plataforma": "Instagram",
         "nombre": "NovaVision GT",
         "usuario": "novavisiongt",
-        "correo": "novavisiongt.oficial@gmail.com",
+        "correo": "PENDIENTE — correo empresarial alternativo por definir",
         "url": "https://www.instagram.com/novavisiongt?mdxt=MWc2OWMzaGU0M2RjOA==",
         "estado": "Activa",
         "dos_pasos": "Desactivada"
@@ -320,7 +321,7 @@ window.UYC_RECORDS = [
         "plataforma": "TikTok",
         "nombre": "NovaVision GT",
         "usuario": "novavision.gt",
-        "correo": "novavisiongt.oficial@gmail.com",
+        "correo": "PENDIENTE — correo empresarial alternativo por definir",
         "url": "https://tiktok.com/@novavision.gt",
         "estado": "Activa",
         "dos_pasos": "Desactivada"
@@ -329,7 +330,7 @@ window.UYC_RECORDS = [
         "plataforma": "Clapper",
         "nombre": "NovaVision GT",
         "usuario": "novavisiongt",
-        "correo": "novavisiongt.oficial@gmail.com",
+        "correo": "PENDIENTE — correo empresarial alternativo por definir",
         "url": "https://clapperapp.com/novavisiongt?is_invite=1&r=0oRaR1klJ1&c=in&m=co",
         "estado": "Activa",
         "dos_pasos": "Desactivada"
@@ -340,9 +341,9 @@ window.UYC_RECORDS = [
         "nombre": "Google / Gmail",
         "correo": "novavisiongt.oficial@gmail.com",
         "usuario": "novavisiongt",
-        "estado": "Pendiente de confirmar por inconsistencia en la agenda",
+        "estado": "No disponible / no creado",
         "url": "https://mail.google.com/",
-        "notas": "La agenda marca el correo como no disponible y, al mismo tiempo, como verificado y con contraseña configurada. No se declara activo hasta confirmar cuál estado es correcto."
+        "notas": "El correo propuesto novavisiongt.oficial@gmail.com fue reportado por el propietario como no disponible. Se debe definir un correo empresarial alternativo antes de considerarlo activo."
       },
       {
         "nombre": "GitHub — NovaVision GT",
@@ -378,7 +379,7 @@ window.UYC_RECORDS = [
       "nombre_visible": "NovaVision GT",
       "nombre_corto": "NovaVision",
       "usuario": "novavisiongt",
-      "correo": "novavisiongt.oficial@gmail.com",
+      "correo": "PENDIENTE — correo empresarial alternativo por definir",
       "nombre_oficial": "NovaVision GT"
     },
     "activos": [
@@ -473,14 +474,14 @@ window.UYC_RECORDS = [
     ],
     "seguridad": {
       "contrasenas_en_sitio": false,
-      "dos_pasos_correo": "PENDIENTE DE CONFIRMACIÓN",
+      "dos_pasos_correo": "NO APLICA ACTUALMENTE — correo empresarial aún no creado",
       "dos_pasos_redes": "Desactivada en Facebook, Instagram, TikTok y Clapper",
       "politica": "No introducir contraseñas en los archivos del repositorio. La caja fuerte local es la única sección editable de UYC."
     },
     "pendientes": [
-      "Confirmar el estado real de novavisiongt.oficial@gmail.com: la agenda lo marca como no disponible y también como verificado con contraseña configurada.",
-      "Si el correo existe, confirmar o configurar correo de recuperación.",
-      "Si el correo existe, confirmar si se activará la verificación en dos pasos."
+      "Definir y crear un correo empresarial alternativo, ya que novavisiongt.oficial@gmail.com no está disponible.",
+      "Configurar correo de recuperación del nuevo correo empresarial cuando sea creado.",
+      "Configurar o confirmar la verificación en dos pasos del nuevo correo empresarial cuando sea creado."
     ],
     "notas": [
       "NovaVision GT está activa y pertenece oficialmente a OmniForce Evolution S.A.",
@@ -491,13 +492,15 @@ window.UYC_RECORDS = [
       "TikTok utiliza el usuario novavision.gt; las demás redes registradas utilizan novavisiongt.",
       "El repositorio oficial confirmado es NovaVision_GT.",
       "El mismo repositorio NovaVision_GT fue confirmado por el propietario como sistema propio y como repositorio de la página de presentación.",
-      "Se mantienen incorporados los ocho PNG originales de la identidad visual y sus miniaturas optimizadas."
+      "Se mantienen incorporados los ocho PNG originales de la identidad visual y sus miniaturas optimizadas.",
+      "El correo novavisiongt.oficial@gmail.com fue propuesto inicialmente, pero el propietario confirmó que no está disponible.",
+      "Hasta crear un correo alternativo, UYC no mostrará un correo empresarial activo para NovaVision GT."
     ],
     "soporte": {
-      "correo": "novavisiongt.oficial@gmail.com",
-      "canal": "Correo electrónico y redes sociales",
+      "correo": "PENDIENTE",
+      "canal": "Redes sociales",
       "enlace": "",
-      "atencion": "Atención digital",
+      "atencion": "Atención digital mediante redes sociales",
       "telefono": "No aplica",
       "whatsapp": "No aplica"
     },
