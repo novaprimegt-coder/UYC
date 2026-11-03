@@ -99,7 +99,7 @@ function directory(){
 function companyHeading(r){
  const parts=[["ficha","Ficha","▤"],["imagenes","Logos","▧"],["redes","Redes","◎"],["enlaces","Enlaces","↗"],["claves","Claves","◇"]];
  return '<section class="company-header"><button class="crumb" type="button" data-menu-home>← Todas las empresas</button>'
- +'<div class="company-banner"><div class="company-banner-main">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Empresa o marca")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Registro UYC")+'</p></div></div>'
+ +'<div class="company-banner"><div class="company-banner-main">'+logo(r)+'<div><span class="company-overline">'+esc(r.categoria||"Empresa o marca")+'</span><h1>'+esc(r.nombre)+'</h1><p>'+esc(r.tipo||"Registro UYC")+'</p>'+(r.empresa_matriz?'<p class="parent-affiliation">Pertenece a <strong>'+esc(r.empresa_matriz)+'</strong></p>':"")+'</div></div>'
  +'<div class="company-banner-status">'+status(r.estado)+'</div></div>'
  +'<nav class="company-shortcuts" aria-label="Información de '+esc(r.nombre)+'">'
  +parts.map(([key,title,symbol])=>'<button type="button" data-tab="'+key+'" class="shortcut '+(tab===key?"active":"")+'" aria-current="'+(tab===key?"page":"false")+'"><span class="shortcut-icon" aria-hidden="true">'+symbol+'</span><span>'+title+'</span></button>').join("")

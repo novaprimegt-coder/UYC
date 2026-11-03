@@ -1,4 +1,4 @@
-/* UYC — datos institucionales públicos. Modificar únicamente en código. No incluir contraseñas. */
+/* UYC - Datos institucionales públicos. Actualizar solo desde el código; no introducir contraseñas. */
 window.UYC_RECORDS = [
   {
     "id": "taskflow",
@@ -264,7 +264,8 @@ window.UYC_RECORDS = [
         "version": "V3.0.0",
         "actualizacion": "15 de octubre de 2026, 9:58 p. m. (Guatemala)"
       }
-    }
+    },
+    "empresa_matriz": "OmniForce Evolution S.A."
   },
   {
     "id": "novavisiongt",
@@ -341,12 +342,101 @@ window.UYC_RECORDS = [
     },
     "identidad": {
       "nombre": "NovaVision GT",
-      "estado": "Referencias visuales entregadas; aprobación de los 8 usos pendiente",
+      "estado": "Identidad visual oficial incorporada: 8 PNG originales sin alteraciones.",
       "paleta": "Azul oscuro, azul, cian y blanco",
-      "fuente": "NovaVision_GT_UYC_Completo.docx",
-      "observacion": "El documento incorpora 7 PNG distintos y describe 8 recursos: logo principal y logo horizontal corresponden al mismo PNG. No se publican como aprobados hasta autorización."
+      "fuente": "NovaVision_GT_Logos_y_Usos.docx",
+      "observacion": "Se incorporaron ocho PNG originales distintos: principal, secundario, cuadrado, horizontal, isotipo, arte Hero, variantes A y B. Las miniaturas WebP se usan solo para acelerar vistas previas."
     },
-    "activos": [],
+    "activos": [
+      {
+        "id": "logo-principal",
+        "nombre": "Logo principal",
+        "uso": "Sirve como la versión principal de identidad visual de NovaVision GT. Es ideal para presentaciones institucionales, fichas empresariales, documentos oficiales, portadas corporativas y publicaciones donde se quiera mostrar la marca con su mayor nivel de presencia e impacto visual.",
+        "src": "assets/novavisiongt/logo-principal.png",
+        "thumb": "assets/novavisiongt/optimized/logo-principal.webp",
+        "filename": "NovaVision_GT_logo-principal.png",
+        "w": 1024,
+        "h": 1536,
+        "transparent": false
+      },
+      {
+        "id": "logo-secundario",
+        "nombre": "Logo secundario",
+        "uso": "Sirve como una versión alternativa del logo oficial. Es útil para publicaciones, piezas gráficas, documentos y materiales donde se necesite una presentación más limpia de la marca sin perder su identidad principal.",
+        "src": "assets/novavisiongt/logo-secundario.png",
+        "thumb": "assets/novavisiongt/optimized/logo-secundario.webp",
+        "filename": "NovaVision_GT_logo-secundario.png",
+        "w": 1254,
+        "h": 1254,
+        "transparent": true
+      },
+      {
+        "id": "logo-cuadrado",
+        "nombre": "Logo cuadrado",
+        "uso": "Sirve para espacios cuadrados y formatos compactos. Es ideal para perfiles, miniaturas, fichas visuales, catálogos, tarjetas digitales y sistemas donde la composición cuadrada encaja mejor.",
+        "src": "assets/novavisiongt/logo-cuadrado.png",
+        "thumb": "assets/novavisiongt/optimized/logo-cuadrado.webp",
+        "filename": "NovaVision_GT_logo-cuadrado.png",
+        "w": 1254,
+        "h": 1254,
+        "transparent": true
+      },
+      {
+        "id": "logo-horizontal",
+        "nombre": "Logo horizontal",
+        "uso": "Sirve para encabezados, banners, páginas web, cabeceras, firmas visuales y formatos horizontales. Es la versión recomendada cuando se dispone de un espacio amplio de lado a lado.",
+        "src": "assets/novavisiongt/logo-horizontal.png",
+        "thumb": "assets/novavisiongt/optimized/logo-horizontal.webp",
+        "filename": "NovaVision_GT_logo-horizontal.png",
+        "w": 2172,
+        "h": 724,
+        "transparent": true
+      },
+      {
+        "id": "isotipo",
+        "nombre": "Isotipo",
+        "uso": "Sirve como símbolo individual de la marca. Es ideal para favicon, iconos, avatares, marcas de agua, aplicaciones, bots, accesos directos y usos donde no sea necesario mostrar el nombre completo de la empresa.",
+        "src": "assets/novavisiongt/isotipo.png",
+        "thumb": "assets/novavisiongt/optimized/isotipo.webp",
+        "filename": "NovaVision_GT_isotipo.png",
+        "w": 1254,
+        "h": 1254,
+        "transparent": true
+      },
+      {
+        "id": "arte-hero",
+        "nombre": "Arte Hero / Portada oficial",
+        "uso": "Sirve como imagen de portada o recurso hero principal. Es ideal para la portada de la página web, banners promocionales, cabeceras de redes sociales, presentaciones de alto impacto y materiales visuales de lanzamiento.",
+        "src": "assets/novavisiongt/arte-hero.png",
+        "thumb": "assets/novavisiongt/optimized/arte-hero.webp",
+        "filename": "NovaVision_GT_arte-hero.png",
+        "w": 1672,
+        "h": 941,
+        "transparent": false
+      },
+      {
+        "id": "variante-a",
+        "nombre": "Variante complementaria A",
+        "uso": "Sirve como una variante complementaria del sistema visual. Puede usarse en piezas gráficas alternativas, publicaciones especiales o contextos donde se desee una versión adicional del logo conservando la misma identidad de NovaVision GT.",
+        "src": "assets/novavisiongt/variante-a.png",
+        "thumb": "assets/novavisiongt/optimized/variante-a.webp",
+        "filename": "NovaVision_GT_variante-a.png",
+        "w": 1254,
+        "h": 1254,
+        "transparent": true
+      },
+      {
+        "id": "variante-b",
+        "nombre": "Variante complementaria B",
+        "uso": "Sirve como una segunda variante complementaria del sistema de marca. Es útil para adaptaciones visuales, materiales secundarios, distintas composiciones gráficas y recursos donde se necesite variedad manteniendo coherencia visual.",
+        "src": "assets/novavisiongt/variante-b.png",
+        "thumb": "assets/novavisiongt/optimized/variante-b.webp",
+        "filename": "NovaVision_GT_variante-b.png",
+        "w": 1254,
+        "h": 1254,
+        "transparent": true
+      }
+    ],
     "seguridad": {
       "dos_pasos_correo": "PENDIENTE",
       "politica": "No introducir contraseñas en los archivos del repositorio. La caja fuerte local es la única sección editable de UYC."
@@ -356,7 +446,6 @@ window.UYC_RECORDS = [
       "Confirmar fecha de creación, fecha de lanzamiento y estado empresarial.",
       "Confirmar razón social, empresa matriz o grupo y relaciones con otras marcas, si existen.",
       "Aprobar o corregir la misión, visión, propósito, objetivos, valores y eslogan preparados por el chat audiovisual.",
-      "Aprobar los recursos visuales preparados e indicar si el logo principal y el horizontal deben compartir un mismo PNG.",
       "Identificar el repositorio oficial de presentación: existen NovaVision_GT y NovaVision-GT; no se ha confirmado cuál corresponde.",
       "Confirmar la URL de la página web oficial, su versión, su hosting y su última actualización.",
       "Confirmar si existe un repositorio de sistema o programa propio, distinto al de presentación (el expediente dice NO APLICA).",
@@ -368,7 +457,7 @@ window.UYC_RECORDS = [
     "notas": [
       "Registro inicial creado con información empresarial confirmada y campos sin aprobar claramente pendientes.",
       "El expediente institucional se mantiene como documento fuente de propuestas. Las propuestas no se muestran como misión, visión ni identidad digital aprobadas.",
-      "El documento adjunto contiene 7 PNG únicos para 8 tipos de recurso visual. No se publican enlaces a PNG inexistentes o sin autorización."
+      "Se incorporaron a GitHub los ocho PNG originales distintos del documento NovaVision_GT_Logos_y_Usos.docx y sus miniaturas optimizadas."
     ],
     "soporte": {
       "correo": "PENDIENTE",
@@ -420,6 +509,19 @@ window.UYC_RECORDS = [
       "Edición",
       "Imágenes publicitarias",
       "Creación de campañas publicitarias"
-    ]
+    ],
+    "visual": {
+      "cuadrado": "assets/novavisiongt/logo-cuadrado.png",
+      "miniaturas": {
+        "assets/novavisiongt/logo-principal.png": "assets/novavisiongt/optimized/logo-principal.webp",
+        "assets/novavisiongt/logo-secundario.png": "assets/novavisiongt/optimized/logo-secundario.webp",
+        "assets/novavisiongt/logo-cuadrado.png": "assets/novavisiongt/optimized/logo-cuadrado.webp",
+        "assets/novavisiongt/logo-horizontal.png": "assets/novavisiongt/optimized/logo-horizontal.webp",
+        "assets/novavisiongt/isotipo.png": "assets/novavisiongt/optimized/isotipo.webp",
+        "assets/novavisiongt/arte-hero.png": "assets/novavisiongt/optimized/arte-hero.webp",
+        "assets/novavisiongt/variante-a.png": "assets/novavisiongt/optimized/variante-a.webp",
+        "assets/novavisiongt/variante-b.png": "assets/novavisiongt/optimized/variante-b.webp"
+      }
+    }
   }
 ];

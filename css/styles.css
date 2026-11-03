@@ -507,4 +507,7 @@ body.menu-open{overflow:hidden}
  .data-row{grid-template-columns:minmax(0,1fr)}
  .data-row .btn{justify-self:end}
 }
-
+/* Filiación empresarial: se muestra solo cuando el dato está confirmado. */
+.company-banner .parent-affiliation{margin-top:8px;color:#72594e;font-size:12px;line-height:1.55;font-weight:650}
+.company-banner .parent-affiliation strong{font-weight:820;color:#a75b48}
+@media(max-width:540px){.company-banner .parent-affiliation{font-size:11px;line-height:1.55;margin-top:7px}}
