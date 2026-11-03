@@ -272,80 +272,114 @@ window.UYC_RECORDS = [
     "nombre": "NovaVision GT",
     "tipo": "Empresa",
     "categoria": "Marketing Digital y Desarrollo Web",
-    "estado": "Estado empresarial pendiente de confirmación",
-    "descripcion": "NovaVision GT es una empresa enfocada exclusivamente en Marketing Digital y Desarrollo Web. Su trabajo se concentra en crear y fortalecer la presencia digital de empresas, marcas, comercios, emprendimientos y proyectos mediante soluciones de desarrollo y comunicación visual.\n\nEn el área de desarrollo, NovaVision GT crea páginas, tiendas, biografías, chatbots web o para WhatsApp y aplicaciones. Asimismo, dentro del alcance indicado por el propietario, se registra el servicio: “Subimos aplicación a PlayStation/ solo desarmadas por nuestro equipo.”\n\nEn Marketing Digital, la empresa desarrolla videos publicitarios con inteligencia artificial o desde cero, realiza edición, crea imágenes publicitarias y diseña campañas publicitarias. El alcance de NovaVision GT queda limitado a estos servicios mientras el propietario no autorice una ampliación.",
-    "mision": "PENDIENTE",
-    "vision": "PENDIENTE",
-    "proposito": "PENDIENTE",
-    "objetivo": "PENDIENTE",
-    "valores": [],
+    "estado": "Activa",
+    "descripcion": "NovaVision GT es una empresa especializada en Marketing Digital y Desarrollo Web, orientada a crear, desarrollar y fortalecer la presencia digital de empresas, marcas, comercios, emprendimientos y proyectos.\n\nIntegra soluciones de desarrollo digital y comunicación visual mediante páginas web, tiendas, biografías digitales, chatbots web o para WhatsApp, desarrollo de aplicaciones, creación y edición de contenido publicitario, imágenes promocionales y campañas de marketing digital.\n\nSu trabajo busca combinar tecnología, diseño y comunicación para ofrecer soluciones digitales claras, funcionales, profesionales y adaptadas a las necesidades de cada proyecto.",
+    "mision": "Crear soluciones de Marketing Digital y Desarrollo Web que permitan a empresas, marcas, comercios y proyectos construir y fortalecer una presencia digital profesional, funcional y coherente, mediante herramientas tecnológicas, desarrollo, diseño y comunicación adaptados a sus necesidades.",
+    "vision": "Consolidar a NovaVision GT como una empresa reconocida por integrar Marketing Digital y Desarrollo Web en soluciones modernas, funcionales y confiables, capaces de acompañar el crecimiento y la evolución digital de empresas, marcas y proyectos.",
+    "proposito": "Convertir ideas, necesidades y objetivos empresariales en soluciones digitales que permitan a cada cliente mejorar su presencia, comunicación, funcionamiento y desarrollo dentro de los entornos digitales.",
+    "objetivo": "Desarrollar soluciones de presencia digital y marketing que integren tecnología, diseño y comunicación para mejorar la forma en que empresas, marcas, comercios y proyectos se presentan, funcionan y promocionan en internet.",
+    "valores": [
+      "Innovación",
+      "Calidad",
+      "Responsabilidad",
+      "Creatividad",
+      "Claridad",
+      "Eficiencia",
+      "Profesionalismo",
+      "Evolución continua",
+      "Compromiso"
+    ],
     "contacto": {
-      "correo": "PENDIENTE",
-      "correo_estado": "No creado; propuesta pendiente de confirmar",
-      "usuario": "PENDIENTE",
-      "telefono": "PENDIENTE",
-      "whatsapp": "PENDIENTE"
+      "correo": "novavisiongt.oficial@gmail.com",
+      "correo_estado": "PENDIENTE DE CONFIRMACIÓN — la agenda indica que no está disponible, pero también lo marca como verificado y con contraseña configurada.",
+      "usuario": "novavisiongt",
+      "usuario_estado": "Identidad principal confirmada. TikTok utiliza el usuario propio novavision.gt.",
+      "whatsapp": "No aplica",
+      "telefono": "No aplica"
     },
     "redes": [
       {
         "plataforma": "Facebook",
         "nombre": "NovaVision GT",
-        "usuario": "PENDIENTE",
-        "correo": "PENDIENTE",
-        "url": "",
-        "estado": "Pendiente de creación",
-        "dos_pasos": "PENDIENTE"
+        "usuario": "novavisiongt",
+        "correo": "novavisiongt.oficial@gmail.com",
+        "url": "https://www.facebook.com/share/1DCqTj9Fx5/",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
       },
       {
         "plataforma": "Instagram",
         "nombre": "NovaVision GT",
-        "usuario": "PENDIENTE",
-        "correo": "PENDIENTE",
-        "url": "",
-        "estado": "Pendiente de creación",
-        "dos_pasos": "PENDIENTE"
+        "usuario": "novavisiongt",
+        "correo": "novavisiongt.oficial@gmail.com",
+        "url": "https://www.instagram.com/novavisiongt?mdxt=MWc2OWMzaGU0M2RjOA==",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
       },
       {
         "plataforma": "TikTok",
         "nombre": "NovaVision GT",
-        "usuario": "PENDIENTE",
-        "correo": "PENDIENTE",
-        "url": "",
-        "estado": "Pendiente de creación",
-        "dos_pasos": "PENDIENTE"
+        "usuario": "novavision.gt",
+        "correo": "novavisiongt.oficial@gmail.com",
+        "url": "https://tiktok.com/@novavision.gt",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
       },
       {
         "plataforma": "Clapper",
         "nombre": "NovaVision GT",
-        "usuario": "PENDIENTE",
-        "correo": "PENDIENTE",
-        "url": "",
-        "estado": "Pendiente de creación",
-        "dos_pasos": "PENDIENTE"
+        "usuario": "novavisiongt",
+        "correo": "novavisiongt.oficial@gmail.com",
+        "url": "https://clapperapp.com/novavisiongt?is_invite=1&r=0oRaR1klJ1&c=in&m=co",
+        "estado": "Activa",
+        "dos_pasos": "Desactivada"
       }
     ],
-    "cuentas": [],
+    "cuentas": [
+      {
+        "nombre": "Google / Gmail",
+        "correo": "novavisiongt.oficial@gmail.com",
+        "usuario": "novavisiongt",
+        "estado": "Pendiente de confirmar por inconsistencia en la agenda",
+        "url": "https://mail.google.com/",
+        "notas": "La agenda marca el correo como no disponible y, al mismo tiempo, como verificado y con contraseña configurada. No se declara activo hasta confirmar cuál estado es correcto."
+      },
+      {
+        "nombre": "GitHub — NovaVision GT",
+        "usuario": "novaprimegt-coder",
+        "repositorio": "NovaVision_GT",
+        "estado": "Activo",
+        "url": "https://github.com/novaprimegt-coder/NovaVision_GT",
+        "notas": "Repositorio confirmado por el propietario para NovaVision GT y para su página de presentación."
+      }
+    ],
     "web": {
       "nombre": "NovaVision GT",
-      "url": "",
-      "original": "",
-      "dominio": "PENDIENTE",
-      "ruta": "PENDIENTE",
-      "alojamiento": "PENDIENTE",
-      "protocolo": "PENDIENTE",
-      "estado": "PENDIENTE",
-      "propietario": "PENDIENTE",
-      "repositorio": "",
-      "tipo_proyecto": "Página de presentación (pendiente de confirmar)",
-      "version": "PENDIENTE",
-      "ultima_actualizacion": "PENDIENTE"
+      "url": "https://novaprimegt-coder.github.io/NovaVision_GT/",
+      "original": "https://novaprimegt-coder.github.io/NovaVision_GT/",
+      "dominio": "novaprimegt-coder.github.io",
+      "ruta": "/NovaVision_GT/",
+      "alojamiento": "GitHub Pages",
+      "protocolo": "HTTPS",
+      "estado": "Activo — confirmado por el propietario",
+      "propietario": "novaprimegt-coder",
+      "repositorio": "https://github.com/novaprimegt-coder/NovaVision_GT",
+      "nota_repositorio": "Repositorio oficial confirmado para NovaVision GT.",
+      "tipo_proyecto": "Página de presentación oficial de NovaVision GT",
+      "version": "No especificada",
+      "ultima_actualizacion": "6 de octubre de 2026 (último commit registrado en el repositorio)"
     },
     "identidad": {
       "nombre": "NovaVision GT",
       "estado": "Identidad visual oficial incorporada: 8 PNG originales sin alteraciones.",
       "paleta": "Azul oscuro, azul, cian y blanco",
       "fuente": "NovaVision_GT_Logos_y_Usos.docx",
-      "observacion": "Se incorporaron ocho PNG originales distintos: principal, secundario, cuadrado, horizontal, isotipo, arte Hero, variantes A y B. Las miniaturas WebP se usan solo para acelerar vistas previas."
+      "observacion": "Se incorporaron ocho PNG originales distintos: principal, secundario, cuadrado, horizontal, isotipo, arte Hero, variantes A y B. Las miniaturas WebP se usan solo para acelerar vistas previas.",
+      "nombre_visible": "NovaVision GT",
+      "nombre_corto": "NovaVision",
+      "usuario": "novavisiongt",
+      "correo": "novavisiongt.oficial@gmail.com",
+      "nombre_oficial": "NovaVision GT"
     },
     "activos": [
       {
@@ -438,65 +472,51 @@ window.UYC_RECORDS = [
       }
     ],
     "seguridad": {
-      "dos_pasos_correo": "PENDIENTE",
+      "contrasenas_en_sitio": false,
+      "dos_pasos_correo": "PENDIENTE DE CONFIRMACIÓN",
+      "dos_pasos_redes": "Desactivada en Facebook, Instagram, TikTok y Clapper",
       "politica": "No introducir contraseñas en los archivos del repositorio. La caja fuerte local es la única sección editable de UYC."
     },
     "pendientes": [
-      "Confirmar el nombre corto NovaVision y el ID interno novavisiongt (propuestos).",
-      "Confirmar fecha de creación, fecha de lanzamiento y estado empresarial.",
-      "Confirmar razón social, empresa matriz o grupo y relaciones con otras marcas, si existen.",
-      "Aprobar o corregir la misión, visión, propósito, objetivos, valores y eslogan preparados por el chat audiovisual.",
-      "Identificar el repositorio oficial de presentación: existen NovaVision_GT y NovaVision-GT; no se ha confirmado cuál corresponde.",
-      "Confirmar la URL de la página web oficial, su versión, su hosting y su última actualización.",
-      "Confirmar si existe un repositorio de sistema o programa propio, distinto al de presentación (el expediente dice NO APLICA).",
-      "Confirmar el correo novavisiongt@gmail.com y el usuario @novavisiongt propuestos cuando se creen realmente.",
-      "Crear y confirmar las cuentas y URLs reales de Facebook, Instagram, TikTok y Clapper, así como 2FA.",
-      "Confirmar teléfono empresarial, WhatsApp, correo de soporte y horario de atención.",
-      "Confirmar país y área de cobertura."
+      "Confirmar el estado real de novavisiongt.oficial@gmail.com: la agenda lo marca como no disponible y también como verificado con contraseña configurada.",
+      "Si el correo existe, confirmar o configurar correo de recuperación.",
+      "Si el correo existe, confirmar si se activará la verificación en dos pasos."
     ],
     "notas": [
-      "Registro inicial creado con información empresarial confirmada y campos sin aprobar claramente pendientes.",
-      "El expediente institucional se mantiene como documento fuente de propuestas. Las propuestas no se muestran como misión, visión ni identidad digital aprobadas.",
-      "Se incorporaron a GitHub los ocho PNG originales distintos del documento NovaVision_GT_Logos_y_Usos.docx y sus miniaturas optimizadas."
+      "NovaVision GT está activa y pertenece oficialmente a OmniForce Evolution S.A.",
+      "Fecha de creación y lanzamiento oficial: 3 de noviembre de 2026.",
+      "No posee actualmente una razón social independiente.",
+      "No utiliza teléfono ni WhatsApp empresarial.",
+      "Facebook, Instagram, TikTok y Clapper están confirmados como creados y activos.",
+      "TikTok utiliza el usuario novavision.gt; las demás redes registradas utilizan novavisiongt.",
+      "El repositorio oficial confirmado es NovaVision_GT.",
+      "El mismo repositorio NovaVision_GT fue confirmado por el propietario como sistema propio y como repositorio de la página de presentación.",
+      "Se mantienen incorporados los ocho PNG originales de la identidad visual y sus miniaturas optimizadas."
     ],
     "soporte": {
-      "correo": "PENDIENTE",
-      "canal": "PENDIENTE",
+      "correo": "novavisiongt.oficial@gmail.com",
+      "canal": "Correo electrónico y redes sociales",
       "enlace": "",
-      "atencion": "PENDIENTE",
-      "telefono": "PENDIENTE",
-      "whatsapp": "PENDIENTE"
+      "atencion": "Atención digital",
+      "telefono": "No aplica",
+      "whatsapp": "No aplica"
     },
     "repositorios": {
       "sistema": {
         "tipo": "Sistema o programa",
-        "nombre": "NO APLICA actualmente (por confirmar)",
-        "url": "",
-        "descripcion": "No se ha confirmado un sistema propio independiente de la empresa. No confundir con los sistemas desarrollados para clientes."
+        "nombre": "NovaVision GT",
+        "url": "https://github.com/novaprimegt-coder/NovaVision_GT",
+        "descripcion": "Repositorio confirmado por el propietario como sistema propio de NovaVision GT. Actualmente coincide con el repositorio de presentación."
       },
       "presentacion": {
         "tipo": "Página demostrativa o informativa",
-        "nombre": "Pendiente de identificar",
-        "url": "",
-        "descripcion": "Existen dos posibles repositorios en la cuenta GitHub del propietario; falta identificar el oficial.",
-        "pagina": "",
-        "version": "PENDIENTE",
-        "actualizacion": "PENDIENTE"
+        "nombre": "NovaVision_GT",
+        "url": "https://github.com/novaprimegt-coder/NovaVision_GT",
+        "descripcion": "Repositorio oficial confirmado para la página pública de presentación de NovaVision GT.",
+        "pagina": "https://novaprimegt-coder.github.io/NovaVision_GT/",
+        "version": "No especificada",
+        "actualizacion": "6 de octubre de 2026 (último commit registrado)"
       }
-    },
-    "propuestas": {
-      "id": "novavisiongt",
-      "nombre_corto": "NovaVision",
-      "usuario": "@novavisiongt",
-      "correo": "novavisiongt@gmail.com",
-      "mision": "Crear soluciones de marketing digital y desarrollo web que permitan a empresas, marcas, comercios y proyectos construir una presencia digital profesional, funcional y coherente, mediante páginas, tiendas, biografías, chatbots, aplicaciones, contenido publicitario y campañas adaptadas a sus necesidades.",
-      "vision": "Consolidar a NovaVision GT como una empresa reconocida por integrar desarrollo web y marketing digital en soluciones claras, modernas y funcionales, capaces de acompañar el crecimiento digital de marcas y negocios con una identidad profesional y consistente.",
-      "proposito": "Convertir ideas y necesidades de negocio en herramientas digitales y materiales de comunicación que ayuden a una marca a presentarse, comunicarse y desarrollarse mejor en entornos digitales.",
-      "objetivo": "Desarrollar soluciones de presencia digital y marketing que integren tecnología, diseño y comunicación para mejorar la forma en que los clientes presentan y promocionan sus proyectos en internet.",
-      "eslogan": "Tu visión, llevada al mundo digital.",
-      "horario": "Lunes a sábado, 08:00 a 18:00, hora de Guatemala",
-      "alcance": "Guatemala, con atención de servicios digitales en línea",
-      "estado_aprobacion": "PROPUESTAS — NO CONFIRMADAS"
     },
     "servicios": [
       "Páginas",
@@ -522,6 +542,13 @@ window.UYC_RECORDS = [
         "assets/novavisiongt/variante-a.png": "assets/novavisiongt/optimized/variante-a.webp",
         "assets/novavisiongt/variante-b.png": "assets/novavisiongt/optimized/variante-b.webp"
       }
-    }
+    },
+    "nombre_corto": "NovaVision",
+    "actividad_principal": "Servicios de Marketing Digital y Desarrollo Web.",
+    "razon_social": "No posee actualmente una razón social independiente.",
+    "fecha_creacion": "3 de noviembre de 2026",
+    "fecha_lanzamiento": "3 de noviembre de 2026",
+    "empresa_matriz": "OmniForce Evolution S.A.",
+    "eslogan": "Tu visión, llevada al mundo digital."
   }
 ];
