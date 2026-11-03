@@ -110,6 +110,18 @@ function profile(r){
  const vision=card("Visión",'<div class="copy-text">'+textBlock(r.vision)+'</div>',r.vision);
  const extras=[["Descripción completa",r.descripcion],["Propósito",r.proposito],["Objetivo general",r.objetivo]];
  const values=card("Valores institucionales",'<div class="taglist">'+(r.valores||[]).map(v=>'<span class="tag">'+esc(v)+'</span>').join("")+'</div>',(r.valores||[]).join(", "));
+ const businessRows=[
+  ["Estado empresarial",r.estado],
+  ["Actividad principal",r.actividad_principal],
+  ["Empresa matriz",r.empresa_matriz],
+  ["Razón social",r.razon_social],
+  ["Fecha de creación",r.fecha_creacion],
+  ["Fecha de lanzamiento",r.fecha_lanzamiento],
+  ["Eslogan",r.eslogan]
+ ].filter(([,value])=>value);
+ const business=businessRows.length&&(r.actividad_principal||r.razon_social||r.fecha_creacion||r.fecha_lanzamiento||r.eslogan)
+  ?card("Datos empresariales",businessRows.map(([label,value])=>field(label,value)).join(""))
+  :"";
  const app=r.aplicacion?card("Información de la aplicación",
   field("Versión actual",r.aplicacion.version)
  +field("Compilación",r.aplicacion.compilacion)
@@ -124,10 +136,10 @@ function profile(r){
  +'<div class="info-rail-item"><span>Categoría empresarial</span><strong>'+esc(r.categoria||r.tipo||"Pendiente")+'</strong>'+copyBtn(r.categoria||r.tipo,"Copiar categoría")+'</div></div>'
  +'<div class="section-heading feature-heading"><div><h2>Misión y visión</h2><p>Textos oficiales, disponibles para copiar.</p></div></div>'
  +'<div class="grid-two feature-cards">'+mission+vision+'</div>'
- +'<details class="detail-group"><summary><span><strong>Información complementaria</strong><small>Descripción, propósito, objetivos, valores y aplicación</small></span><span class="detail-toggle"><span class="detail-toggle-label"><span class="when-closed">Ver más</span><span class="when-open">Ocultar</span></span><span class="detail-expand" aria-hidden="true"></span></span></summary>'
+ +'<details class="detail-group"><summary><span><strong>Información complementaria</strong><small>Datos empresariales, descripción, propósito, objetivos, valores y aplicación</small></span><span class="detail-toggle"><span class="detail-toggle-label"><span class="when-closed">Ver más</span><span class="when-open">Ocultar</span></span><span class="detail-expand" aria-hidden="true"></span></span></summary>'
  +'<div class="detail-group-body"><div class="grid-two">'
  +extras.map(([label,body])=>card(label,'<div class="copy-text">'+textBlock(body)+'</div>',body)).join("")
- +values+(app||"")+'</div></div></details></div>';
+ +business+values+(app||"")+'</div></div></details></div>';
 }
 function social(r){
  const items=r.redes||[],mainUser=r.contacto?.usuario||"",mainEmail=r.contacto?.correo||"";
